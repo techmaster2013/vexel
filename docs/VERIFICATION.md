@@ -14,4 +14,6 @@ Cross-origin browser rules prevent reading arbitrary iframe documents. Vexel als
 
 Google/Microsoft sign-in needs deployment credentials. Real Firestore request delivery, email recovery, ad-provider integration, VM state import/export, all game win/loss paths, physical low-end-device performance, Docker and public deployment remain unverified. GTA gameplay is unverified; only its source loader was inspected. Remote sources can change or refuse framing.
 
-The catalog contains 72 entries: 5 installed games, 3 remote players, 11 external launchers and 53 entries awaiting legitimate sources. The movie catalog has 13 records with 5 connected open-film streams. Protected media payloads were not copied.
+The catalog contains 72 entries: 7 installed games, 3 remote players, 11 external launchers and 51 entries awaiting legitimate sources. The movie catalog has 13 records with 5 connected open-film streams. Protected media payloads were not copied.
+
+Local game pack update: Dino Game and Adventures with Anxiety now load from vex-games. Dino gameplay start and Anxiety loading/title screen were browser-smoke-tested. Upstream licenses, source pins and credits remain in each game directory; full story completion is unverified.
