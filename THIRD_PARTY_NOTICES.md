@@ -1,0 +1,21 @@
+# Third-party notices
+
+Vexel's original platform code retains this repository's GPL-3.0 license. The separately loaded, unmodified MercuryWorkshop runtime packages retain AGPL-3.0-only. Their source, releases and build instructions are available at:
+
+- Scramjet 2.0.67-alpha.2 and scramjet-controller 0.0.14: https://github.com/MercuryWorkshop/scramjet
+- libcurl-transport 2.0.5: https://github.com/MercuryWorkshop/CurlTransport
+
+Exact package versions and integrity hashes are in pnpm-lock.yaml. Runtime files are prepared by scripts/build.mjs, without modification except concatenating the service-worker lifecycle/fetch hooks. Those hooks are in that script. The AGPL license is served beside the runtime assets after building.
+
+jose 6.x is MIT: https://github.com/panva/jose . It runs on the server.
+
+DM Sans and Space Grotesk fonts are served by Google Fonts under the SIL Open Font License; system fonts are used when remote fonts are unavailable.
+
+Film records include separate attribution and source links. Tears of Steel: (CC) Blender Foundation, Mango Open Movie Project, CC BY 3.0. Its full credits remain part of the streamed film. No movie data is distributed in this repository. Catalog metadata does not grant redistribution rights to other media.
+
+Revision 0.3:
+- Silkscreen regular/bold are bundled in public/fonts with the SIL Open Font License. They replace the earlier externally loaded fonts.
+- v86 0.5.472 is BSD-2-Clause: https://github.com/copy/v86 . Its license is copied beside prepared runtime files. Firmware source revisions and checksums are recorded in scripts/vm-sources.json; firmware licensing is copied alongside them.
+- @mercuryworkshop/wisp-js 0.5.1 is LGPL-3.0-or-later: https://github.com/MercuryWorkshop/wisp-js . It is imported unmodified as a server library. The deprecated wisp-server-node implementation is not used.
+- Alpine Linux is assembled from separately licensed packages. The unmodified x86 installation image is downloaded from the official Alpine mirror and SHA-256 verified, not committed to the source repository. Source/package details: https://alpinelinux.org/ and https://gitlab.alpinelinux.org/alpine/aports .
+- Big Buck Bunny, Sintel, Elephants Dream, and Caminandes: Llamigos stream from Internet Archive items carrying CC BY 3.0 metadata, with creator attribution and full film credits preserved. No media files are bundled.
