@@ -442,6 +442,7 @@ export const server = createServer(async (req, res) => {
         const now = Date.now();
         if (b.kind && !["browse", "play"].includes(b.kind))
           fail(400, "Invalid activity.");
+        if (u.unlimited_coins) return json(res, { earned: 0, user: me(u) });
         const amount = b.kind === "play" ? 3 : 1;
         if (now - u.last_reward < 60000)
           return json(res, { earned: 0, user: me(u) });
@@ -467,9 +468,9 @@ export const server = createServer(async (req, res) => {
               .get(u.id, item.id)
           )
             fail(409, "Already owned.");
-          if (u.coins < item.price)
+          if (!u.unlimited_coins && u.coins < item.price)
             fail(409, "Earn more coins to unlock this.");
-          award(db, u.id, -item.price, "shop:" + item.id);
+          if (!u.unlimited_coins) award(db, u.id, -item.price, "shop:" + item.id);
           db.prepare("INSERT INTO owned VALUES(?,?)").run(u.id, item.id);
         });
         return json(res, {
@@ -477,7 +478,7 @@ export const server = createServer(async (req, res) => {
         });
       }
       if (path === "/api/admin/grant") {
-        if (!admins.includes(u.username.toLowerCase()))
+        if (!me(u).admin)
           fail(403, "Admin access required.");
         if (!Number.isInteger(b.amount) || b.amount < 1 || b.amount > 10000)
           fail(400, "Grant 1–10,000 coins.");
@@ -502,7 +503,7 @@ export const server = createServer(async (req, res) => {
       if (path === "/api/chat/delete") {
         const m = db.prepare("SELECT * FROM messages WHERE id=?").get(b.id);
         if (!m) fail(404, "Message not found.");
-        if (m.user_id !== u.id && !admins.includes(u.username.toLowerCase()))
+        if (m.user_id !== u.id && !me(u).admin)
           fail(403, "Cannot delete this message.");
         db.prepare("DELETE FROM messages WHERE id=?").run(b.id);
         return json(res, { ok: true });
@@ -524,7 +525,7 @@ export const server = createServer(async (req, res) => {
     }
     if (path === "/api/feedback/drafts") {
       const u = auth(req);
-      if (!admins.includes(u.username.toLowerCase()))
+      if (!me(u).admin)
         fail(403, "Admin access required.");
       return json(
         res,

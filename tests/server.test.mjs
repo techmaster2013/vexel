@@ -249,3 +249,20 @@ test('game probe only accepts catalog-approved external sources',async()=>{
  let x=await request('/api/game-probe?id=missing&url=https://127.0.0.1/');assert.equal(x.r.status,404);
  x=await request('/api/game-probe?id=fixture-0');assert.equal(x.r.status,400);
 });
+
+ test("persisted account privileges allow unlimited purchases without exposing privilege writes", async () => {
+  let x = await request("/api/register", {username:"privilege_test", password:"strong-test-password"}, "");
+  const session=x.r.headers.get("set-cookie").split(";")[0], id=x.b.user.id;
+  assert.equal(x.b.user.admin,false); assert.equal(x.b.user.unlimitedCoins,false);
+  const db=new DatabaseSync(database);
+  db.prepare("UPDATE users SET is_admin=1, unlimited_coins=1 WHERE id=?").run(id);
+  x=await request("/api/shop/buy",{item:"rose"},session);
+  assert.equal(x.r.status,200); assert.equal(x.b.user.coins,0);
+  assert.equal(x.b.user.unlimitedCoins,true);assert.equal(x.b.user.admin,true);
+  assert.ok(x.b.user.owned.includes("rose"));
+  x=await request("/api/activity",{kind:"play"},session);assert.equal(x.b.earned,0);
+  x=await request("/api/admin/grant",{username:"privilege_test",amount:1},session);assert.equal(x.r.status,200);
+  x=await request("/api/preferences",{preferences:{is_admin:0,unlimited_coins:0,unlimitedCoins:false}},session);
+  assert.equal(x.b.user.admin,true);assert.equal(x.b.user.unlimitedCoins,true);
+  db.close();
+ });

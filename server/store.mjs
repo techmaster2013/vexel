@@ -23,6 +23,10 @@ export function openStore(path) {
  CREATE TABLE IF NOT EXISTS ledger(id INTEGER PRIMARY KEY,user_id TEXT REFERENCES users(id),amount INTEGER,reason TEXT,created INTEGER);
  CREATE TABLE IF NOT EXISTS drafts(id TEXT PRIMARY KEY,user_id TEXT,category TEXT,game TEXT,message TEXT,created INTEGER);
  `);
+  const columns = new Set(db.prepare("PRAGMA table_info(users)").all().map(c => c.name));
+  for (const column of ["is_admin", "unlimited_coins"]) {
+    if (!columns.has(column)) db.exec(`ALTER TABLE users ADD COLUMN ${column} INTEGER NOT NULL DEFAULT 0`);
+  }
   return db;
 }
 export const random = () => randomBytes(32).toString("base64url");
@@ -44,12 +48,13 @@ export function publicUser(db, u, admins = []) {
     username: u.username,
     email: u.email,
     coins: u.coins,
+    unlimitedCoins: !!u.unlimited_coins,
     preferences: JSON.parse(u.preferences),
     owned: db
       .prepare("SELECT item FROM owned WHERE user_id=?")
       .all(u.id)
       .map((x) => x.item),
-    admin: admins.includes(u.username.toLowerCase()),
+    admin: !!u.is_admin || admins.includes(u.username.toLowerCase()),
   };
 }
 export function transaction(db, fn) {

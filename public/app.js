@@ -140,7 +140,7 @@ function identity() {
     ? `${esc(user.username)}<small>Signed in · no ads</small>`
     : "Guest<small>Sign in to sync your data</small>";
   $("#avatar").textContent = user?.username[0].toUpperCase() || "V";
-  $("#balance").textContent = "◈ " + (user?.coins || 0);
+  $("#balance").textContent = "◈ " + (user?.unlimitedCoins ? "∞" : (user?.coins || 0));
 }
 function title(kicker, name, desc, action = "") {
   return `<div class="page-title"><div><span class="eyebrow">${kicker}</span><h1>${name}</h1><p>${desc}</p></div>${action}</div>`;
@@ -251,7 +251,7 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.4</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + user.coins + " coins" : "Theme shop"}</h2><p>Earn coins while using Vexel or playing installed games. Unlock account themes in the shop.</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.4</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>Earn coins while using Vexel or playing installed games. Unlock account themes in the shop.</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
     ad();
   bindCards();
   $("#home-updates").onclick = updates;
@@ -696,7 +696,7 @@ function accountPage() {
   if (user) {
     main.innerHTML =
       title("ACCOUNT", esc(user.username), "Manage your account.") +
-      `<div class="form-grid"><div class="panel"><span class="badge">SIGNED IN · AD FREE</span><h2 style="margin-top:20px">Your account</h2><p>◈ ${user.coins} coins · ${user.owned.length} unlocked themes</p><p class="catalog-note">Earn 1 coin per active minute, or 3 while playing. One reward per minute, across your account. Coins have no cash value.</p><div class="actions"><a href="#shop" class="pill primary">Visit the shop</a><button id="logout">Sign out</button></div><p class="catalog-note">Email/password accounts support email or username login. Email verification and password recovery are not configured in this first version.</p></div>${user.admin ? `<form id="grant" class="panel"><h2>Admin coin grant</h2><label for="grant-user">Username</label><input id="grant-user" required><label for="grant-amount">Coins</label><input id="grant-amount" type="number" min="1" max="10000" required><div class="actions"><button>Grant coins</button></div><p id="grant-status" class="status"></p></form>` : `<div class="panel"><h2>Saved data</h2><p>Favorites, recent games, notes, and preferences sync with your account.</p><a href="#settings" class="link">Settings →</a></div>`}</div>`;
+      `<div class="form-grid"><div class="panel"><span class="badge">SIGNED IN · AD FREE</span><h2 style="margin-top:20px">Your account</h2><p>◈ ${user.unlimitedCoins ? "∞" : user.coins} coins · ${user.owned.length} unlocked themes</p><p class="catalog-note">Earn 1 coin per active minute, or 3 while playing. One reward per minute, across your account. Coins have no cash value.</p><div class="actions"><a href="#shop" class="pill primary">Visit the shop</a><button id="logout">Sign out</button></div><p class="catalog-note">Email/password accounts support email or username login. Email verification and password recovery are not configured in this first version.</p></div>${user.admin ? `<form id="grant" class="panel"><h2>Admin coin grant</h2><label for="grant-user">Username</label><input id="grant-user" required><label for="grant-amount">Coins</label><input id="grant-amount" type="number" min="1" max="10000" required><div class="actions"><button>Grant coins</button></div><p id="grant-status" class="status"></p></form>` : `<div class="panel"><h2>Saved data</h2><p>Favorites, recent games, notes, and preferences sync with your account.</p><a href="#settings" class="link">Settings →</a></div>`}</div>`;
     $("#logout").onclick = async () => {
       try {
         await api("logout", {});
@@ -767,7 +767,7 @@ function shopPage() {
       "CUSTOMIZATION",
       "Theme shop",
       "Unlock themes with earned coins.",
-      `<span class="badge">◈ ${user?.coins || 0} COINS</span>`,
+      `<span class="badge">◈ ${user?.unlimitedCoins ? "∞" : (user?.coins || 0)} COINS</span>`,
     ) +
     `<div class="grid">${config.shop.map((s) => `<article class="panel shop-card"><div class="swatch" style="background:${s.color}">vexel.</div><h3 style="margin-top:20px">${s.name}</h3><p>Account theme</p><div class="actions"><small>◈ ${s.price}</small><button data-buy="${s.id}" ${user?.owned.includes(s.id) ? "disabled" : ""}>${user?.owned.includes(s.id) ? "Owned ✓" : "Unlock"}</button></div></article>`).join("")}</div><p class="catalog-note">${user ? "Stay active to earn 1 coin per minute, or 3 while a game is open. Rewards share a server cooldown." : "Sign in to earn coins and unlock themes."} No purchases or real money.</p>`;
   main.querySelectorAll("[data-buy]").forEach(
