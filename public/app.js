@@ -1128,10 +1128,7 @@ try {
     toast("Sign-in did not complete. Please try again or use your username and password.");
     history.replaceState(null,"",location.pathname+location.hash);
   }
-  if (!sessionStorage.getItem("vexel.changelog.0.5")) {
-    updates();
-    sessionStorage.setItem("vexel.changelog.0.5", "1");
-  }
+  updates();
 } catch (e) {
   main.innerHTML =
     '<div class="empty">Vexel couldn’t load its files. Check the connection and deployment, then reload.</div>';
