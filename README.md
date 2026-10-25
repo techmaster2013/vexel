@@ -20,6 +20,8 @@ Put game files in **[vex-games](https://github.com/techmaster2013/vex-games)**. 
 
 Vexel publishes from **main**. There is no separate publishing branch. The game files have their own repo; everything else stays here.
 
+The library now has 940 entries: 21 local entries, 892 external game pages, and 27 still awaiting working sources. Caver & apps also has a searchable list of your public projects.
+
 Some games need their files or an external service connected before they can play. Pac-Man uses the supplied wrapper and still needs Google’s assets through Caver. Eggfish opens its creator’s page through Caver.
 
 [Credits and licenses](THIRD_PARTY_NOTICES.md) · [Technical checks](docs/VERIFICATION.md)

@@ -181,8 +181,8 @@ function bindCards() {
 function preview(id) {
  const g=games.find(x=>x.id===id);if(!g)return;
  const favorite=prefs.favorites?.includes(id),source=g.proxyTarget||g.remoteUrl||g.launchUrl;
- const playControl=g.launchViaCaver&&source?`<button class="primary" id="play" ${config.proxyReady?'':'disabled'}>Open in Caver ↗</button>${config.proxyReady?'':'<small class="muted">Caver needs a Wisp endpoint before this game can open.</small>'}`:g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Play on creator site ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
- open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Open source ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
+ const playControl=g.launchViaCaver&&source?`<button class="primary" id="play" ${config.proxyReady?'':'disabled'}>Open in Caver ↗</button>${config.proxyReady?'':'<small class="muted">Caver needs a Wisp endpoint before this game can open.</small>'}`:g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Open hosted game ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
+ open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Original page ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
  $('#favorite').onclick=()=>{prefs.favorites=favorite?(prefs.favorites||[]).filter(x=>x!==id):[...(prefs.favorites||[]),id];save();preview(id);};
  if(g.launchViaCaver&&source)$('#play').onclick=()=>{if(!config.proxyReady)return;dialog.close();openInCaver(source);};
  else if(g.openExternally&&source)$('#play').onclick=()=>{prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();dialog.close();};
@@ -191,12 +191,12 @@ function preview(id) {
 function openInCaver(originalUrl){pendingProxy=originalUrl;if(location.hash==='#apps')render();else location.hash='apps';}
 function play(g){
  const externalSource=g.proxyTarget||g.remoteUrl||g.launchUrl;
- if(externalSource){const target=new URL(externalSource);if(target.protocol!=='https:'||target.origin===location.origin)return toast('Remote games require a separate HTTPS origin.');}
+ if(externalSource&&!g.path){const target=new URL(externalSource);if(target.protocol!=='https:'||target.origin===location.origin)return toast('Remote games require a separate HTTPS origin.');}
  if(g.launchViaCaver&&externalSource){openInCaver(externalSource);return;}
  if(g.openExternally&&externalSource){window.open(externalSource,'_blank','noopener');return;}
  cleanup();playing=true;
  prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();
- const originalUrl=externalSource||(config.gameOrigin||asset('content'))+g.path;
+ const originalUrl=g.path?(config.gameOrigin||asset('content'))+g.path:externalSource;
  const external=new URL(originalUrl,location.href).origin!==location.origin;
  main.innerHTML=`<div class="player-toolbar"><div><span class="eyebrow">NOW PLAYING</span><h2>${esc(g.title)}</h2></div><div class="actions"><button id="back-games">← Games</button>${external?'<button id="caver-game">Caver ↗</button>':''}<button id="full">⛶ Fullscreen</button></div></div><div id="game-view"><iframe id="game-frame" class="player-frame" sandbox="allow-scripts allow-pointer-lock" allow="fullscreen; gamepad" title="${esc(g.title)}"></iframe></div><p class="player-status">${esc(g.controls||'')}${g.license?' · '+esc(g.license):''}</p>`;
  const frame=$('#game-frame');let stopWatching=()=>{};
@@ -371,7 +371,7 @@ function appPage() {
     title("BROWSER", "Caver", "Search the web or open an app through Caver.") +
     `<form id="browser-form" class="search-row"><input id="address" placeholder="Search or enter a website" aria-label="Website address"><button class="primary">Go ↗</button></form><div class="actions"><button data-control="back">← Back</button><button data-control="forward">Forward →</button><button data-control="reload">↻ Reload</button></div><p id="proxy-status" class="status">${config.proxyReady ? "Scramjet 2 · ready to start" : "Proxy setup needed · the owner must configure a Wisp endpoint."}</p><div id="proxy-view" hidden></div>` +
     section("Apps", "Preset applets open through Caver.") +
-    `<div class="grid">${applets.map(([n, m, u, c]) => `<button class="game-card" data-app="${u}"><div class="cover" style="--cover:${c}"><span class="cover-mark">${m}</span></div><div class="card-meta"><strong>${n}</strong><span>↗</span></div></button>`).join("")}</div><p class="catalog-note">External apps may require login and may refuse proxy access. Their availability is controlled by the provider.</p>`;
+    `<div class="grid">${applets.map(([n, m, u, c]) => `<button class="game-card" data-app="${u}"><div class="cover" style="--cover:${c}"><span class="cover-mark">${m}</span></div><div class="card-meta"><strong>${n}</strong><span>↗</span></div></button>`).join("")}</div><p class="catalog-note">External apps may require login and may refuse proxy access. Their availability is controlled by the provider.</p>` + section("Your projects", "Websites and source links from your public repositories.") + `<input id="project-search" type="search" aria-label="Search projects" placeholder="Find a project…"><div id="repository-projects" class="grid" style="margin-top:20px"><p>Loading projects…</p></div>`;
   let busy = false;
   async function go(value) {
     if (busy) return;
@@ -400,7 +400,16 @@ function appPage() {
   main
     .querySelectorAll("[data-control]")
     .forEach((b) => (b.onclick = () => proxy.control(b.dataset.control)));
-  cleanup = () => proxy.destroy();
+  const projectController=new AbortController();
+  fetch(asset('repository-projects.json'),{signal:projectController.signal,cache:'no-cache'}).then(r=>{if(!r.ok)throw Error('Projects unavailable.');return r.json();}).then(projects=>{
+    if(projectController.signal.aborted)return;
+    const show=()=>{
+      const q=$('#project-search').value.toLowerCase();
+      $('#repository-projects').innerHTML=projects.filter(p=>p.name.toLowerCase().includes(q)).map(p=>`<article class="panel"><h3>${esc(p.name)}</h3><p>${esc(p.description)}</p><div class="actions">${p.url?`<a class="pill primary" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Open website ↗</a>`:''}<a class="pill" href="${esc(p.source)}" target="_blank" rel="noopener noreferrer">Source ↗</a></div></article>`).join('')||'<p>No matching projects.</p>';
+    };
+    $('#project-search').oninput=show;show();
+  }).catch(e=>{if(!projectController.signal.aborted)$('#repository-projects').textContent=e.message;});
+  cleanup = () => {projectController.abort();proxy.destroy();};
   if (pendingProxy) {
     const target = pendingProxy;
     pendingProxy = "";

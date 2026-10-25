@@ -2,7 +2,7 @@
 
 Static GitHub Pages frontend: supplied logo, Silkscreen, navy glass home, lightweight transitions, previews, filters and 48-card pagination, settings, local tools/media/music and opt-in Alpine VM. Changelog opens on every reload and says only “added website functionality”. Manga reader removed.
 
-The catalog has 919 records: 17 standalone local games, one local Pac-Man HTML wrapper needing Caver/remote Google assets, 14 external sources/applets and 887 pending records. Eggfish opens its creator page through Caver when Wisp is configured. No protected game/movie/music payloads were copied under unrelated collection licenses.
+The catalog has 940 records: 21 local entries, 892 external sources/applets and 27 unavailable records. The local count includes a remote-dependent Pac-Man wrapper and a racing source requiring multiplayer setup. Eggfish still requires Caver. External reachability checks are not gameplay verification.
 
 Firebase adapters support email accounts, username-only accounts and Google/Microsoft. Discord has a backend-to-Firebase popup bridge using Firebase Admin custom tokens. Incorrect credentials show “Incorrect login!”; missing configuration and network errors stay distinct. Real provider setup remains pending.
 

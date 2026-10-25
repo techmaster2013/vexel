@@ -23,3 +23,7 @@ GitHub Pages cannot read arbitrary cross-origin iframe documents. Static known-b
 ## Main-only editor update
 
 19 automated test groups pass. Static editor sign-in screen visually checked. Editor records round-trip and unsafe URL rejection are tested. The GamePlaza Firebase account, admin custom claim and Firestore rule block are not deployed or verified against the live project; the editor fails closed without them. No real admin credentials were available. The rule block is a prototype for review in the existing project, not a replacement for GamePlaza rules.
+
+## Repository links and source import, 2026-10-25
+
+All 41 connected repositories inventoried again. Read public entry points/catalogs; inspected game-hub through 43 directory trees after its full recursive response exceeded connector limits. Imported GPL cars, MIT The House Game, and owner-authorized GPT Corner; source revisions and licenses retained in vex-games. Local src/link asset references in all three imports resolve (zero missing files). 905 new launch candidates checked using GET/first 8 KiB; 879 returned HTML without obvious error/challenge signatures. No gameplay claim follows from that check. Catalog validates 940 unique records; 21 local, 892 external, 27 pending. Browser surface was unavailable, so new gameplay and visual checks remain unverified. App project directory has 34 public source links, 16 with reachable Pages sites.
