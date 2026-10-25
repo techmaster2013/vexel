@@ -1,3 +1,4 @@
+import {api,staticMode} from "./runtime.js";
 import {classifyBlockEvidence,readableDocumentEvidence} from './block-signatures.js';
 export function renderBlockedFallback(container,{originalUrl,onOpenCaver}) {
  const panel=document.createElement('section');panel.className='blocked-fallback panel';panel.setAttribute('role','status');
@@ -11,8 +12,8 @@ export function watchExternalGame({frame,container,originalUrl,gameId,onOpenCave
  const show=()=>{if(disposed||confirmed)return;confirmed=true;frame.remove();renderBlockedFallback(container,{originalUrl,onOpenCaver});};
  const inspectReadable=()=>{try{const doc=frame.contentDocument;if(doc&&classifyBlockEvidence(readableDocumentEvidence(doc)).blocked)show();}catch{/* Cross-origin frames are intentionally unreadable. */}};
  const check=async()=>{
-  if(disposed||confirmed)return;inspectReadable();if(confirmed||requested)return;requested=true;
-  try{const result=probe?await probe():await fetch('/api/game-probe?id='+encodeURIComponent(gameId),{signal:abort.signal}).then(r=>r.ok?r.json():null);if(result?.blocked===true&&result?.signature)show();}catch{/* Failures are not block-page evidence. */}
+  if(disposed||confirmed)return;inspectReadable();if(confirmed||requested||staticMode)return;requested=true;
+  try{const result=probe?await probe():await api('game-probe?id='+encodeURIComponent(gameId),undefined,{signal:abort.signal});if(result?.blocked===true&&result?.signature)show();}catch{/* Failures are not block-page evidence. */}
  };
  frame.addEventListener('load',check);const timer=setTimeout(check,1200);
  return()=>{disposed=true;clearTimeout(timer);abort.abort();frame.removeEventListener('load',check);};

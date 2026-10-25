@@ -1,41 +1,19 @@
-> Current 0.4 update: supplied graffiti logo, navy glass home, lightweight page transitions, Caver naming, and conservative external-game block detection with original-URL recovery. See [verification](VERIFICATION.md) for current checks and limitations. Earlier milestone notes below are historical.
+# Vexel 0.5 status
 
-# First-version status
+## Working core
 
-| Requirement | Status |
-|---|---|
-| One main repo + separate game payload repo | Implemented; no game payloads in vexel |
-| Original identity, navy GamePlaza descendant, Barnical-style organization, glass panels | Implemented |
-| Replaceable graffiti logo placeholder | SVG placeholder; final art pending user supply |
-| Home, games, apps, request, settings, account, media, social, tools | Implemented routes |
-| Game previews after selection | Implemented; launch requires explicit play |
-| Search, categories, favorites, recents, random, fullscreen | Implemented |
-| Startup changelog | Once per tab session, can reopen |
-| Scramjet 2 proxy + preset applets | Runtime/assets and UI implemented; live Wisp setup and navigation unverified |
-| Username/email accounts | Persistent password accounts; optional email login; no email verification/recovery |
-| Google / Microsoft | OIDC handlers implemented; credentials and live flow verification pending |
-| GamePlaza request mechanism | Same Firestore collection/schema; local fallback drafts. Live delivery intentionally untested |
-| Nexite-based chatroom idea | Persistent shared rooms, polling, message deletion/moderation; DMs/friends/attachments deferred |
-| Coins, customization shop, admin grants | Implemented with server cooldown, transactions and ledger |
-| Lots of customization, reactive wallpaper | Three unlockable accents, navy base, wallpaper, density, lite, motion, tab title, import/export |
-| StreamPlaza-style media | Local video/resume and remote player implemented |
-| Larger onboard film catalog | 12 records; one verified remote stream, 11 preview records pending stream/license checks |
-| Manga reading | Local images, scroll/paged, RTL; publisher integration/CBZ deferred |
-| Music player / Liner concept | Original local queue, persistent player, timed LRC line lyrics; full port, word sync, library imports deferred |
-| Soundboard / GPT Corner tools | Synth pads, pocket tools, notes, pixel editor/export implemented |
-| Radio Garden / Orb.Farm | Optional external launches |
-| Alpine Linux WASM VM | Deferred; no emulator/image bundled and no fake terminal substitute |
-| coreHZ AI functionality | Hub/browser role implemented; live AI integration deferred |
-| Ads for logged-out visitors only | Conditional inert placement implemented; no ad network connected |
-| Protected games/movies/manga | Not bundled; original game pack and licensed/metadata architecture only |
-| Deployment | Node/Docker configuration supplied; not publicly deployed, Docker unverified |
+Plain static frontend, navy glass home and supplied logo, Silkscreen, lightweight/reduced-motion transitions, game previews, category/search/sort/favorites/recent games, bounded 48-card pagination, settings and local tools/media/manga/music, and opt-in Alpine v86 VM. The static deployment contains game-pack output from the separate vex-games source repository.
 
-## Next integration work
+The inventory covers 41 accessible repositories and GN-Math metadata. Current catalog: 919 entries; 17 installed, 14 external sources, 888 awaiting authorized files. Catalog records are not playable game payloads. Protected game assets were not copied under an unrelated collection license. MMG singleplayer starts; its Firebase multiplayer service is unchanged and multiplayer is unverified.
 
-Configure and verify OIDC and operator-owned Wisp, verify Firestore delivery against current rules, choose a licensed media source strategy and verify streams, select a vetted WASM emulator/image, extend chat parity and account recovery/deletion, then perform a production deployment review. Third-party proxy app compatibility cannot be guaranteed by the shell alone.
+## Backend-dependent
 
-## Revision 0.2 supersedes the initial library/design counts above
+The optional Node backend supports existing SQLite accounts, persisted admin/unlimited flags, authoritative rewards/shop/grants, three chatrooms, GamePlaza Firestore requests with durable draft fallback, Google/Microsoft/Discord provider flows and self-hosted Wisp. Provider credentials remain absent; request delivery and production operations remain unverified.
 
-The default home is now a library rather than a landing page. It uses the user-specified Barnical GameSite structure, navy/black colors, visible translucent glass layers, category counts, plain copy, and new original game illustrations. The old green logo placeholder has been replaced with a neutral navy placeholder.
+GitHub Pages has no Node runtime. Optional Firebase browser authentication is prepared for Google/Microsoft/email but needs a Firebase project/provider configuration. Shared Firebase chat, cloud preferences, unique username registry, authoritative economy and Discord-to-Firebase linking are not implemented. Static pages do not publish/migrate local SQLite accounts. Disabled connected features show setup/availability messages instead of pretending to succeed.
 
-The catalog now contains 72 entries: **5 installed games, 12 external launchers, and 55 metadata-only entries awaiting sources**. Deltarune and GTA V are not playable additions. The third-party launcher pages were checked for reachability, not full end-to-end gameplay. The 2048 MIT payload is locally installed with attribution and has been browser-tested. All games being playable remains incomplete.
+Caver's browser runtime is bundled; a configured Wisp endpoint is still required on Pages. Static block detection is restricted to readable iframe evidence; a browser cannot inspect arbitrary cross-origin frames. Node mode adds bounded source probes and private-address rejection.
+
+## Not complete
+
+Full game/media parity, protected payload redistribution, cloud chat/moderation operations, live identity-provider setup, production proxy hosting, real ad-provider integration, email recovery, verified gameplay for every imported game, and physical low-end-device benchmarks.

@@ -1,3 +1,4 @@
+import {api,asset,gameAsset,staticMode,providerSignIn} from "./runtime.js";
 import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
 import {watchExternalGame} from "./blocked-games.js";
@@ -66,21 +67,6 @@ $("#nav").innerHTML = nav
       `<div class="nav-label">${label}</div>${links.map(([id, g, t]) => `<a href="#${id}" data-route="${id}"><span class="glyph">${g}</span>${t}</a>`).join("")}`,
   )
   .join("");
-async function api(path, data) {
-  const r = await fetch("/api/" + path, {
-    method: data ? "POST" : "GET",
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-  });
-  let b;
-  try {
-    b = await r.json();
-  } catch {
-    throw Error("Server unavailable.");
-  }
-  if (!r.ok) throw Error(b.error || "Request failed.");
-  return b;
-}
 function toast(message) {
   $("#toast").textContent = message;
   $("#toast").classList.add("show");
@@ -152,7 +138,7 @@ function canLaunch(g) {
   return Boolean(g.path || g.remoteUrl || g.launchUrl);
 }
 function card(g) {
-  return `<button class="game-card" data-game="${esc(g.id)}" aria-label="Preview ${esc(g.title)}"><div class="cover" style="--cover:${esc(g.color || "#12264a")}">${g.cover ? `<img src="${esc(g.cover)}" alt="" loading="lazy">` : `<div class="cover-pattern" data-kind="${esc(g.category)}"><span>${esc(g.title)}</span></div>`}<span class="tag">${esc(g.category)}</span><span class="play-indicator">${canLaunch(g) ? "▷" : "+"}</span></div><div class="card-meta"><strong>${esc(g.title)}</strong><div class="card-details"><span>${esc(g.status || "Installed")}</span><span class="favorite-indicator">${prefs.favorites?.includes(g.id) ? "♥" : "♡"}</span></div></div></button>`;
+  return `<button class="game-card" data-game="${esc(g.id)}" aria-label="Preview ${esc(g.title)}"><div class="cover" style="--cover:${esc(g.color || "#12264a")}">${g.cover ? `<img src="${esc(gameAsset(g.cover))}" alt="" loading="lazy">` : `<div class="cover-pattern" data-kind="${esc(g.category)}"><span>${esc(g.title)}</span></div>`}<span class="tag">${esc(g.category)}</span><span class="play-indicator">${canLaunch(g) ? "▷" : "+"}</span></div><div class="card-meta"><strong>${esc(g.title)}</strong><div class="card-details"><span>${esc(g.status || "Installed")}</span><span class="favorite-indicator">${prefs.favorites?.includes(g.id) ? "♥" : "♡"}</span></div></div></button>`;
 }
 function grid(items) {
   return items.length
@@ -180,13 +166,13 @@ $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
 function updates() {
   open(
-    `<span class="eyebrow">VERSION 0.4</span><h2>Changelog</h2><ul class="change-list"><li>Your logo, Silkscreen, and a dedicated home screen.</li><li>Lightweight page transitions and Caver block-page recovery.</li><li>Navy and black interface with translucent panels.</li><li>Game library, category sidebar, search and sorting.</li><li>GamePlaza catalog and requested titles.</li><li>Game previews, favorites, accounts and chat.</li><li>Built-in browser transport and an Alpine VM launcher.</li></ul><p class="catalog-note">Unavailable titles are labeled. Google and Microsoft sign-in require deployment credentials. Remote games are served by their source hosts.</p><button class="primary" id="enter">Close</button>`,
+    `<span class="eyebrow">VERSION 0.5</span><h2>Changelog</h2><ul class="change-list"><li>GitHub Pages support, expanded game catalog, MMG and licensed game imports.</li><li>Your logo, Silkscreen, and a dedicated home screen.</li><li>Lightweight page transitions and Caver block-page recovery.</li><li>Navy and black interface with translucent panels.</li><li>Game library, category sidebar, search and sorting.</li><li>GamePlaza catalog and requested titles.</li><li>Game previews, favorites, accounts and chat.</li><li>Built-in browser transport and an Alpine VM launcher.</li></ul><p class="catalog-note">Unavailable titles are labeled. Google, Microsoft, and Discord sign-in require deployment credentials. Remote games are served by their source hosts.</p><button class="primary" id="enter">Close</button>`,
   );
   $("#enter").onclick = () => dialog.close();
 }
 $("#credits").onclick = () =>
   open(
-    `<h2>Credits</h2><p>Vexel combines the game library, browser, tools, and community features developed across GamePlaza, coreHZ, GPT Corner, nexSite, nexite, and StreamPlaza. Layout inspired by Barnical.</p><p>Proxy: <a href="https://github.com/MercuryWorkshop/scramjet" target="_blank" rel="noopener">MercuryWorkshop Scramjet 2 (AGPL-3.0)</a> and <a href="https://github.com/MercuryWorkshop/CurlTransport" target="_blank" rel="noopener">libcurl transport (AGPL-3.0)</a>. Unmodified runtime packages are installed from the pinned dependency lockfile. Open movie credits and licenses appear beside each player. Font: Silkscreen, bundled under the SIL Open Font License. Alpine VM: v86 (BSD-2-Clause), SeaBIOS, and Alpine Linux. Built-in transport: wisp-js (LGPL-3.0-or-later).</p><p>Logo: replaceable SVG placeholder. Original game payloads live in vex-games.</p><p>Vexel is GPL-3.0, with no warranty. Third-party components retain their licenses.</p><a class="pill" href="https://github.com/techmaster2013/vexel" target="_blank" rel="noopener">Source & research notes ↗</a>`,
+    `<h2>Credits</h2><p>Vexel combines the game library, browser, tools, and community features developed across GamePlaza, coreHZ, GPT Corner, nexSite, nexite, and StreamPlaza. Layout inspired by Barnical.</p><p>Proxy: <a href="https://github.com/MercuryWorkshop/scramjet" target="_blank" rel="noopener">MercuryWorkshop Scramjet 2 (AGPL-3.0)</a> and <a href="https://github.com/MercuryWorkshop/CurlTransport" target="_blank" rel="noopener">libcurl transport (AGPL-3.0)</a>. Unmodified runtime packages are installed from the pinned dependency lockfile. Open movie credits and licenses appear beside each player. Font: Silkscreen, bundled under the SIL Open Font License. Alpine VM: v86 (BSD-2-Clause), SeaBIOS, and Alpine Linux. Built-in transport: wisp-js (LGPL-3.0-or-later).</p><p>Logo: supplied by Vexel’s owner. Original game payloads live in vex-games.</p><p>Vexel is GPL-3.0, with no warranty. Third-party components retain their licenses.</p><a class="pill" href="https://github.com/techmaster2013/vexel" target="_blank" rel="noopener">Source & research notes ↗</a>`,
   );
 function bindCards() {
   main
@@ -196,7 +182,7 @@ function bindCards() {
 function preview(id) {
  const g=games.find(x=>x.id===id);if(!g)return;
  const favorite=prefs.favorites?.includes(id),source=g.remoteUrl||g.launchUrl;
- open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(g.cover)}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>'}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Open source ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
+ open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>'}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Open source ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
  $('#favorite').onclick=()=>{prefs.favorites=favorite?(prefs.favorites||[]).filter(x=>x!==id):[...(prefs.favorites||[]),id];save();preview(id);};
  if(g.path||source)$('#play').onclick=()=>{dialog.close();play(g);};
 }
@@ -206,7 +192,7 @@ function play(g){
  if(externalSource){const target=new URL(externalSource);if(target.protocol!=='https:'||target.origin===location.origin)return toast('Remote games require a separate HTTPS origin.');}
  cleanup();playing=true;
  prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();
- const originalUrl=externalSource||(config.gameOrigin||'/content')+g.path;
+ const originalUrl=externalSource||(config.gameOrigin||asset('content'))+g.path;
  const external=new URL(originalUrl,location.href).origin!==location.origin;
  main.innerHTML=`<div class="player-toolbar"><div><span class="eyebrow">NOW PLAYING</span><h2>${esc(g.title)}</h2></div><div class="actions"><button id="back-games">← Games</button>${external?'<button id="caver-game">Caver ↗</button>':''}<button id="full">⛶ Fullscreen</button></div></div><div id="game-view"><iframe id="game-frame" class="player-frame" sandbox="allow-scripts allow-pointer-lock" allow="fullscreen; gamepad" title="${esc(g.title)}"></iframe></div><p class="player-status">${esc(g.controls||'')}${g.license?' · '+esc(g.license):''}</p>`;
  const frame=$('#game-frame');let stopWatching=()=>{};
@@ -226,7 +212,7 @@ function home() {
       .filter(Boolean)
       .slice(0, 4);
   main.innerHTML =
-    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="/vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">0.4</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} installed games</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
+    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">0.4</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} installed games</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
       .slice(0, 6)
       .map(
         ([name, mark, url]) =>
@@ -251,7 +237,7 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.4</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>Earn coins while using Vexel or playing installed games. Unlock account themes in the shop.</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.5</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>Earn coins while using Vexel or playing installed games. Unlock account themes in the shop.</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
     ad();
   bindCards();
   $("#home-updates").onclick = updates;
@@ -319,8 +305,9 @@ function gamePage() {
       '<button id="random">Surprise me</button>',
     ) +
     `<div class="library-toolbar"><div class="sort-tabs" role="group" aria-label="Sort games"><button data-sort="az" class="selected">Alphabetical</button><button data-sort="recent">Recently played</button><button data-sort="favorites">Favorites</button></div><div class="search-row"><input id="search" type="search" placeholder="Search games…" aria-label="Search games"><select id="availability" aria-label="Game availability"><option value="all">All titles</option><option value="available">Connected sources</option><option value="pending">Awaiting source</option></select></div></div><div id="recent-shelf"></div><div id="game-grid"></div>`;
-  let sort = "az";
-  function refresh() {
+  let sort = "az", page = 0;
+  function refresh(reset = true) {
+    if(reset) page=0;
     const q = $("#search").value.toLowerCase(),
       availability = $("#availability").value;
     let list = games.filter(
@@ -340,7 +327,9 @@ function gamePage() {
       });
     $("#recent-shelf").hidden =
       Boolean(q) || libraryFilter !== "All" || sort === "favorites";
-    $("#game-grid").innerHTML = grid(list);
+    const size=48,pages=Math.max(1,Math.ceil(list.length/size));page=Math.min(page,pages-1);
+    $("#game-grid").innerHTML = grid(list.slice(page*size,(page+1)*size))+`<div class="actions library-pagination"><button id="games-prev" ${page===0?'disabled':''}>← Previous</button><span>${list.length} matches · Page ${page+1} of ${pages}</span><button id="games-next" ${page>=pages-1?'disabled':''}>Next →</button></div>`;
+    $("#games-prev").onclick=()=>{page--;refresh(false);};$("#games-next").onclick=()=>{page++;refresh(false);};
     bindCards();
   }
   const recent = (prefs.recent || [])
@@ -726,7 +715,14 @@ function accountPage() {
   }
   main.innerHTML =
     title("ACCOUNT", "Account", "Sign in or create an account.") +
-    `<div class="form-grid"><form id="login" class="panel"><h2>Sign in</h2><label for="login-id">Email or username</label><input id="login-id" autocomplete="username" required><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required><div class="actions"><button class="primary">Sign in →</button></div><p class="status" role="status"></p><div class="stack">${["google", "microsoft"].map((p) => `<a class="pill" ${config.providers[p] ? `href="/auth/${p}"` : 'aria-disabled="true"'}>${p === "google" ? "Google" : "Microsoft"} ${config.providers[p] ? "↗" : "· setup needed"}</a>`).join("")}</div></form><form id="register" class="panel"><h2>Create account</h2><label for="username">Username</label><input id="username" pattern="[a-zA-Z0-9_]{3,20}" minlength="3" maxlength="20" autocomplete="username" required><label for="email">Email (optional)</label><input id="email" type="email" autocomplete="email"><label for="new-password">Password · at least 10 characters</label><input id="new-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required><div class="actions"><button class="primary">Create account →</button></div><p class="status" role="status"></p><small>Choose a username-only account or add an email for email login.</small></form></div>`;
+    `<div class="form-grid"><form id="login" class="panel"><h2>Sign in</h2><label for="login-id">Email or username</label><input id="login-id" autocomplete="username" required><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required><div class="actions"><button class="primary">Sign in →</button></div><p class="status" role="status"></p><div class="stack">${["google", "microsoft", "discord"].map((p) => `<a class="pill" ${config.providers[p] ? `href="${staticMode?"#account":asset("auth/"+p)}" data-provider="${p}"` : 'aria-disabled="true"'}>${({google:"Google",microsoft:"Microsoft",discord:"Discord"})[p]} ${config.providers[p] ? "↗" : "· setup needed"}</a>`).join("")}</div></form><form id="register" class="panel"><h2>Create account</h2><label for="username">Username</label><input id="username" pattern="[a-zA-Z0-9_]{3,20}" minlength="3" maxlength="20" autocomplete="username" required><label for="email">Email (optional)</label><input id="email" type="email" autocomplete="email"><label for="new-password">Password · at least 10 characters</label><input id="new-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required><div class="actions"><button class="primary">Create account →</button></div><p class="status" role="status"></p><small>Choose a username-only account or add an email for email login.</small></form></div>`;
+  if(staticMode){
+    const note=document.createElement('p');note.className='catalog-note';note.textContent='GitHub Pages mode: Firebase handles sign-in when configured. Shared chat, cloud preferences and coins need a trusted backend. Discord needs an OAuth callback backend. Display names are not unique account identifiers.';main.prepend(note);
+    main.querySelectorAll('[data-provider]').forEach(b=>b.onclick=async e=>{e.preventDefault();try{user=await providerSignIn(b.dataset.provider);identity();render();}catch(e){toast(e.message);}});
+    $('#login-id').type='email';$('#login-id').previousElementSibling.textContent='Email';
+    $('#email').required=true;$('#email').previousElementSibling.textContent='Email';
+    $('#register small').textContent='Choose a display name and email. Firebase accounts use email to sign in.';
+  }
   for (const mode of ["login", "register"])
     $("#" + mode).onsubmit = async (e) => {
       e.preventDefault();
@@ -1070,7 +1066,7 @@ function render() {
   document
     .querySelectorAll("[data-route]")
     .forEach((a) => a.classList.toggle("active", a.dataset.route === route));
-  $('#breadcrumb').innerHTML=`<img class="topbar-logo" src="/vexel-logo.png" alt="Vexel" width="84" height="31"><span>/ ${esc(nav.flatMap(x=>x[1]).find(x=>x[0]===route)[2])}</span>`;
+  $('#breadcrumb').innerHTML=`<img class="topbar-logo" src="./vexel-logo.png" alt="Vexel" width="84" height="31"><span>/ ${esc(nav.flatMap(x=>x[1]).find(x=>x[0]===route)[2])}</span>`;
   const pages = {
     home,
     games: gamePage,
@@ -1125,13 +1121,17 @@ try {
   }
   identity();
   render();
-  if (!sessionStorage.getItem("vexel.changelog.0.4")) {
+  if(new URLSearchParams(location.search).has("auth_error")){
+    toast("Sign-in did not complete. Please try again or use your username and password.");
+    history.replaceState(null,"",location.pathname+location.hash);
+  }
+  if (!sessionStorage.getItem("vexel.changelog.0.5")) {
     updates();
-    sessionStorage.setItem("vexel.changelog.0.4", "1");
+    sessionStorage.setItem("vexel.changelog.0.5", "1");
   }
 } catch (e) {
   main.innerHTML =
-    '<div class="empty">Vexel couldn’t start. Check that the server is running, then reload.</div>';
+    '<div class="empty">Vexel couldn’t load its files. Check the connection and deployment, then reload.</div>';
   toast(e.message);
 }
 let activeUntil = Date.now() + 90000;

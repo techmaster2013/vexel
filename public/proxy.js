@@ -1,3 +1,4 @@
+import {api,asset} from "./runtime.js";
 let controller, frame, starting;
 const load = (src) =>
   new Promise((ok, no) => {
@@ -5,7 +6,7 @@ const load = (src) =>
     s.src = src;
     s.onload = ok;
     s.onerror = () =>
-      no(Error("Proxy assets unavailable. Run the build step."));
+      no(Error("Caver assets could not load. Please reload or contact the site owner."));
     document.head.append(s);
   });
 export function normalize(value) {
@@ -26,15 +27,15 @@ async function start() {
   if (controller) return controller;
   if (starting) return starting;
   starting = (async () => {
-    const config = await (await fetch("/api/proxy-config")).json();
+    const config = await api("proxy-config");
     if (!config.wisp)
       throw Error(
         "The proxy needs a Wisp server configured by the site owner.",
       );
-    await load("/vendor/scramjet/scramjet.js");
-    await load("/vendor/controller/controller.api.js");
-    const reg = await navigator.serviceWorker.register("/sw.js", {
-      scope: "/",
+    await load(asset("vendor/scramjet/scramjet.js"));
+    await load(asset("vendor/controller/controller.api.js"));
+    const reg = await navigator.serviceWorker.register(asset("sw.js"), {
+      scope: new URL(".",import.meta.url).pathname,
     });
     await navigator.serviceWorker.ready;
     if (!navigator.serviceWorker.controller)
@@ -52,17 +53,17 @@ async function start() {
           ),
         ),
       ]);
-    const { default: Client } = await import("/vendor/libcurl/index.mjs");
+    const { default: Client } = await import(asset("vendor/libcurl/index.mjs"));
     const transport = new Client({ wisp: config.wisp });
     await transport.init?.();
     const c = new $scramjetController.Controller({
       serviceworker: navigator.serviceWorker.controller || reg.active,
       transport,
       config: {
-        prefix: "/~/sj/",
-        scramjetPath: "/vendor/scramjet/scramjet.js",
-        injectPath: "/vendor/controller/controller.inject.js",
-        wasmPath: "/vendor/scramjet/scramjet.wasm",
+        prefix: new URL("~/sj/",import.meta.url).pathname,
+        scramjetPath: asset("vendor/scramjet/scramjet.js"),
+        injectPath: asset("vendor/controller/controller.inject.js"),
+        wasmPath: asset("vendor/scramjet/scramjet.wasm"),
       },
       scramjetConfig: $scramjet.defaultConfigDev || {},
     });

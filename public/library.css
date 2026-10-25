@@ -671,14 +671,14 @@ body[data-theme="rose"] {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("/fonts/silkscreen-400.ttf") format("truetype");
+  src: url("./fonts/silkscreen-400.ttf") format("truetype");
 }
 @font-face {
   font-family: Silkscreen;
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("/fonts/silkscreen-700.ttf") format("truetype");
+  src: url("./fonts/silkscreen-700.ttf") format("truetype");
 }
 body,
 button,
@@ -1093,3 +1093,5 @@ nav a,.category-link{font-size:11px}.card-meta strong{font-size:12px}.card-detai
 .brand{padding:0 4px 18px;justify-content:center}.brand img.brand-logo{width:185px;height:auto;max-width:100%;filter:drop-shadow(0 0 1px #9ebdff88) drop-shadow(0 4px 13px #3c62c940)}#breadcrumb{display:flex;align-items:center;gap:12px;min-width:0}#breadcrumb span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.topbar-logo{width:84px;height:31px;object-fit:contain;filter:drop-shadow(0 0 .6px #b2ccffaa);flex:none}.home-heading h1{margin:4px 0 10px;line-height:1}.home-logo{width:min(470px,100%);height:auto;display:block;filter:drop-shadow(0 0 1px #b3cdff99) drop-shadow(0 4px 24px #3157bf55)}.home-hero{border-top:1px solid #cfdeff46;box-shadow:inset 0 1px #ffffff1c,inset 0 -1px #719ce815,0 16px 55px #0003}.home-hero:before{content:'';position:absolute;top:0;left:0;width:5px;height:42%;background:linear-gradient(#6a8ff0aa,transparent);pointer-events:none}.home-actions .pill{border-radius:5px 12px 5px 12px}.home-shortcuts .quick{border-left-color:#a8c6ff44}.blocked-fallback{margin-top:20px;min-height:58vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;background:radial-gradient(ellipse at 50% 0%,#3353a127,transparent 60%),linear-gradient(135deg,#a1c2ff0d,#0b163044);border:1px solid #c4d8ff36;box-shadow:inset 0 1px #fff2,0 20px 65px #0003}.blocked-fallback h2{max-width:560px;font-size:23px;line-height:1.6;margin:0}.blocked-symbol{display:grid;place-items:center;width:62px;height:62px;font-size:30px;border:1px solid #bed3ff35;border-radius:17px;background:#82a9ff0a;box-shadow:inset 0 1px #fff2;color:#aec8ff}.blocked-fallback .primary{font-size:12px;padding:13px 22px}.player-toolbar h2{font-size:21px}.home-hero,.game-card,.panel{transition:border-color 120ms ease,box-shadow 120ms ease}body.lite .game-card{transition:none}body.lite .home-logo,body.lite .brand-logo,body.lite .topbar-logo{filter:none}body.reduce .game-card{transition:none}@media(prefers-reduced-motion:reduce){.game-card,.panel{transition:none!important}}@media(max-width:760px){.home-logo{width:min(330px,100%)}.home-heading{align-items:start}.home-heading>div{min-width:0;flex:1}.home-version{margin-left:12px}.topbar-logo{width:66px;height:26px}#breadcrumb{gap:7px;font-size:8px}.blocked-fallback{min-height:50vh;padding:27px 20px}.blocked-fallback h2{font-size:17px}.blocked-fallback .primary{font-size:10px}.player-toolbar h2{font-size:17px}}
 /* Glass remains on the main surfaces; avoid a GPU blur layer for every game. */
 .game-card{backdrop-filter:none;-webkit-backdrop-filter:none}@supports(content-visibility:auto){.game-card{content-visibility:auto;contain-intrinsic-size:auto 270px}}
+
+.library-pagination{justify-content:center;margin:24px 0;font-size:10px;flex-wrap:wrap}

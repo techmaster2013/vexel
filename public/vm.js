@@ -1,3 +1,4 @@
+import {asset} from "./runtime.js";
 export async function mountVM(main, { api, toast, download }) {
   const $ = (s) => main.querySelector(s);
   let emulator = null,
@@ -24,16 +25,16 @@ export async function mountVM(main, { api, toast, download }) {
     $("#vm-memory").disabled = true;
     setStatus("Loading emulator and boot image…");
     try {
-      const { V86 } = await import("/vendor/v86/libv86.mjs");
+      const { V86 } = await import(asset("vendor/v86/libv86.mjs"));
       if (disposed) return;
       emulator = new V86({
-        wasm_path: "/vendor/v86/v86.wasm",
+        wasm_path: asset("vendor/v86/v86.wasm"),
         memory_size: Number($("#vm-memory").value) * 1024 * 1024,
         vga_memory_size: 8 * 1024 * 1024,
         screen_container: $("#vm-screen"),
-        bios: { url: "/vendor/v86/seabios.bin" },
-        vga_bios: { url: "/vendor/v86/vgabios.bin" },
-        cdrom: { url: "/vendor/v86/alpine.iso", async: false },
+        bios: { url: asset("vendor/v86/seabios.bin") },
+        vga_bios: { url: asset("vendor/v86/vgabios.bin") },
+        cdrom: { url: asset("vendor/v86/alpine.iso"), async: false },
         autostart: true,
         disable_mouse: true,
         disable_keyboard: false,

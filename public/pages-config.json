@@ -1,0 +1,6 @@
+{
+  "mode": "static",
+  "wispUrl": "",
+  "firebase": null,
+  "firebaseProviders": {"google": false, "microsoft": false}
+}

@@ -19,3 +19,7 @@ Revision 0.3:
 - @mercuryworkshop/wisp-js 0.5.1 is LGPL-3.0-or-later: https://github.com/MercuryWorkshop/wisp-js . It is imported unmodified as a server library. The deprecated wisp-server-node implementation is not used.
 - Alpine Linux is assembled from separately licensed packages. The unmodified x86 installation image is downloaded from the official Alpine mirror and SHA-256 verified, not committed to the source repository. Source/package details: https://alpinelinux.org/ and https://gitlab.alpinelinux.org/alpine/aports .
 - Big Buck Bunny, Sintel, Elephants Dream, and Caminandes: Llamigos stream from Internet Archive items carrying CC BY 3.0 metadata, with creator attribution and full film credits preserved. No media files are bundled.
+
+## Additional game sources
+
+MMG (GPL-3.0), the licensed b-rn1c-1 game directories (MicropolisJS/3D City GPL with additional terms, URL Chess AGPL, Asteroids/Canvas Tetris/Particle Clicker/Tower Building MIT), and owner-authorized original nexHTML mini-games live in the separate vex-games repository. Their own licenses and source revisions are retained there. Catalog metadata does not license third-party proprietary payloads. The optional Firebase browser SDK is loaded from Google's pinned 12.4.0 CDN when configured.

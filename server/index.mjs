@@ -4,8 +4,8 @@ import { cleanPreferences } from "./preferences.mjs";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { resolve, extname, sep } from "node:path";
-import { randomUUID, createHash } from "node:crypto";
-import { createRemoteJWKSet, jwtVerify, decodeJwt } from "jose";
+import { randomUUID } from "node:crypto";
+import { createAuth, providerConfig } from "./auth.mjs";
 import {
   openStore,
   random,
@@ -30,20 +30,9 @@ const admins = (env.ADMIN_USERNAMES || "")
   .toLowerCase()
   .split(",")
   .map((x) => x.trim());
-const limits = new Map(),
-  oauth = new Map();
-const providers = {
-  google: {
-    discovery: "https://accounts.google.com/.well-known/openid-configuration",
-    id: env.GOOGLE_CLIENT_ID,
-    secret: env.GOOGLE_CLIENT_SECRET,
-  },
-  microsoft: {
-    discovery: `https://login.microsoftonline.com/${env.MICROSOFT_TENANT || "consumers"}/v2.0/.well-known/openid-configuration`,
-    id: env.MICROSOFT_CLIENT_ID,
-    secret: env.MICROSOFT_CLIENT_SECRET,
-  },
-};
+const limits = new Map();
+const providers = providerConfig(env);
+const providerAuth = createAuth({providers,origin});
 const cookie = (req, name) => {
   const entry = (req.headers.cookie || "")
     .split(";")
@@ -67,7 +56,6 @@ function rate(req, bucket, n, period = 60000) {
 setInterval(() => {
   const now = Date.now();
   for (const [k, v] of limits) if (v.until < now) limits.delete(k);
-  for (const [k, v] of oauth) if (v.expires < now) oauth.delete(k);
   db.prepare("DELETE FROM sessions WHERE expires<?").run(now);
 }, 60000).unref();
 async function body(req) {
@@ -126,14 +114,6 @@ async function catalog() {
     return [];
   }
 }
-async function oidcMeta(p) {
-  if (!p.meta) {
-    const r = await fetch(p.discovery, { signal: AbortSignal.timeout(10000) });
-    if (!r.ok) fail(502, "Identity provider unavailable.");
-    p.meta = await r.json();
-  }
-  return p.meta;
-}
 const mime = {
   ".html": "text/html",
   ".js": "text/javascript",
@@ -163,6 +143,7 @@ async function file(res, base, path) {
   res.writeHead(200, {
     "Content-Type": mime[extname(target)] || "application/octet-stream",
     "Cache-Control": "no-cache",
+    "Access-Control-Allow-Origin": "*",
   });
   res.end(await readFile(target));
 }
@@ -180,7 +161,7 @@ export const server = createServer(async (req, res) => {
     }
     if (path === "/api/config")
       return json(res, {
-        version: "0.4.0",
+        version: "0.5.0",
         providers: Object.fromEntries(
           Object.entries(providers).map(([k, p]) => [
             k,
@@ -220,90 +201,32 @@ export const server = createServer(async (req, res) => {
         p = providers[name];
       if (!p?.id || !p.secret)
         fail(503, "This sign-in provider needs deployment credentials.");
-      const meta = await oidcMeta(p),
-        redirect = origin + `/auth/${name}/callback`;
+      if (req.method !== "GET" || (callback && callback !== "callback")) fail(404,"Unknown sign-in route.");
+      res.setHeader("Cache-Control","no-store");
+      res.setHeader("Referrer-Policy","no-referrer");
       if (!callback) {
-        const state = random(),
-          nonce = random(),
-          verifier = random(),
-          binding = random();
-        oauth.set(state, {
-          name,
-          nonce,
-          verifier,
-          binding: digest(binding),
-          expires: Date.now() + 600000,
-        });
-        res.setHeader(
-          "Set-Cookie",
-          `vexel_oauth=${binding}; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=600${secure ? "; Secure" : ""}`,
-        );
-        const dest = new URL(meta.authorization_endpoint);
-        dest.search = new URLSearchParams({
-          client_id: p.id,
-          redirect_uri: redirect,
-          response_type: "code",
-          scope: "openid profile email",
-          state,
-          nonce,
-          code_challenge: createHash("sha256")
-            .update(verifier)
-            .digest("base64url"),
-          code_challenge_method: "S256",
-        });
-        res.writeHead(302, { Location: dest.href });
-        return res.end();
+        const flow=await providerAuth.start(name);
+        res.setHeader("Set-Cookie",`vexel_oauth=${flow.binding}; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=600${secure ? "; Secure" : ""}`);
+        res.writeHead(302,{Location:flow.url}); return res.end();
       }
-      const state = url.searchParams.get("state"),
-        flow = oauth.get(state);
-      oauth.delete(state);
-      if (
-        !flow ||
-        flow.name !== name ||
-        flow.expires < Date.now() ||
-        flow.binding !== digest(cookie(req, "vexel_oauth") || "")
-      )
-        fail(400, "Sign-in expired. Please try again.");
-      const tokenRes = await fetch(meta.token_endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          client_id: p.id,
-          client_secret: p.secret,
-          grant_type: "authorization_code",
-          redirect_uri: redirect,
-          code: url.searchParams.get("code") || "",
-          code_verifier: flow.verifier,
-        }),
-        signal: AbortSignal.timeout(15000),
-      });
-      if (!tokenRes.ok) fail(401, "Provider rejected sign-in.");
-      const token = await tokenRes.json();
-      let issuer = meta.issuer;
-      if (name === "microsoft") {
-        const tid = decodeJwt(token.id_token).tid;
-        if (!/^[a-f0-9-]{36}$/i.test(tid || "")) fail(401, "Invalid tenant.");
-        issuer = issuer.replace("{tenantid}", tid);
-      }
-      const { payload } = await jwtVerify(
-        token.id_token,
-        createRemoteJWKSet(new URL(meta.jwks_uri)),
-        { audience: p.id, issuer, algorithms: ["RS256"] },
-      );
-      if (payload.nonce !== flow.nonce || !payload.sub)
-        fail(401, "Identity verification failed.");
+      let identity;
+      try { identity=await providerAuth.complete(name,url,cookie(req,"vexel_oauth")); }
+      catch { res.setHeader("Set-Cookie",`vexel_oauth=; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=0${secure ? "; Secure" : ""}`);res.writeHead(302,{Location:"/?auth_error=signin_failed#account"});return res.end(); }
+      res.setHeader("Set-Cookie",`vexel_oauth=; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=0${secure ? "; Secure" : ""}`);
       let u = db
         .prepare("SELECT * FROM users WHERE provider=? AND subject=?")
-        .get(name, payload.sub);
+        .get(name, identity.subject);
       if (!u) {
         const id = randomUUID(),
           username = "vex_" + randomBytesShort();
         db.prepare(
           "INSERT INTO users(id,username,provider,subject,last_reward) VALUES(?,?,?,?,?)",
-        ).run(id, username, name, payload.sub, Date.now());
+        ).run(id, username, name, identity.subject, Date.now());
         u = db.prepare("SELECT * FROM users WHERE id=?").get(id);
       }
+      const clearedFlowCookie=res.getHeader("Set-Cookie");
       session(res, u.id);
+      res.setHeader("Set-Cookie",[clearedFlowCookie,res.getHeader("Set-Cookie")]);
       res.writeHead(302, { Location: "/#account" });
       return res.end();
     }
