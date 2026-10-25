@@ -4,7 +4,7 @@
 // updatedAt is a required server timestamp. No credentials belong here.
 match /vexel/site {
   function isEditor() {
-    return request.auth != null && request.auth.token.vexelAdmin == true;
+    return request.auth != null && (request.auth.uid == 'PeDivPz9H3hvwW0TB33tgq6V4u63' || request.auth.token.get('vexelAdmin', false) == true);
   }
   function validSite() {
     return request.resource.data.keys().hasAll(['payload', 'updatedAt'])

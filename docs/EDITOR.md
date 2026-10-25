@@ -3,10 +3,9 @@
 The editor uses the **same Firebase project and accounts as GamePlaza**. Your password is sent to Firebase, never stored in Vexel or GitHub. Signing in alone does not grant editing permission.
 
 1. In Firebase Console, open **gplaza-feedback → Authentication → Settings → Authorized domains**. Add `techmaster2013.github.io` (and `localhost` for local use).
-2. Find your existing admin account under **Authentication → Users** and copy its UID.
-3. On your private backend, configure the service-account credential for **gplaza-feedback**. Run `node scripts/grant-editor.mjs YOUR_UID`. This grants the `vexelAdmin` permission to that specific account. Do not publish the service-account file.
-4. Add the match block in `docs/EDITOR_RULES.txt` inside your existing Firestore rules. Keep GamePlaza’s other rules. Review and test it in the Firebase rules playground: anonymous users can read only the published document; normal signed-in accounts cannot write; your admin can save; missing/extra fields and oversized payloads fail.
-5. Open **edit.html**, sign in with your existing GamePlaza email and password, and publish your additions.
+2. Your admin UID is already configured: `PeDivPz9H3hvwW0TB33tgq6V4u63`. No backend or custom-claim command is needed for this account.
+3. Add the match block in `docs/EDITOR_RULES.txt` inside your existing Firestore rules. Keep GamePlaza’s other rules. Review and test it in the Firebase rules playground: anonymous users can read only the published document; normal signed-in accounts cannot write; your admin can save; missing/extra fields and oversized payloads fail.
+4. Open **edit.html**, sign in with your existing GamePlaza email and password, and publish your additions.
 
 For username login, add an alias in `public/editor-config.js`, such as `usernames={owner:'your-existing-admin-email'}`. The alias is public, so use an address you are comfortable publishing. It points to your existing account; it does not create a password or grant permission. Email login already works without an alias.
 

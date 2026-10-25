@@ -1,7 +1,7 @@
 import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 import {getFirestore,doc,getDoc,setDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js';
-import {firebaseConfig,usernames} from './editor-config.js';
+import {firebaseConfig,usernames,editorUid} from './editor-config.js';
 import {validateEdits} from './content-store.js';
 const app=initializeApp(firebaseConfig,'vexel-editor'),auth=getAuth(app),db=getFirestore(app),ref=doc(db,'vexel','site'),$=id=>document.getElementById(id);
 const message=(text,error=false)=>{$('status').textContent=text;$('status').className=error?'error':'';};
@@ -15,7 +15,7 @@ function row(kind,item={}){
 $('login-form').onsubmit=async e=>{e.preventDefault();message('Signing in…');try{let identifier=$('username').value.trim();identifier=usernames[identifier.toLowerCase()]||identifier;if(!identifier.includes('@'))throw Error('Use your existing GamePlaza admin email. A username alias can be added in editor-config.js.');await signInWithEmailAndPassword(auth,identifier,$('password').value);$('password').value='';}catch(e){message(['auth/invalid-credential','auth/wrong-password','auth/user-not-found'].includes(e.code)?'Incorrect login!':e.message,true);}};
 onAuthStateChanged(auth,async user=>{
  $('editor').hidden=true;$('login').hidden=!!user;if(!user)return;
- try{const token=await user.getIdTokenResult(true);if(token.claims.vexelAdmin!==true)throw Error('Signed in, but this account needs Vexel editor permission. See the setup guide.');
+ try{const token=await user.getIdTokenResult(true);if(user.uid!==editorUid && token.claims.vexelAdmin!==true)throw Error('Signed in, but this account needs Vexel editor permission. See the setup guide.');
  const snapshot=await getDoc(ref);const data=snapshot.exists()?validateEdits(JSON.parse(snapshot.data().payload)):{games:[],movies:[],wispUrl:''};
  $('games').replaceChildren();$('movies').replaceChildren();for(const kind of ['games','movies'])data[kind].forEach(item=>row(kind,item));$('wisp').value=data.wispUrl;$('editor').hidden=false;message('Ready to edit.');
  }catch(e){message(e.message,true);$('login').hidden=false;await signOut(auth);}
