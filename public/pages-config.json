@@ -2,6 +2,16 @@
   "mode": "static",
   "wispUrl": "",
   "authBackendUrl": "",
-  "firebase": null,
-  "firebaseProviders": {"google": false, "microsoft": false}
+  "firebase": {
+    "apiKey": "AIzaSyDAd_RUXKRdXICvOGTgrC3i7_PST_BxmtE",
+    "authDomain": "gplaza-feedback.firebaseapp.com",
+    "projectId": "gplaza-feedback",
+    "storageBucket": "gplaza-feedback.firebasestorage.app",
+    "messagingSenderId": "311535800676",
+    "appId": "1:311535800676:web:fad6c2cfdf9c03e3e66a71"
+  },
+  "firebaseProviders": {
+    "google": true,
+    "microsoft": true
+  }
 }
