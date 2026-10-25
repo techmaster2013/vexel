@@ -2,7 +2,7 @@
 """Prepare the static site using the checked-in assets; no Node/package manager.
 Game payloads remain sourced from the separate vex-games checkout.
 """
-import argparse,json,shutil,pathlib
+import argparse,json,shutil,pathlib,hashlib,re
 root=pathlib.Path(__file__).resolve().parents[1]
 p=argparse.ArgumentParser();p.add_argument('--games',type=pathlib.Path,default=root.parent/'vex-games');p.add_argument('--output',type=pathlib.Path,required=True);args=p.parse_args()
 output=args.output.resolve();games=args.games.resolve()
@@ -13,6 +13,9 @@ for required in ['vendor/scramjet/scramjet.js','vendor/controller/controller.api
  if not (root/'public'/required).is_file():raise SystemExit('Missing checked-in runtime: '+required)
 shutil.copytree(root/'public',output,dirs_exist_ok=True)
 shutil.copytree(games,output/'content',ignore=shutil.ignore_patterns('.git','.github'),dirs_exist_ok=True)
+index=output/'index.html'
+version=hashlib.sha256((output/'app.js').read_bytes()).hexdigest()[:12]
+index.write_text(re.sub(r'src="\./app\.js(?:\?[^"]*)?"','src="./app.js?v='+version+'"',index.read_text()))
 config=json.loads((root/'public/pages-config.json').read_text());config['mode']='static'
 (output/'site-config.js').write_text('// Generated public configuration; never include secrets.\nexport default '+json.dumps(config,indent=2)+';\n')
 shutil.copy(root/'LICENSE',output/'LICENSE');(output/'.nojekyll').touch()
