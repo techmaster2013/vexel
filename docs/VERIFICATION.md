@@ -23,3 +23,7 @@ Local game pack update: Dino Game and Adventures with Anxiety now load from vex-
 A static HTTP preview under `/vexel/` loads without `/api` or a Node backend. Browser verified catalog pagination/search, MMG preview and sandboxed singleplayer start. Firebase and live Google/Microsoft/Discord sign-in remain unverified because no provider credentials/project are configured. Local signed-token provider tests cover Google/Microsoft audiences, nonce, issuer/tenant handling, Discord profile validation, cookie binding, callback replay and cancellation.
 
 Pages mode deliberately disables shared backend features. Static cross-origin blocked-game detection is limited by the browser same-origin policy. Runtime asset and Alpine boot-image copies are checked in and published without requiring an npm/pnpm build. VM boot on the final Pages origin still needs verification.
+
+## Published site verification
+
+Both source repos were merged into main after successful GitHub checks. GitHub Pages publication from main succeeded without changing the environment's main-only deployment policy. The actual https://techmaster2013.github.io/vexel/ site loaded and MMG singleplayer started inside its sandbox. URL Chess rendered its board. Canvas Tetris started; its board styling was adjusted to fit the iframe. 3D City reached its rendered title screen in the static sandbox after Blob-worker and CORS-texture compatibility fixes. Full game playthroughs remain unverified. The local owner account remains admin/unlimited in SQLite and is not published to Pages.
