@@ -26,7 +26,7 @@ Cross-origin games are sandboxed. Local sandbox storage is per-frame memory when
 
 ## Connected features
 
-Firebase web configuration enables Google/Microsoft/email authentication on Pages. It is not configured by default. Display names are not unique usernames; cloud preferences, shared chat and secure coin rewards require additional backend integration. Discord is implemented in the optional Node backend and needs registered OAuth credentials plus a running callback server. The original local `owner` account and privileges live only in the local SQLite database; no account database is published to Pages.
+Firebase web configuration enables Google/Microsoft/email authentication on Pages. It is not configured by default. Username-only accounts are supported; email/social display names are not username credentials; cloud preferences, shared chat and secure coin rewards require additional backend integration. Discord is implemented in the optional Node backend and needs registered OAuth credentials plus a running callback server. The original local `owner` account and privileges live only in the local SQLite database; no account database is published to Pages.
 
 Caver uses Scramjet v2 but needs a Wisp WebSocket transport; GitHub Pages cannot provide one. Readable-frame block signatures still work statically; cross-origin server-side block probing requires the optional backend. Blank/error pages are never assumed blocked.
 

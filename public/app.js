@@ -124,7 +124,7 @@ function apply() {
 function identity() {
   $("#identity").innerHTML = user
     ? `${esc(user.username)}<small>Signed in · no ads</small>`
-    : "Guest<small>Sign in to sync your data</small>";
+    : (staticMode ? "Guest<small>Account options</small>" : "Guest<small>Sign in to sync your data</small>");
   $("#avatar").textContent = user?.username[0].toUpperCase() || "V";
   $("#balance").textContent = "◈ " + (user?.unlimitedCoins ? "∞" : (user?.coins || 0));
 }
@@ -182,14 +182,17 @@ function bindCards() {
 function preview(id) {
  const g=games.find(x=>x.id===id);if(!g)return;
  const favorite=prefs.favorites?.includes(id),source=g.remoteUrl||g.launchUrl;
- open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>'}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Open source ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
+ const playControl=g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Play on creator site ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
+ open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Open source ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
  $('#favorite').onclick=()=>{prefs.favorites=favorite?(prefs.favorites||[]).filter(x=>x!==id):[...(prefs.favorites||[]),id];save();preview(id);};
- if(g.path||source)$('#play').onclick=()=>{dialog.close();play(g);};
+ if(g.openExternally&&source)$('#play').onclick=()=>{prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();dialog.close();};
+ else if(g.path||source)$('#play').onclick=()=>{dialog.close();play(g);};
 }
 function openInCaver(originalUrl){pendingProxy=originalUrl;if(location.hash==='#apps')render();else location.hash='apps';}
 function play(g){
  const externalSource=g.remoteUrl||g.launchUrl;
  if(externalSource){const target=new URL(externalSource);if(target.protocol!=='https:'||target.origin===location.origin)return toast('Remote games require a separate HTTPS origin.');}
+ if(g.openExternally&&externalSource){window.open(externalSource,'_blank','noopener');return;}
  cleanup();playing=true;
  prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();
  const originalUrl=externalSource||(config.gameOrigin||asset('content'))+g.path;
@@ -212,7 +215,7 @@ function home() {
       .filter(Boolean)
       .slice(0, 4);
   main.innerHTML =
-    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">0.4</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} installed games</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
+    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">0.5</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} installed games</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
       .slice(0, 6)
       .map(
         ([name, mark, url]) =>
@@ -237,7 +240,7 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.5</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>Earn coins while using Vexel or playing installed games. Unlock account themes in the shop.</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.5</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
     ad();
   bindCards();
   $("#home-updates").onclick = updates;
@@ -685,7 +688,7 @@ function accountPage() {
   if (user) {
     main.innerHTML =
       title("ACCOUNT", esc(user.username), "Manage your account.") +
-      `<div class="form-grid"><div class="panel"><span class="badge">SIGNED IN · AD FREE</span><h2 style="margin-top:20px">Your account</h2><p>◈ ${user.unlimitedCoins ? "∞" : user.coins} coins · ${user.owned.length} unlocked themes</p><p class="catalog-note">Earn 1 coin per active minute, or 3 while playing. One reward per minute, across your account. Coins have no cash value.</p><div class="actions"><a href="#shop" class="pill primary">Visit the shop</a><button id="logout">Sign out</button></div><p class="catalog-note">Email/password accounts support email or username login. Email verification and password recovery are not configured in this first version.</p></div>${user.admin ? `<form id="grant" class="panel"><h2>Admin coin grant</h2><label for="grant-user">Username</label><input id="grant-user" required><label for="grant-amount">Coins</label><input id="grant-amount" type="number" min="1" max="10000" required><div class="actions"><button>Grant coins</button></div><p id="grant-status" class="status"></p></form>` : `<div class="panel"><h2>Saved data</h2><p>Favorites, recent games, notes, and preferences sync with your account.</p><a href="#settings" class="link">Settings →</a></div>`}</div>`;
+      `<div class="form-grid"><div class="panel"><span class="badge">SIGNED IN · AD FREE</span><h2 style="margin-top:20px">Your account</h2><p>◈ ${user.unlimitedCoins ? "∞" : user.coins} coins · ${user.owned.length} unlocked themes</p><p class="catalog-note">${staticMode?"Cloud coins and purchases are not connected on this deployment.":"Earn 1 coin per active minute, or 3 while playing. One reward per minute, across your account. Coins have no cash value."}</p><div class="actions"><a href="#shop" class="pill primary">Visit the shop</a><button id="logout">Sign out</button></div><p class="catalog-note">Email/password accounts support email or username login. Email verification and password recovery are not configured in this first version.</p></div>${user.admin ? `<form id="grant" class="panel"><h2>Admin coin grant</h2><label for="grant-user">Username</label><input id="grant-user" required><label for="grant-amount">Coins</label><input id="grant-amount" type="number" min="1" max="10000" required><div class="actions"><button>Grant coins</button></div><p id="grant-status" class="status"></p></form>` : `<div class="panel"><h2>Saved data</h2><p>${staticMode?"Favorites, recent games, notes, and preferences stay on this device.":"Favorites, recent games, notes, and preferences sync with your account."}</p><a href="#settings" class="link">Settings →</a></div>`}</div>`;
     $("#logout").onclick = async () => {
       try {
         await api("logout", {});
@@ -717,11 +720,11 @@ function accountPage() {
     title("ACCOUNT", "Account", "Sign in or create an account.") +
     `<div class="form-grid"><form id="login" class="panel"><h2>Sign in</h2><label for="login-id">Email or username</label><input id="login-id" autocomplete="username" required><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required><div class="actions"><button class="primary">Sign in →</button></div><p class="status" role="status"></p><div class="stack">${["google", "microsoft", "discord"].map((p) => `<a class="pill" ${config.providers[p] ? `href="${staticMode?"#account":asset("auth/"+p)}" data-provider="${p}"` : 'aria-disabled="true"'}>${({google:"Google",microsoft:"Microsoft",discord:"Discord"})[p]} ${config.providers[p] ? "↗" : "· setup needed"}</a>`).join("")}</div></form><form id="register" class="panel"><h2>Create account</h2><label for="username">Username</label><input id="username" pattern="[a-zA-Z0-9_]{3,20}" minlength="3" maxlength="20" autocomplete="username" required><label for="email">Email (optional)</label><input id="email" type="email" autocomplete="email"><label for="new-password">Password · at least 10 characters</label><input id="new-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required><div class="actions"><button class="primary">Create account →</button></div><p class="status" role="status"></p><small>Choose a username-only account or add an email for email login.</small></form></div>`;
   if(staticMode){
-    const note=document.createElement('p');note.className='catalog-note';note.textContent='GitHub Pages mode: Firebase handles sign-in when configured. Shared chat, cloud preferences and coins need a trusted backend. Discord needs an OAuth callback backend. Display names are not unique account identifiers.';main.prepend(note);
+    const note=document.createElement('p');note.className='catalog-note';note.textContent='GitHub Pages mode: Firebase handles sign-in when configured. Shared chat, cloud preferences and coins need a trusted backend. Discord needs an OAuth callback backend. Username-only accounts have unique handles. Email and social accounts use their email or provider.';main.prepend(note);
     main.querySelectorAll('[data-provider]').forEach(b=>b.onclick=async e=>{e.preventDefault();try{user=await providerSignIn(b.dataset.provider);identity();render();}catch(e){toast(e.message);}});
-    $('#login-id').type='email';$('#login-id').previousElementSibling.textContent='Email';
-    $('#email').required=true;$('#email').previousElementSibling.textContent='Email';
-    $('#register small').textContent='Choose a display name and email. Firebase accounts use email to sign in.';
+    $('#login-id').type='text';$('#login-id').previousElementSibling.textContent='Email or username';
+    $('#email').required=false;$('#email').previousElementSibling.textContent='Email (optional)';
+    $('#register small').textContent='Leave email blank to create a username-only account. With an email, use that email to sign in.';
   }
   for (const mode of ["login", "register"])
     $("#" + mode).onsubmit = async (e) => {
@@ -765,7 +768,7 @@ function shopPage() {
       "Unlock themes with earned coins.",
       `<span class="badge">◈ ${user?.unlimitedCoins ? "∞" : (user?.coins || 0)} COINS</span>`,
     ) +
-    `<div class="grid">${config.shop.map((s) => `<article class="panel shop-card"><div class="swatch" style="background:${s.color}">vexel.</div><h3 style="margin-top:20px">${s.name}</h3><p>Account theme</p><div class="actions"><small>◈ ${s.price}</small><button data-buy="${s.id}" ${user?.owned.includes(s.id) ? "disabled" : ""}>${user?.owned.includes(s.id) ? "Owned ✓" : "Unlock"}</button></div></article>`).join("")}</div><p class="catalog-note">${user ? "Stay active to earn 1 coin per minute, or 3 while a game is open. Rewards share a server cooldown." : "Sign in to earn coins and unlock themes."} No purchases or real money.</p>`;
+    `<div class="grid">${config.shop.map((s) => `<article class="panel shop-card"><div class="swatch" style="background:${s.color}">vexel.</div><h3 style="margin-top:20px">${s.name}</h3><p>Account theme</p><div class="actions"><small>◈ ${s.price}</small><button data-buy="${s.id}" ${user?.owned.includes(s.id) ? "disabled" : ""}>${user?.owned.includes(s.id) ? "Owned ✓" : "Unlock"}</button></div></article>`).join("")}</div><p class="catalog-note">${staticMode ? "Coin rewards and theme purchases need a shared backend." : user ? "Stay active to earn 1 coin per minute, or 3 while a game is open. Rewards share a server cooldown." : "Sign in to earn coins and unlock themes."} No purchases or real money.</p>`;
   main.querySelectorAll("[data-buy]").forEach(
     (b) =>
       (b.onclick = async () => {
