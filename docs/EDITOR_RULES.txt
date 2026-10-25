@@ -1,0 +1,19 @@
+// Add this match INSIDE the existing /databases/{database}/documents block.
+// Do not replace GamePlaza's existing feedback/changelog rules.
+// vexel/site: payload is public website content encoded as JSON (max 150 KB);
+// updatedAt is a required server timestamp. No credentials belong here.
+match /vexel/site {
+  function isEditor() {
+    return request.auth != null && request.auth.token.vexelAdmin == true;
+  }
+  function validSite() {
+    return request.resource.data.keys().hasAll(['payload', 'updatedAt'])
+      && request.resource.data.keys().hasOnly(['payload', 'updatedAt'])
+      && request.resource.data.payload is string
+      && request.resource.data.payload.size() <= 150000
+      && request.resource.data.updatedAt == request.time;
+  }
+  allow get: if true; // Published website additions are visible to visitors.
+  allow list, delete: if false;
+  allow create, update: if isEditor() && validSite();
+}

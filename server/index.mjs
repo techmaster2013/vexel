@@ -1,3 +1,4 @@
+import {createDiscordBridge,mintFirebaseToken} from "./discord-bridge.mjs";
 import {probeExternalGame} from "./block-probe.mjs";
 import { attachProxyTransport } from "./proxy-transport.mjs";
 import { cleanPreferences } from "./preferences.mjs";
@@ -33,6 +34,7 @@ const admins = (env.ADMIN_USERNAMES || "")
 const limits = new Map();
 const providers = providerConfig(env);
 const providerAuth = createAuth({providers,origin});
+const discordBridge=createDiscordBridge({pageOrigin:env.PAGES_ORIGIN,enabled:!!env.FIREBASE_PROJECT_ID,mintToken:mintFirebaseToken});
 const cookie = (req, name) => {
   const entry = (req.headers.cookie || "")
     .split(";")
@@ -161,7 +163,7 @@ export const server = createServer(async (req, res) => {
     }
     if (path === "/api/config")
       return json(res, {
-        version: "0.5.0",
+        version: "1.0.0",
         providers: Object.fromEntries(
           Object.entries(providers).map(([k, p]) => [
             k,
@@ -205,14 +207,22 @@ export const server = createServer(async (req, res) => {
       res.setHeader("Cache-Control","no-store");
       res.setHeader("Referrer-Policy","no-referrer");
       if (!callback) {
+        const pagesClient=url.searchParams.get("client")==="pages";
+        if(pagesClient && (name!=="discord"||!discordBridge.ready))fail(503,"Discord needs a configured Firebase callback backend.");
         const flow=await providerAuth.start(name);
+        if(pagesClient)discordBridge.remember(new URL(flow.url).searchParams.get("state"),url.searchParams.get("channel"));
         res.setHeader("Set-Cookie",`vexel_oauth=${flow.binding}; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=600${secure ? "; Secure" : ""}`);
         res.writeHead(302,{Location:flow.url}); return res.end();
       }
+      const bridgeFlow=name==="discord"?discordBridge.take(url.searchParams.get("state")):null;
       let identity;
       try { identity=await providerAuth.complete(name,url,cookie(req,"vexel_oauth")); }
-      catch { res.setHeader("Set-Cookie",`vexel_oauth=; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=0${secure ? "; Secure" : ""}`);res.writeHead(302,{Location:"/?auth_error=signin_failed#account"});return res.end(); }
+      catch { if(bridgeFlow)return discordBridge.respond(res,bridgeFlow,{error:true});res.setHeader("Set-Cookie",`vexel_oauth=; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=0${secure ? "; Secure" : ""}`);res.writeHead(302,{Location:"/?auth_error=signin_failed#account"});return res.end(); }
       res.setHeader("Set-Cookie",`vexel_oauth=; HttpOnly; SameSite=Lax; Path=/auth/; Max-Age=0${secure ? "; Secure" : ""}`);
+      if(bridgeFlow){
+        try{return discordBridge.respond(res,bridgeFlow,{token:await discordBridge.token(identity.subject)});}
+        catch{return discordBridge.respond(res,bridgeFlow,{error:true});}
+      }
       let u = db
         .prepare("SELECT * FROM users WHERE provider=? AND subject=?")
         .get(name, identity.subject);
@@ -265,7 +275,7 @@ export const server = createServer(async (req, res) => {
           !checkPassword(pw, u?.password || hashPassword(random())) ||
           !u?.password
         )
-          fail(401, "Incorrect sign-in details.");
+          fail(401, "Incorrect login!");
         session(res, u.id);
         return json(res, { user: me(u) });
       }
@@ -484,7 +494,7 @@ export const server = createServer(async (req, res) => {
 function randomBytesShort() {
   return random().slice(0, 10).toLowerCase().replace(/-/g, "_");
 }
-attachProxyTransport(server, { origin, enabled: builtinWisp });
+attachProxyTransport(server, { origin, allowedOrigins: (env.WISP_ALLOWED_ORIGINS||"").split(",").map(x=>x.trim()).filter(Boolean), enabled: builtinWisp });
 server.listen(Number(env.PORT || 3000), "0.0.0.0", () =>
   console.log(`Vexel: ${origin}`),
 );

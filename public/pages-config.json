@@ -1,6 +1,7 @@
 {
   "mode": "static",
   "wispUrl": "",
+  "authBackendUrl": "",
   "firebase": null,
   "firebaseProviders": {"google": false, "microsoft": false}
 }

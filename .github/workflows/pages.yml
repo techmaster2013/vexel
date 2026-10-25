@@ -1,5 +1,7 @@
 name: Publish GitHub Pages
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,14 +16,36 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      GAMES_ACCESS_TOKEN: ${{ secrets.VEX_GAMES_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Platform source
+        uses: actions/checkout@v4
         with:
-          ref: gh-pages
+          ref: main
+          path: source
+      - name: Current private game source
+        if: env.GAMES_ACCESS_TOKEN != ''
+        uses: actions/checkout@v4
+        with:
+          repository: techmaster2013/vex-games
+          ref: main
+          token: ${{ secrets.VEX_GAMES_TOKEN }}
+          path: game-pack
+      - name: Bundled release game pack
+        if: env.GAMES_ACCESS_TOKEN == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download game-pack-v1 --repo techmaster2013/vexel --pattern game-pack.tar.gz
+          mkdir game-pack
+          tar -xzf game-pack.tar.gz -C game-pack
+      - name: Prepare static files
+        run: python3 source/scripts/prepare-pages.py --games game-pack --output pages
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: pages
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

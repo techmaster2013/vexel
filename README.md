@@ -1,37 +1,25 @@
 # Vexel
 
-A navy glass game, media and tools platform. The frontend is plain HTML, CSS and JavaScript. GitHub Pages visitors need no Node, npm or pnpm.
+**[Open Vexel](https://techmaster2013.github.io/vexel/)** · **[Website editor](https://techmaster2013.github.io/vexel/edit.html)**
 
-## GitHub Pages
+Games, movies, music, chat, and tools in one place. Version 1.
 
-Public site: https://techmaster2013.github.io/vexel/
+### Change the website
 
-`main` contains the platform source and checked-in browser runtimes. `vex-games/main` contains the game catalog and payloads. The generated `gh-pages` branch contains deployment output from both repositories; the Pages workflow runs from `main` and uploads that output without a package-install/build step.
+Open **edit.html** and sign in with your GamePlaza admin account. Add games and movies, or change Caver’s server address, then press **Publish changes**. Visitors see changes after reloading.
 
-To prepare a new static deployment, use Python (no package installation):
+The editor needs a one-time connection before it can publish: **[Editor setup](docs/EDITOR.md)**.
 
-```sh
-python3 scripts/prepare-pages.py --games ../vex-games --output ../pages-output
-```
+### Add game files
 
-Use an empty output directory outside both source repositories. Publish that generated output to `gh-pages`. Run the Publish GitHub Pages workflow from `main` after publishing the generated branch. The workflow deploys it through GitHub Pages Actions. It does not publish databases, server secrets, accounts or source-repository credentials.
+Put game files in **[vex-games](https://github.com/techmaster2013/vex-games)**. Use its **main** branch. Then add the game to Vexel through the editor. Only upload games you own or have permission to share.
 
-Edit `public/pages-config.json` for public Firebase web config and an optional `wss://` Wisp transport. Never place OAuth client secrets in that file. See [authentication setup](docs/AUTH_SETUP.md).
+### Set up accounts or Caver
 
-## What works without a backend
+**[Step-by-step setup](docs/SETUP.md)** explains Google, Microsoft, Discord, username login, and the Wisp server Caver needs.
 
-Home, the catalog and game previews, installed games, external game launchers, local preferences/favorites/recent games, media playback, local manga reader, soundboard/tools/music, and the on-demand Alpine VM. Browser runtimes and the VM image load only when their feature starts. Large catalogs are paginated.
+Vexel publishes from **main**. There is no separate publishing branch. The game files have their own repo; everything else stays here.
 
-Cross-origin games are sandboxed. Local sandbox storage is per-frame memory when persistent browser storage is unavailable; it is discarded when the player closes. No game gets access to Vexel account cookies or preferences.
+Some games need their files or an external service connected before they can play. Pac-Man uses the supplied wrapper and still needs Google’s assets through Caver. Eggfish opens its creator’s page through Caver.
 
-## Connected features
-
-Firebase web configuration enables Google/Microsoft/email authentication on Pages. It is not configured by default. Username-only accounts are supported; email/social display names are not username credentials; cloud preferences, shared chat and secure coin rewards require additional backend integration. Discord is implemented in the optional Node backend and needs registered OAuth credentials plus a running callback server. The original local `owner` account and privileges live only in the local SQLite database; no account database is published to Pages.
-
-Caver uses Scramjet v2 but needs a Wisp WebSocket transport; GitHub Pages cannot provide one. Readable-frame block signatures still work statically; cross-origin server-side block probing requires the optional backend. Blank/error pages are never assumed blocked.
-
-## Optional full backend
-
-Node 24 and the pinned dependencies run the existing SQLite accounts, admin grants, economy, shared chat, GamePlaza Firestore request delivery, OAuth callbacks and built-in Wisp transport. For this optional mode only: install dependencies, copy `.env.example` to `.env`, configure values and run `pnpm dev`. Browser runtime assets are already checked in; `pnpm build` can regenerate them.
-
-See [verification](docs/VERIFICATION.md), [status](docs/STATUS.md), and [third-party notices](THIRD_PARTY_NOTICES.md). Vexel retains GPL-3.0; individual imported games retain their own licenses.
+[Credits and licenses](THIRD_PARTY_NOTICES.md) · [Technical checks](docs/VERIFICATION.md)

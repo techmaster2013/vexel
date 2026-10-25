@@ -1095,3 +1095,5 @@ nav a,.category-link{font-size:11px}.card-meta strong{font-size:12px}.card-detai
 .game-card{backdrop-filter:none;-webkit-backdrop-filter:none}@supports(content-visibility:auto){.game-card{content-visibility:auto;contain-intrinsic-size:auto 270px}}
 
 .library-pagination{justify-content:center;margin:24px 0;font-size:10px;flex-wrap:wrap}
+
+.release-note{font-size:13px;line-height:1.8;margin:24px 0 30px;color:#dce8ff}.status.error{color:#ffa9b1;background:#ff73820b;border-left:2px solid #ff9eaa;padding:10px 12px}.pill[aria-disabled="true"]{opacity:.6;cursor:default}button:disabled{cursor:default}.detail .actions{align-items:center}

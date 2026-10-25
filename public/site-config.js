@@ -2,6 +2,7 @@
 export default {
   mode: 'server',
   wispUrl: '',
+  authBackendUrl: '',
   firebase: null,
   firebaseProviders: {google:false,microsoft:false},
 };

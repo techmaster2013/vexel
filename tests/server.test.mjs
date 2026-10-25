@@ -46,6 +46,7 @@ before(async () => {
       DATABASE_PATH: database,
       GAME_CONTENT_DIR: join(tmp, "content"),
       ADMIN_USERNAMES: "qa_admin",
+      WISP_ALLOWED_ORIGINS: "https://techmaster2013.github.io",
       FEEDBACK_DRAFT_ONLY: "true",
     },
     stdio: "pipe",
@@ -227,7 +228,7 @@ test("built-in proxy advertises its own endpoint and rejects foreign-origin upgr
           Upgrade: "websocket",
           "Sec-WebSocket-Version": "13",
           "Sec-WebSocket-Key": "dGhlIHNhbXBsZSBub25jZQ==",
-          Origin: origin,
+          Origin: "https://techmaster2013.github.io",
         },
       },
       (res) => {

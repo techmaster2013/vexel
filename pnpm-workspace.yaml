@@ -1,4 +1,6 @@
 allowBuilds:
+  '@firebase/util': false
   bufferutil: false
+  protobufjs: false
 minimumReleaseAgeExclude:
   - '@mercuryworkshop/wisp-js@0.5.1'

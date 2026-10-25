@@ -13,10 +13,22 @@ for required in ['vendor/scramjet/scramjet.js','vendor/controller/controller.api
  if not (root/'public'/required).is_file():raise SystemExit('Missing checked-in runtime: '+required)
 shutil.copytree(root/'public',output,dirs_exist_ok=True)
 shutil.copytree(games,output/'content',ignore=shutil.ignore_patterns('.git','.github'),dirs_exist_ok=True)
-index=output/'index.html'
-version=hashlib.sha256((output/'app.js').read_bytes()).hexdigest()[:12]
-index.write_text(re.sub(r'src="\./app\.js(?:\?[^"]*)?"','src="./app.js?v='+version+'"',index.read_text()))
 config=json.loads((root/'public/pages-config.json').read_text());config['mode']='static'
 (output/'site-config.js').write_text('// Generated public configuration; never include secrets.\nexport default '+json.dumps(config,indent=2)+';\n')
+# One version across the small first-party module graph prevents stale dependent
+# modules/config after publication. Vendor/VM files remain lazy and pinned.
+first_party=sorted([*output.glob('*.js'),*output.glob('*.css')])
+release=hashlib.sha256(b''.join(p.name.encode()+p.read_bytes() for p in first_party)+(games/'manifest.json').read_bytes()).hexdigest()[:12]
+imports=re.compile(r"((?:\bfrom\s*|\bimport\s*\(\s*|\bimport\s*)['\"])(\./[^'\"?]+\.(?:js|mjs))(?:\?[^'\"]*)?(['\"])")
+for file in output.glob('*.js'):
+ if file.name=='sw.js':continue
+ file.write_text(imports.sub(lambda m:m[1]+m[2]+'?v='+release+m[3],file.read_text()))
+index=output/'index.html'
+html=re.sub(r'src="\./app\.js(?:\?[^"]*)?"','src="./app.js?v='+release+'"',index.read_text())
+html=re.sub(r'href="(\./(?:style|library)\.css)(?:\?[^"]*)?"',lambda m:'href="'+m[1]+'?v='+release+'"',html)
+index.write_text(html)
 shutil.copy(root/'LICENSE',output/'LICENSE');(output/'.nojekyll').touch()
 print(f'Static Pages output: {output}; {len(manifest)} catalog records. No backend is needed for the core site.')
+
+editor=output/'edit.html'
+editor.write_text(editor.read_text().replace('./edit.js','./edit.js?v='+release).replace('./style.css','./style.css?v='+release).replace('./edit.css','./edit.css?v='+release))

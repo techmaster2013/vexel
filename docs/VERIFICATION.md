@@ -1,31 +1,25 @@
-# Verification — October 24, 2026
+# Verification — Vexel 1.0
 
-## Current checks (0.5)
+## Automated checks
 
-- Fifteen automated test groups pass: accounts, sessions, preferences, economy, authorization, content separation, proxy origin handling, catalog-only game probes, dynamic block signatures, false positives, and private-address rejection.
-- Browser verified: supplied logo on home/sidebar/top bar, navigation, game preview and installed game launch, Deltarune chapter menu, actual Scramjet navigation, Alpine boot and root shell, and Big Buck Bunny remote playback readiness.
-- Controlled browser fixture verified the exact blocked-page message and Open in Caver button. Clicking it opened the original URL, including its query string, through the real Scramjet route.
-- Block detection ignores blank pages, loading pages, ordinary errors, iframe restrictions, hidden/script text and unrelated denial pages. Dynamic IDs, wrappers, whitespace and entities are covered by tests.
-- Page transitions use a 150 ms opacity/translation animation and are disabled by lightweight mode, reduced-motion preference or the motion setting. Game checks run once per launch, have bounded network requests, and are cancelled when leaving the player.
+18 test groups pass: backend accounts/sessions/privileges/economy, catalog and probes, block signatures/false positives/private-address rejection, Google/Microsoft signed-token verification, Discord OAuth flow, one-use/expiry/origin-bound Firebase bridge logic, popup-source/channel checks, username identifiers and incorrect-login message mapping.
 
-## Limits and unverified flows
+Pinned Firebase Admin 14.5.0 imports successfully with optional package build scripts disabled. No real service-account credentials or provider tokens were used in tests.
 
-Cross-origin browser rules prevent reading arbitrary iframe documents. Vexel also probes the catalog-approved URL from the server; browser-only network filters may therefore be invisible. The manual Caver button remains available. Blank pages alone never trigger the blocked fallback.
+## Browser evidence
 
-Google/Microsoft sign-in needs deployment credentials. Real Firestore request delivery, email recovery, ad-provider integration, VM state import/export, all game win/loss paths, physical low-end-device performance, Docker and public deployment remain unverified. GTA gameplay is unverified; only its source loader was inspected. Remote sources can change or refuse framing.
+Earlier published Pages smoke checks: home/logo, per-reload changelog, catalog/search/pagination, MMG sandboxed singleplayer, URL Chess board, Canvas Tetris start. The static preview rendered the 3D City title screen after worker/texture sandbox fixes. Earlier Alpine boot/root shell, Scramjet navigation and open-film playback readiness were verified locally.
 
-The catalog contains 919 entries: 17 installed games, 3 remote players, 12 external launchers and 887 entries awaiting legitimate sources. The movie catalog has 13 records with 5 connected open-film streams. Protected media payloads were not copied.
+Version 1 changes require the final browser checks recorded by the task: minimal changelog, no manga navigation, exact wrong-login text, Caver-required Pac-Man/Eggfish records and static deployment publication.
 
-Local game pack update: Dino Game and Adventures with Anxiety now load from vex-games. Dino gameplay start and Anxiety loading/title screen were browser-smoke-tested. Upstream licenses, source pins and credits remain in each game directory; full story completion is unverified.
+## Limits
 
-## Static deployment and provider changes
+No real Firebase project/provider configuration or production Wisp endpoint is present. Live Google/Microsoft/Discord sign-in, custom-token delivery with real credentials, production Docker/Caddy and full game playthroughs remain unverified. Local SQLite owner privileges remain private to the local database.
 
-A static HTTP preview under `/vexel/` loads without `/api` or a Node backend. Browser verified catalog pagination/search, MMG preview and sandboxed singleplayer start. Firebase and live Google/Microsoft/Discord sign-in remain unverified because no provider credentials/project are configured. Local signed-token provider tests cover Google/Microsoft audiences, nonce, issuer/tenant handling, Discord profile validation, cookie binding, callback replay and cancellation.
+The supplied Pac-Man HTML is a wrapper and still needs Google's remote game; Google's frame-ancestors policy prevents direct third-party framing. The wrapper is routed through Caver, not represented as a standalone offline game. Eggfish is creator-hosted and its asset/code inventory is metadata only.
 
-Pages mode deliberately disables shared backend features. Static cross-origin blocked-game detection is limited by the browser same-origin policy. Runtime asset and Alpine boot-image copies are checked in and published without requiring an npm/pnpm build. VM boot on the final Pages origin still needs verification.
+GitHub Pages cannot read arbitrary cross-origin iframe documents. Static known-block detection remains limited to readable evidence; Node mode can probe approved URLs. Blank pages, normal errors and iframe restrictions never imply a network block.
 
-## Published site verification
+## Main-only editor update
 
-Both source repos were merged into main after successful GitHub checks. GitHub Pages publication from main succeeded without changing the environment's main-only deployment policy. The actual https://techmaster2013.github.io/vexel/ site loaded and MMG singleplayer started inside its sandbox. URL Chess rendered its board. Canvas Tetris started; its board styling was adjusted to fit the iframe. 3D City reached its rendered title screen in the static sandbox after Blob-worker and CORS-texture compatibility fixes. Full game playthroughs remain unverified. The local owner account remains admin/unlimited in SQLite and is not published to Pages.
-
-Username-only Firebase registration now uses a deterministic non-deliverable email alias, providing unique case-normalized username/password sign-in without a public email directory. Email accounts retain email sign-in. Identifier mapping/validation passes a unit test; live Firebase registration is unverified without a configured project. Eggfish is connected to the creator-hosted upload with a 233-reference static asset audit; its assets are not redistributed, per the user's choice.
+19 automated test groups pass. Static editor sign-in screen visually checked. Editor records round-trip and unsafe URL rejection are tested. The GamePlaza Firebase account, admin custom claim and Firestore rule block are not deployed or verified against the live project; the editor fails closed without them. No real admin credentials were available. The rule block is a prototype for review in the existing project, not a replacement for GamePlaza rules.

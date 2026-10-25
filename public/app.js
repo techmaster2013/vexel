@@ -1,3 +1,5 @@
+import {loadEdits} from './content-store.js';
+import {loginFailure} from "./auth-errors.js";
 import {api,asset,gameAsset,staticMode,providerSignIn} from "./runtime.js";
 import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
@@ -40,7 +42,6 @@ const nav = [
       ["games", "◇", "Games"],
       ["apps", "▦", "Caver & apps"],
       ["media", "▷", "Movies & shows"],
-      ["manga", "▤", "Manga reader"],
     ],
   ],
   [
@@ -165,10 +166,8 @@ $(".skip").onclick = (e) => {
 $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
 function updates() {
-  open(
-    `<span class="eyebrow">VERSION 0.5</span><h2>Changelog</h2><ul class="change-list"><li>GitHub Pages support, expanded game catalog, MMG and licensed game imports.</li><li>Your logo, Silkscreen, and a dedicated home screen.</li><li>Lightweight page transitions and Caver block-page recovery.</li><li>Navy and black interface with translucent panels.</li><li>Game library, category sidebar, search and sorting.</li><li>GamePlaza catalog and requested titles.</li><li>Game previews, favorites, accounts and chat.</li><li>Built-in browser transport and an Alpine VM launcher.</li></ul><p class="catalog-note">Unavailable titles are labeled. Google, Microsoft, and Discord sign-in require deployment credentials. Remote games are served by their source hosts.</p><button class="primary" id="enter">Close</button>`,
-  );
-  $("#enter").onclick = () => dialog.close();
+  open('<span class="eyebrow">VERSION 1.0</span><h2>Changelog</h2><p class="release-note">added website functionality</p><button class="primary" id="enter">Close</button>');
+  $("#enter").onclick=()=>dialog.close();
 }
 $("#credits").onclick = () =>
   open(
@@ -181,17 +180,19 @@ function bindCards() {
 }
 function preview(id) {
  const g=games.find(x=>x.id===id);if(!g)return;
- const favorite=prefs.favorites?.includes(id),source=g.remoteUrl||g.launchUrl;
- const playControl=g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Play on creator site ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
+ const favorite=prefs.favorites?.includes(id),source=g.proxyTarget||g.remoteUrl||g.launchUrl;
+ const playControl=g.launchViaCaver&&source?`<button class="primary" id="play" ${config.proxyReady?'':'disabled'}>Open in Caver ↗</button>${config.proxyReady?'':'<small class="muted">Caver needs a Wisp endpoint before this game can open.</small>'}`:g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Play on creator site ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
  open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Open source ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
  $('#favorite').onclick=()=>{prefs.favorites=favorite?(prefs.favorites||[]).filter(x=>x!==id):[...(prefs.favorites||[]),id];save();preview(id);};
- if(g.openExternally&&source)$('#play').onclick=()=>{prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();dialog.close();};
+ if(g.launchViaCaver&&source)$('#play').onclick=()=>{if(!config.proxyReady)return;dialog.close();openInCaver(source);};
+ else if(g.openExternally&&source)$('#play').onclick=()=>{prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();dialog.close();};
  else if(g.path||source)$('#play').onclick=()=>{dialog.close();play(g);};
 }
 function openInCaver(originalUrl){pendingProxy=originalUrl;if(location.hash==='#apps')render();else location.hash='apps';}
 function play(g){
- const externalSource=g.remoteUrl||g.launchUrl;
+ const externalSource=g.proxyTarget||g.remoteUrl||g.launchUrl;
  if(externalSource){const target=new URL(externalSource);if(target.protocol!=='https:'||target.origin===location.origin)return toast('Remote games require a separate HTTPS origin.');}
+ if(g.launchViaCaver&&externalSource){openInCaver(externalSource);return;}
  if(g.openExternally&&externalSource){window.open(externalSource,'_blank','noopener');return;}
  cleanup();playing=true;
  prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();
@@ -215,7 +216,7 @@ function home() {
       .filter(Boolean)
       .slice(0, 4);
   main.innerHTML =
-    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">0.5</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} installed games</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
+    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">1.0</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} local entries</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
       .slice(0, 6)
       .map(
         ([name, mark, url]) =>
@@ -240,7 +241,7 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 0.5</span><h2>Changelog</h2><p>Your logo, page transitions, Caver recovery, and an Alpine VM launcher.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 1.0</span><h2>Changelog</h2><p>added website functionality</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
     ad();
   bindCards();
   $("#home-updates").onclick = updates;
@@ -307,7 +308,7 @@ function gamePage() {
       `${games.length} games · ${available} connected · ${games.length - available} awaiting sources`,
       '<button id="random">Surprise me</button>',
     ) +
-    `<div class="library-toolbar"><div class="sort-tabs" role="group" aria-label="Sort games"><button data-sort="az" class="selected">Alphabetical</button><button data-sort="recent">Recently played</button><button data-sort="favorites">Favorites</button></div><div class="search-row"><input id="search" type="search" placeholder="Search games…" aria-label="Search games"><select id="availability" aria-label="Game availability"><option value="all">All titles</option><option value="available">Connected sources</option><option value="pending">Awaiting source</option></select></div></div><div id="recent-shelf"></div><div id="game-grid"></div>`;
+    `<div class="library-toolbar"><div class="sort-tabs" role="group" aria-label="Sort games"><button data-sort="az" class="selected">Alphabetical</button><button data-sort="recent">Recently played</button><button data-sort="favorites">Favorites</button></div><div class="search-row"><input id="search" type="search" placeholder="Search games…" aria-label="Search games"><select id="availability" aria-label="Game availability"><option value="all">All titles</option><option value="available" ${games.length>100?"selected":""}>Connected sources</option><option value="pending">Awaiting source</option></select></div></div><div id="recent-shelf"></div><div id="game-grid"></div>`;
   let sort = "az", page = 0;
   function refresh(reset = true) {
     if(reset) page=0;
@@ -413,7 +414,7 @@ function mediaPage() {
       "Movies & shows",
       "Browse the catalog or open a local video.",
     ) +
-    `<div class="search-row"><input id="movie-search" type="search" aria-label="Search movies" placeholder="Find a movie…"><select id="movie-filter" aria-label="Movie filter"><option>All films</option><option>My watchlist</option></select><button id="local-video">＋ Open local video</button><input id="video-file" type="file" accept="video/*" hidden></div><div id="movie-grid" class="grid"></div><p class="catalog-note">Thirteen films in the starter catalog. Five open films have connected streams; other records remain previews until their streams are verified. Streams load only when selected. More films can be added as licensed sources become available.</p><div id="video-area"></div>`;
+    `<div class="search-row"><input id="movie-search" type="search" aria-label="Search movies" placeholder="Find a movie…"><select id="movie-filter" aria-label="Movie filter"><option>All films</option><option>My watchlist</option></select><button id="local-video">＋ Open local video</button><input id="video-file" type="file" accept="video/*" hidden></div><div id="movie-grid" class="grid"></div><p class="catalog-note">${movies.length} films in the catalog. ${movies.filter(m=>m.stream).length} have connected streams; other records remain previews until their streams are verified. Streams load only when selected. More films can be added as licensed sources become available.</p><div id="video-area"></div>`;
   function refresh() {
     const q = $("#movie-search").value.toLowerCase(),
       list = movies.filter(
@@ -502,35 +503,6 @@ function videoPlayer(m) {
     ($("#video-status").textContent =
       "This stream is unavailable. Try again later or open a local video.");
   area.scrollIntoView({ behavior: "smooth" });
-}
-function mangaPage() {
-  main.innerHTML =
-    title("READER", "Manga reader", "Open page images from your device.") +
-    `<div class="panel"><div class="search-row"><button class="primary" id="open-pages">＋ Open page images</button><select id="reading-mode" aria-label="Reader layout"><option value="scroll">Vertical scroll</option><option value="paged">Paged horizontal</option></select><select id="direction" aria-label="Reading direction"><option value="ltr">Left to right</option><option value="rtl">Right to left</option></select></div><input id="pages" type="file" accept="image/*" multiple hidden><p id="page-status">Select page images in reading order. Files sort by name.</p><p class="catalog-note">Reader concept only: no manga chapters are bundled. ZIP/CBZ extraction and publisher catalog integrations remain future work.</p></div><div id="reader" class="reader"></div>`;
-  let urls = [];
-  $("#open-pages").onclick = () => $("#pages").click();
-  $("#pages").onchange = (e) => {
-    urls.forEach(URL.revokeObjectURL);
-    const files = [...e.target.files]
-      .filter((f) => f.type.startsWith("image/"))
-      .sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { numeric: true }),
-      );
-    urls = files.map((f) => URL.createObjectURL(f));
-    $("#reader").innerHTML = files
-      .map(
-        (f, i) => `<img src="${urls[i]}" loading="lazy" alt="${esc(f.name)}">`,
-      )
-      .join("");
-    $("#page-status").textContent = files.length + " pages · " + files[0]?.name;
-  };
-  function mode() {
-    $("#reader").className =
-      "reader " + $("#reading-mode").value + " " + $("#direction").value;
-  }
-  $("#reading-mode").onchange = mode;
-  $("#direction").onchange = mode;
-  cleanup = () => urls.forEach(URL.revokeObjectURL);
 }
 function requestPage() {
   main.innerHTML =
@@ -720,7 +692,7 @@ function accountPage() {
     title("ACCOUNT", "Account", "Sign in or create an account.") +
     `<div class="form-grid"><form id="login" class="panel"><h2>Sign in</h2><label for="login-id">Email or username</label><input id="login-id" autocomplete="username" required><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required><div class="actions"><button class="primary">Sign in →</button></div><p class="status" role="status"></p><div class="stack">${["google", "microsoft", "discord"].map((p) => `<a class="pill" ${config.providers[p] ? `href="${staticMode?"#account":asset("auth/"+p)}" data-provider="${p}"` : 'aria-disabled="true"'}>${({google:"Google",microsoft:"Microsoft",discord:"Discord"})[p]} ${config.providers[p] ? "↗" : "· setup needed"}</a>`).join("")}</div></form><form id="register" class="panel"><h2>Create account</h2><label for="username">Username</label><input id="username" pattern="[a-zA-Z0-9_]{3,20}" minlength="3" maxlength="20" autocomplete="username" required><label for="email">Email (optional)</label><input id="email" type="email" autocomplete="email"><label for="new-password">Password · at least 10 characters</label><input id="new-password" type="password" minlength="10" maxlength="128" autocomplete="new-password" required><div class="actions"><button class="primary">Create account →</button></div><p class="status" role="status"></p><small>Choose a username-only account or add an email for email login.</small></form></div>`;
   if(staticMode){
-    const note=document.createElement('p');note.className='catalog-note';note.textContent='GitHub Pages mode: Firebase handles sign-in when configured. Shared chat, cloud preferences and coins need a trusted backend. Discord needs an OAuth callback backend. Username-only accounts have unique handles. Email and social accounts use their email or provider.';main.prepend(note);
+    const note=document.createElement('p');note.className='catalog-note';note.textContent='GitHub Pages mode: Firebase handles sign-in when configured. Shared chat, cloud preferences and coins need a trusted backend. Discord uses the configured secure callback backend. Username-only accounts have unique handles. Email and social accounts use their email or provider.';main.prepend(note);
     main.querySelectorAll('[data-provider]').forEach(b=>b.onclick=async e=>{e.preventDefault();try{user=await providerSignIn(b.dataset.provider);identity();render();}catch(e){toast(e.message);}});
     $('#login-id').type='text';$('#login-id').previousElementSibling.textContent='Email or username';
     $('#email').required=false;$('#email').previousElementSibling.textContent='Email (optional)';
@@ -732,6 +704,8 @@ function accountPage() {
       const f = e.target,
         button = f.querySelector("button");
       button.disabled = true;
+      f.querySelector(".status").textContent="";
+      f.querySelector(".status").classList.remove("error");
       try {
         const data =
           mode === "login"
@@ -754,7 +728,8 @@ function accountPage() {
         render();
         toast("Signed in.");
       } catch (e) {
-        f.querySelector(".status").textContent = e.message;
+        f.querySelector(".status").textContent = mode === "login" ? loginFailure(e) : e.message;
+        f.querySelector(".status").classList.add("error");
       } finally {
         button.disabled = false;
       }
@@ -1075,7 +1050,6 @@ function render() {
     games: gamePage,
     apps: appPage,
     media: mediaPage,
-    manga: mangaPage,
     request: requestPage,
     settings: settingsPage,
     account: accountPage,
@@ -1122,6 +1096,8 @@ try {
     prefs = { ...prefs, ...user.preferences };
     apply();
   }
+  const edited=await loadEdits();
+  if(edited){games.push(...edited.games);movies.push(...edited.movies);if(edited.wispUrl){config.proxyReady=true;window.vexelWisp=edited.wispUrl;}}
   identity();
   render();
   if(new URLSearchParams(location.search).has("auth_error")){

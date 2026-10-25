@@ -4,3 +4,6 @@ data
 .env
 public/vendor
 public/sw.js
+
+secrets
+*service-account*.json
