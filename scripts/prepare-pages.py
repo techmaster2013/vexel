@@ -16,6 +16,4 @@ shutil.copytree(games,output/'content',ignore=shutil.ignore_patterns('.git','.gi
 config=json.loads((root/'public/pages-config.json').read_text());config['mode']='static'
 (output/'site-config.js').write_text('// Generated public configuration; never include secrets.\nexport default '+json.dumps(config,indent=2)+';\n')
 shutil.copy(root/'LICENSE',output/'LICENSE');(output/'.nojekyll').touch()
-workflow=output/'.github/workflows';workflow.mkdir(parents=True,exist_ok=True)
-shutil.copy(root/'.github/workflows/pages.yml',workflow/'pages.yml')
 print(f'Static Pages output: {output}; {len(manifest)} catalog records. No backend is needed for the core site.')

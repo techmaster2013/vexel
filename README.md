@@ -6,7 +6,7 @@ A navy glass game, media and tools platform. The frontend is plain HTML, CSS and
 
 Public site: https://techmaster2013.github.io/vexel/
 
-`main` contains the platform source and checked-in browser runtimes. `vex-games/main` contains the game catalog and payloads. The generated `gh-pages` branch contains deployment output from both repositories; the Pages workflow uploads that output without a package-install/build step.
+`main` contains the platform source and checked-in browser runtimes. `vex-games/main` contains the game catalog and payloads. The generated `gh-pages` branch contains deployment output from both repositories; the Pages workflow runs from `main` and uploads that output without a package-install/build step.
 
 To prepare a new static deployment, use Python (no package installation):
 
@@ -14,7 +14,7 @@ To prepare a new static deployment, use Python (no package installation):
 python3 scripts/prepare-pages.py --games ../vex-games --output ../pages-output
 ```
 
-Use an empty output directory outside both source repositories. Publish that generated output to `gh-pages`. The workflow deploys it through GitHub Pages Actions. It does not publish databases, server secrets, accounts or source-repository credentials.
+Use an empty output directory outside both source repositories. Publish that generated output to `gh-pages`. Run the Publish GitHub Pages workflow from `main` after publishing the generated branch. The workflow deploys it through GitHub Pages Actions. It does not publish databases, server secrets, accounts or source-repository credentials.
 
 Edit `public/pages-config.json` for public Firebase web config and an optional `wss://` Wisp transport. Never place OAuth client secrets in that file. See [authentication setup](docs/AUTH_SETUP.md).
 
