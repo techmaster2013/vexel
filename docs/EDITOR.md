@@ -1,16 +1,45 @@
-# Connect the website editor
+# Setting up the website editor
 
-The editor uses the **same Firebase project and accounts as GamePlaza**. Your password is sent to Firebase, never stored in Vexel or GitHub. Signing in alone does not grant editing permission.
+The editor (`edit.html`) lets you add games and movies to Vexel without touching code. It saves your changes to Firebase, using the same Firebase project and admin account as GamePlaza.
 
-1. In Firebase Console, open **gplaza-feedback → Authentication → Settings → Authorized domains**. Add `techmaster2013.github.io` (and `localhost` for local use).
-2. Your admin UID is already configured: `PeDivPz9H3hvwW0TB33tgq6V4u63`. No backend or custom-claim command is needed for this account.
-3. Add the match block in `docs/EDITOR_RULES.txt` inside your existing Firestore rules. Keep GamePlaza’s other rules. Review and test it in the Firebase rules playground: anonymous users can read only the published document; normal signed-in accounts cannot write; your admin can save; missing/extra fields and oversized payloads fail.
-4. Open **edit.html**, sign in with your existing GamePlaza email and password, and publish your additions.
+You only have to do this once. It takes about 5 minutes.
 
-For username login, add an alias in `public/editor-config.js`, such as `usernames={owner:'your-existing-admin-email'}`. The alias is public, so use an address you are comfortable publishing. It points to your existing account; it does not create a password or grant permission. Email login already works without an alias.
+## 1. Let the website sign in
 
-Games and movie entries are additions to the built-in catalog. Remove an addition with its Remove button, then publish. Game files still belong in vex-games; the editor accepts their published HTTPS URL. The editor does not upload game folders or bypass licensing.
+1. Open the [Firebase console](https://console.firebase.google.com/) and pick the **gplaza-feedback** project.
+2. Go to **Authentication → Settings → Authorized domains**.
+3. Click **Add domain** and add `techmaster2013.github.io`. Add `localhost` too if you want to test on your own computer.
 
-Published additions are stored in **vexel/site**, separately from GamePlaza’s feedback and changelog. It contains only public game/movie addresses and the public Wisp address. No passwords, secret keys, or provider secrets go there. The normal Vexel account system remains separate.
+## 2. Allow the editor to save
 
-The supplied rule block is a prototype and has not been deployed or tested against your live Firebase project. Overlapping existing broad write rules can override these restrictions; review those rules too. Until this setup is completed, the editor fails closed and publishing remains unavailable.
+1. In the same project, go to **Firestore Database → Rules**.
+2. Copy everything in [`EDITOR_RULES.txt`](EDITOR_RULES.txt).
+3. Paste it **inside** the existing `match /databases/{database}/documents { ... }` block. Don't delete the rules that are already there; GamePlaza needs them.
+4. Click **Publish**.
+
+These rules let anyone *read* the published list (so visitors can see your games), but only your admin account can *change* it.
+
+## 3. Use it
+
+1. Open [edit.html](https://techmaster2013.github.io/vexel/edit.html).
+2. Sign in with your GamePlaza admin email and password.
+3. Add games or movies, then press **Publish changes**.
+
+Visitors see the changes the next time they load Vexel.
+
+## Something's not working?
+
+The editor tells you what went wrong. The common ones:
+
+| Message | Fix |
+|---|---|
+| "This website isn't allowed to sign in yet" | Do step 1. |
+| "Firebase refused the request" | Do step 2, then reload the editor. |
+| "This account isn't allowed to edit Vexel" | You signed in with the wrong account. The admin account's ID is set in `public/editor-config.js` (`editorUid`). |
+| "Couldn't reach Firebase" | The network is blocking Google. Try another network. |
+
+## Notes
+
+- Game files still go in the [vex-games](https://github.com/techmaster2013/vex-games) repo. The editor only stores links to them.
+- Your password goes straight to Firebase. It is never saved in Vexel or on GitHub.
+- Want to sign in with a username instead of an email? Add it to `usernames` in `public/editor-config.js`, like `usernames = {owner: 'you@example.com'}`. That file is public, so only use an email you're fine with people seeing.

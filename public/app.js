@@ -5,6 +5,7 @@ import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
 import {watchExternalGame} from "./blocked-games.js";
 import { mountVM } from "./vm.js";
+const VERSION = "1.1";
 const $ = (s) => document.querySelector(s),
   main = $("#main"),
   dialog = $("#modal");
@@ -34,6 +35,11 @@ try {
 } catch {
   prefs = {};
 }
+libraryFilter = prefs.library?.filter || "All";
+const rememberLibrary = (changes) => {
+  prefs.library = { ...prefs.library, ...changes };
+  localStorage.setItem("vexel.preferences", JSON.stringify(prefs));
+};
 const nav = [
   [
     "EXPLORE",
@@ -165,8 +171,16 @@ $(".skip").onclick = (e) => {
 };
 $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
+const CHANGES = [
+  "New galaxy look, lighter on slow Chromebooks",
+  "Vexel opens even when login services are blocked or slow",
+  "Share a game: every game has its own link",
+  "Library remembers your category, sort and filter",
+  "Reload button and F key for fullscreen while playing",
+  "This changelog only pops up when something is new",
+];
 function updates() {
-  open('<span class="eyebrow">VERSION 1.0</span><h2>Changelog</h2><p class="release-note">added website functionality</p><button class="primary" id="enter">Close</button>');
+  open(`<span class="eyebrow">VERSION ${VERSION}</span><h2>What's new</h2><ul class="release-note">${CHANGES.map((c) => `<li>${c}</li>`).join("")}</ul><button class="primary" id="enter">Got it</button>`);
   $("#enter").onclick=()=>dialog.close();
 }
 $("#credits").onclick = () =>
@@ -182,7 +196,8 @@ function preview(id) {
  const g=games.find(x=>x.id===id);if(!g)return;
  const favorite=prefs.favorites?.includes(id),source=g.proxyTarget||g.remoteUrl||g.launchUrl;
  const playControl=g.launchViaCaver&&source?`<button class="primary" id="play" ${config.proxyReady?'':'disabled'}>Open in Caver ↗</button>${config.proxyReady?'':'<small class="muted">Caver needs a Wisp endpoint before this game can open.</small>'}`:g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Open hosted game ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
- open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Original page ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
+ open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button><button id="share">🔗 Copy link</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Original page ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
+ $('#share').onclick=()=>{const link=location.href.split('#')[0]+'#games?game='+encodeURIComponent(id);navigator.clipboard?.writeText(link).then(()=>toast('Link copied! Send it to a friend.'),()=>prompt('Copy this link:',link))??prompt('Copy this link:',link);};
  $('#favorite').onclick=()=>{prefs.favorites=favorite?(prefs.favorites||[]).filter(x=>x!==id):[...(prefs.favorites||[]),id];save();preview(id);};
  if(g.launchViaCaver&&source)$('#play').onclick=()=>{if(!config.proxyReady)return;dialog.close();openInCaver(source);};
  else if(g.openExternally&&source)$('#play').onclick=()=>{prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();dialog.close();};
@@ -198,11 +213,11 @@ function play(g){
  prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();
  const originalUrl=g.path?(config.gameOrigin||asset('content'))+g.path:externalSource;
  const external=new URL(originalUrl,location.href).origin!==location.origin;
- main.innerHTML=`<div class="player-toolbar"><div><span class="eyebrow">NOW PLAYING</span><h2>${esc(g.title)}</h2></div><div class="actions"><button id="back-games">← Games</button>${external?'<button id="caver-game">Caver ↗</button>':''}<button id="full">⛶ Fullscreen</button></div></div><div id="game-view"><iframe id="game-frame" class="player-frame" sandbox="allow-scripts allow-pointer-lock" allow="fullscreen; gamepad" title="${esc(g.title)}"></iframe></div><p class="player-status">${esc(g.controls||'')}${g.license?' · '+esc(g.license):''}</p>`;
+ main.innerHTML=`<div class="player-toolbar"><div><span class="eyebrow">NOW PLAYING</span><h2>${esc(g.title)}</h2></div><div class="actions"><button id="back-games">← Games</button>${external?'<button id="caver-game">Caver ↗</button>':''}<button id="reload-game" title="Reload game">↻ Reload</button><button id="full" title="Fullscreen (F)">⛶ Fullscreen</button></div></div><div id="game-view"><iframe id="game-frame" class="player-frame" sandbox="allow-scripts allow-pointer-lock" allow="fullscreen; gamepad" title="${esc(g.title)}"></iframe></div><p class="player-status">${esc(g.controls||'')}${g.license?' · '+esc(g.license):''}</p>`;
  const frame=$('#game-frame');let stopWatching=()=>{};
  if(external){frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-pointer-lock allow-downloads');stopWatching=watchExternalGame({frame,container:$('#game-view'),originalUrl,gameId:g.id,onOpenCaver:openInCaver});$('#caver-game').onclick=()=>openInCaver(originalUrl);}
  frame.src=originalUrl;
- $('#back-games').onclick=()=>render();$('#full').onclick=()=>$('#game-view').requestFullscreen?.().catch(()=>toast('Fullscreen unavailable.'));
+ $('#back-games').onclick=()=>render();$('#reload-game').onclick=()=>{frame.src='about:blank';setTimeout(()=>{frame.src=originalUrl;},50);};$('#full').onclick=()=>$('#game-view').requestFullscreen?.().catch(()=>toast('Fullscreen unavailable.'));
  cleanup=()=>{playing=false;stopWatching();};animatePage();
 }
 function home() {
@@ -216,7 +231,7 @@ function home() {
       .filter(Boolean)
       .slice(0, 4);
   main.innerHTML =
-    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">1.0</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} local entries</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
+    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">${VERSION}</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} local entries</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
       .slice(0, 6)
       .map(
         ([name, mark, url]) =>
@@ -241,7 +256,7 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE 1.0</span><h2>Changelog</h2><p>added website functionality</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE ${VERSION}</span><h2>What's new</h2><p>${CHANGES[0]}, and more.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
     ad();
   bindCards();
   $("#home-updates").onclick = updates;
@@ -293,6 +308,7 @@ function librarySidebar() {
     (b) =>
       (b.onclick = () => {
         libraryFilter = b.dataset.category;
+        rememberLibrary({ filter: libraryFilter });
         gamePage();
         document.body.classList.remove("menu-open");
       }),
@@ -308,15 +324,15 @@ function gamePage() {
       `${games.length} games · ${available} connected · ${games.length - available} awaiting sources`,
       '<button id="random">Surprise me</button>',
     ) +
-    `<div class="library-toolbar"><div class="sort-tabs" role="group" aria-label="Sort games"><button data-sort="az" class="selected">Alphabetical</button><button data-sort="recent">Recently played</button><button data-sort="favorites">Favorites</button></div><div class="search-row"><input id="search" type="search" placeholder="Search games…" aria-label="Search games"><select id="availability" aria-label="Game availability"><option value="all">All titles</option><option value="available" ${games.length>100?"selected":""}>Connected sources</option><option value="pending">Awaiting source</option></select></div></div><div id="recent-shelf"></div><div id="game-grid"></div>`;
-  let sort = "az", page = 0;
+    `<div class="library-toolbar"><div class="sort-tabs" role="group" aria-label="Sort games">${[["az","Alphabetical"],["recent","Recently played"],["favorites","Favorites"]].map(([id,label])=>`<button data-sort="${id}" class="${(prefs.library?.sort||"az")===id?"selected":""}">${label}</button>`).join("")}</div><div class="search-row"><input id="search" type="search" placeholder="Search games or categories…" aria-label="Search games"><select id="availability" aria-label="Game availability">${[["all","All titles"],["available","Playable now"],["pending","Awaiting source"]].map(([id,label])=>`<option value="${id}" ${(prefs.library?.availability||(games.length>100?"available":"all"))===id?"selected":""}>${label}</option>`).join("")}</select></div></div><div id="recent-shelf"></div><div id="game-grid"></div>`;
+  let sort = prefs.library?.sort || "az", page = 0;
   function refresh(reset = true) {
     if(reset) page=0;
     const q = $("#search").value.toLowerCase(),
       availability = $("#availability").value;
     let list = games.filter(
       (g) =>
-        g.title.toLowerCase().includes(q) &&
+        (g.title.toLowerCase().includes(q) || String(g.category || "").toLowerCase().includes(q)) &&
         (libraryFilter === "All" || g.category === libraryFilter) &&
         (availability === "all" ||
           (availability === "available" ? canLaunch(g) : !canLaunch(g))) &&
@@ -347,11 +363,12 @@ function gamePage() {
   $("#search").value = libraryQuery;
   libraryQuery = "";
   $("#search").oninput = refresh;
-  $("#availability").onchange = refresh;
+  $("#availability").onchange = () => { rememberLibrary({ availability: $("#availability").value }); refresh(); };
   main.querySelectorAll("[data-sort]").forEach(
     (b) =>
       (b.onclick = () => {
         sort = b.dataset.sort;
+        rememberLibrary({ sort });
         main
           .querySelector(".sort-tabs .selected")
           ?.classList.remove("selected");
@@ -550,7 +567,7 @@ function settingsPage() {
       "Settings",
       "Appearance, performance, and saved data.",
     ) +
-    `<div class="form-grid"><div class="panel"><h2>Look & feel</h2><label for="theme">Your theme</label><select id="theme">${["navy", ...(user?.owned || [])].map((t) => `<option value="${esc(t)}" ${prefs.theme === t ? "selected" : ""}>${t === "navy" ? "Midnight navy" : config.shop.find((s) => s.id === t)?.name || t}</option>`).join("")}</select><label for="wallpaper">Wallpaper</label><select id="wallpaper"><option value="still">Still midnight</option><option value="reactive" ${prefs.wallpaper === "reactive" ? "selected" : ""}>Follow my cursor</option><option value="grid" ${prefs.wallpaper === "grid" ? "selected" : ""}>Navy grid</option><option value="black" ${prefs.wallpaper === "black" ? "selected" : ""}>Black</option></select>${[
+    `<div class="form-grid"><div class="panel"><h2>Look & feel</h2><label for="theme">Your theme</label><select id="theme">${["navy", ...(user?.owned || [])].map((t) => `<option value="${esc(t)}" ${prefs.theme === t ? "selected" : ""}>${t === "navy" ? "Galaxy" : config.shop.find((s) => s.id === t)?.name || t}</option>`).join("")}</select><label for="wallpaper">Wallpaper</label><select id="wallpaper"><option value="still">Galaxy</option><option value="reactive" ${prefs.wallpaper === "reactive" ? "selected" : ""}>Nebula follows cursor</option><option value="grid" ${prefs.wallpaper === "grid" ? "selected" : ""}>Space grid</option><option value="black" ${prefs.wallpaper === "black" ? "selected" : ""}>Just stars</option></select>${[
       ["compact", "Compact cards"],
       ["lite", "Lightweight mode"],
       ["motion", "Allow motion"],
@@ -1046,7 +1063,9 @@ function render() {
   cleanup = () => {};
   $("#library-nav")?.remove();
   playing = false;
-  route = location.hash.slice(1) || "home";
+  const [hashRoute, hashQuery = ""] = location.hash.slice(1).split("?");
+  route = hashRoute || "home";
+  const linkedGame = new URLSearchParams(hashQuery).get("game");
   if (!nav.some(([, links]) => links.some(([id]) => id === route)))
     route = "home";
   document.body.classList.remove("menu-open");
@@ -1068,6 +1087,7 @@ function render() {
     vm: vmPage,
   };
   pages[route]();
+  if (linkedGame && games.some((g) => g.id === linkedGame)) preview(linkedGame);
   animatePage();
   window.scrollTo(0, 0);
 }
@@ -1095,28 +1115,42 @@ window.addEventListener("pointermove", (e) => {
   });
 });
 apply();
+// Rejects after `ms` so a slow or blocked service (Firebase on school networks) can't hold up the page.
+const within = (promise, ms) => Promise.race([promise, new Promise((_, no) => setTimeout(() => no(Error("Timed out.")), ms))]);
+// Re-render only list pages, and never while a game or video is open.
+const refreshLists = () => { if (!playing && ["home", "games", "media"].includes(route) && !dialog.open) render(); };
 try {
-  [config, { user }, games] = await Promise.all([
-    api("config"),
-    api("me"),
-    api("catalog"),
-  ]);
-  if (user) {
-    prefs = { ...prefs, ...user.preferences };
-    apply();
-  }
-  const edited=await loadEdits();
-  if(edited){games.push(...edited.games);movies.push(...edited.movies);if(edited.wispUrl){config.proxyReady=true;window.vexelWisp=edited.wispUrl;}}
+  // The site only needs its own config and catalog to work; show it as soon as those arrive.
+  [config, games] = await Promise.all([api("config"), api("catalog")]);
   identity();
   render();
   if(new URLSearchParams(location.search).has("auth_error")){
     toast("Sign-in did not complete. Please try again or use your username and password.");
     history.replaceState(null,"",location.pathname+location.hash);
   }
-  updates();
+  // Skip the changelog when someone arrives through a shared game link, so the game card stays on top.
+  if (localStorage.getItem("vexel.seenVersion") !== VERSION && !location.hash.includes("game=")) {
+    localStorage.setItem("vexel.seenVersion", VERSION);
+    updates();
+  }
+  // Accounts and editor additions load in the background.
+  within(api("me"), 8000).then(({ user: signedIn }) => {
+    if (!signedIn) return;
+    user = signedIn;
+    prefs = { ...prefs, ...user.preferences };
+    apply();
+    identity();
+  }).catch(() => {});
+  loadEdits().then((edited) => {
+    if (!edited) return;
+    games.push(...edited.games);
+    movies.push(...edited.movies);
+    if (edited.wispUrl) { config.proxyReady = true; window.vexelWisp = edited.wispUrl; }
+    refreshLists();
+  });
 } catch (e) {
   main.innerHTML =
-    '<div class="empty">Vexel couldn’t load its files. Check the connection and deployment, then reload.</div>';
+    '<div class="empty">Vexel couldn’t load its files. Check your connection, then reload.</div>';
   toast(e.message);
 }
 let activeUntil = Date.now() + 90000;
@@ -1135,6 +1169,10 @@ setInterval(async () => {
 
 window.addEventListener("keydown", (e) => {
   if (dialog.open || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (playing && e.key.toLowerCase() === "f" && !e.ctrlKey && !e.metaKey) {
+    $("#full")?.click();
+    return;
+  }
   if (
     ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") ||
     e.key === "/"

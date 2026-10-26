@@ -1,4 +1,4 @@
-# Vexel 1.0 setup
+# Advanced setup: accounts, Caver and the server
 
 Live site: https://techmaster2013.github.io/vexel/
 

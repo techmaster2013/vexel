@@ -11,8 +11,11 @@ if output.exists() and any(output.iterdir()):raise SystemExit('Output directory 
 manifest=json.loads((games/'manifest.json').read_text())
 for required in ['vendor/scramjet/scramjet.js','vendor/controller/controller.api.js','vendor/v86/libv86.mjs','vendor/v86/alpine.iso','sw.js']:
  if not (root/'public'/required).is_file():raise SystemExit('Missing checked-in runtime: '+required)
-shutil.copytree(root/'public',output,dirs_exist_ok=True)
+# Source maps and type-build leftovers are only for debugging; visitors never download them.
+shutil.copytree(root/'public',output,ignore=shutil.ignore_patterns('*.map','temp-types-build'),dirs_exist_ok=True)
 shutil.copytree(games,output/'content',ignore=shutil.ignore_patterns('.git','.github'),dirs_exist_ok=True)
+# The catalog is fetched on every visit, so store it without whitespace.
+(output/'content'/'manifest.json').write_text(json.dumps(manifest,separators=(',',':'),ensure_ascii=False))
 config=json.loads((root/'public/pages-config.json').read_text());config['mode']='static'
 (output/'site-config.js').write_text('// Generated public configuration; never include secrets.\nexport default '+json.dumps(config,indent=2)+';\n')
 # One version across the small first-party module graph prevents stale dependent
@@ -25,10 +28,10 @@ for file in output.glob('*.js'):
  file.write_text(imports.sub(lambda m:m[1]+m[2]+'?v='+release+m[3],file.read_text()))
 index=output/'index.html'
 html=re.sub(r'src="\./app\.js(?:\?[^"]*)?"','src="./app.js?v='+release+'"',index.read_text())
-html=re.sub(r'href="(\./(?:style|library)\.css)(?:\?[^"]*)?"',lambda m:'href="'+m[1]+'?v='+release+'"',html)
+html=re.sub(r'href="(\./(?:style|library|galaxy)\.css)(?:\?[^"]*)?"',lambda m:'href="'+m[1]+'?v='+release+'"',html)
 index.write_text(html)
 shutil.copy(root/'LICENSE',output/'LICENSE');(output/'.nojekyll').touch()
 print(f'Static Pages output: {output}; {len(manifest)} catalog records. No backend is needed for the core site.')
 
 editor=output/'edit.html'
-editor.write_text(editor.read_text().replace('./edit.js','./edit.js?v='+release).replace('./style.css','./style.css?v='+release).replace('./edit.css','./edit.css?v='+release))
+editor.write_text(editor.read_text().replace('./edit.js','./edit.js?v='+release).replace('./style.css','./style.css?v='+release).replace('./library.css','./library.css?v='+release).replace('./galaxy.css','./galaxy.css?v='+release).replace('./edit.css','./edit.css?v='+release))

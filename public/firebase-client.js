@@ -1,8 +1,8 @@
 import {friendlyAuthError} from "./auth-errors.js";
 import {loginEmail,usernameLoginEmail,isUsernameEmail} from "./login-identifier.js";
 // Loaded only when a real Firebase project has been configured.
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
-import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,OAuthProvider,signInWithEmailAndPassword,signInWithCustomToken,createUserWithEmailAndPassword,updateProfile,signOut,getIdTokenResult} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js';
+import {getAuth,onAuthStateChanged,signInWithPopup,GoogleAuthProvider,OAuthProvider,signInWithEmailAndPassword,signInWithCustomToken,createUserWithEmailAndPassword,updateProfile,signOut,getIdTokenResult} from 'https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js';
 export async function createClient(config){
  const auth=getAuth(initializeApp(config));
  await new Promise(resolve=>{const stop=onAuthStateChanged(auth,()=>{stop();resolve();});});

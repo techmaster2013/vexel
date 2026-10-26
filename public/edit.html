@@ -1,1 +1,74 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Edit Vexel</title><link rel="stylesheet" href="./style.css"><link rel="stylesheet" href="./library.css"><link rel="stylesheet" href="./edit.css"></head><body><main class="editor-shell"><header><a href="./"><img src="./vexel-logo.png" alt="Vexel" width="220"></a><h1>Website editor</h1></header><section id="login" class="panel"><h2>Admin sign in</h2><p>Use your GamePlaza admin account.</p><form id="login-form"><label for="username">Username or email</label><input id="username" autocomplete="username" required><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required><div class="actions"><button class="primary">Sign in</button></div></form></section><section id="editor" hidden><div class="actions"><button id="publish" class="primary">Publish changes</button><button id="logout">Sign out</button></div><p>Changes appear when visitors reload. These lists add to the built-in collection.</p><section class="panel"><h2>Games</h2><p>Add games you host or have permission to share. Game files stay in vex-games.</p><div id="games"></div><button id="add-game">Add game</button></section><section class="panel"><h2>Movies</h2><p>Use a direct HTTPS video address you have permission to stream.</p><div id="movies"></div><button id="add-movie">Add movie</button></section><section class="panel"><h2>Caver</h2><label for="wisp">Wisp server address</label><input id="wisp" placeholder="wss://your-server.example/wisp/"></section></section><p id="status" role="status" aria-live="polite"></p></main><script type="module" src="./edit.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Edit Vexel</title>
+<link rel="icon" href="./logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./library.css">
+<link rel="stylesheet" href="./galaxy.css">
+<link rel="stylesheet" href="./edit.css">
+</head>
+<body class="editor-page">
+<main class="editor-shell">
+  <header>
+    <a href="./"><img src="./vexel-logo.png" alt="Vexel" width="220" height="82"></a>
+    <h1>Website editor</h1>
+  </header>
+
+  <section id="login" class="panel">
+    <h2>Admin sign in</h2>
+    <p>Use the email and password of your GamePlaza admin account.</p>
+    <form id="login-form">
+      <label for="username">Email</label>
+      <input id="username" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <div class="actions"><button class="primary">Sign in</button></div>
+    </form>
+  </section>
+
+  <section id="editor" hidden>
+    <div class="editor-bar panel">
+      <span>Signed in as <strong id="who"></strong></span>
+      <div class="actions">
+        <button id="publish" class="primary">Publish changes</button>
+        <button id="logout">Sign out</button>
+      </div>
+    </div>
+
+    <section id="setup-help" class="panel setup-help" hidden>
+      <h2>Finish the one-time setup</h2>
+      <p>You're signed in, but Firebase won't let the editor save yet. Add the editor rules to your Firebase project (takes about 2 minutes). Follow the <a id="setup-link" target="_blank" rel="noopener">setup guide</a>, then reload this page.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Games <small>(<span id="games-count">0</span>)</small></h2>
+      <p>Add games you host or have permission to share. Upload the game files to the vex-games repo first, then paste their link here.</p>
+      <div id="games"></div>
+      <button id="add-game">+ Add game</button>
+    </section>
+
+    <section class="panel">
+      <h2>Movies <small>(<span id="movies-count">0</span>)</small></h2>
+      <p>Paste a direct video link you have permission to share.</p>
+      <div id="movies"></div>
+      <button id="add-movie">+ Add movie</button>
+    </section>
+
+    <section class="panel">
+      <h2>Caver server</h2>
+      <label for="wisp">Wisp server address (starts with wss://)</label>
+      <input id="wisp" placeholder="wss://your-server.example/wisp/">
+    </section>
+
+    <p class="muted">Your additions show up next to the built-in games and movies. Visitors see changes after they reload Vexel.</p>
+  </section>
+
+  <p id="status" role="status" aria-live="polite"></p>
+</main>
+<script type="module" src="./edit.js"></script>
+</body>
+</html>

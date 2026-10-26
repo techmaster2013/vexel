@@ -1,0 +1,247 @@
+/* Galaxy theme. Loaded after style.css and library.css and overrides them.
+   Everything here is static CSS (gradients + two tiny SVG star tiles), so it stays
+   cheap on low-end Chromebooks. Lightweight mode and reduced motion turn the extras off. */
+:root {
+  --bg: #07041a;
+  --panel: rgba(30, 18, 66, 0.42);
+  --border: rgba(196, 168, 255, 0.16);
+  --muted: #a69cc9;
+  --text: #f1ecff;
+  --accent: #b994ff;
+  --accent-rgb: 185, 148, 255;
+  --pink: #ff7ad9;
+  --cyan: #6fe3ff;
+  --glow: 0 0 22px rgba(185, 148, 255, 0.25);
+}
+body[data-theme] {
+  --bg: #07041a;
+  --accent: #b994ff;
+}
+body {
+  background: var(--bg);
+}
+
+/* Nebula: a few soft color clouds over deep space. */
+body:before,
+body[data-wallpaper="still"]:before {
+  background:
+    radial-gradient(ellipse 60% 45% at 18% 12%, rgba(124, 77, 255, 0.28), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(255, 92, 205, 0.18), transparent 70%),
+    radial-gradient(ellipse 45% 35% at 70% 18%, rgba(76, 214, 255, 0.10), transparent 70%),
+    linear-gradient(160deg, #0b0626 0%, #07041a 55%, #120728 100%);
+  background-attachment: fixed;
+}
+body[data-wallpaper="reactive"]:before {
+  background:
+    radial-gradient(ellipse 45% 40% at var(--mx, 60%) var(--my, 30%), rgba(150, 100, 255, 0.32), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 85%, rgba(255, 92, 205, 0.16), transparent 70%),
+    linear-gradient(160deg, #0b0626, #07041a 55%, #120728);
+}
+body[data-wallpaper="grid"]:before {
+  background:
+    linear-gradient(90deg, rgba(196, 168, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(196, 168, 255, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 10%, rgba(124, 77, 255, 0.3), transparent 70%),
+    #07041a;
+  background-size: 48px 48px, 48px 48px, 100% 100%, auto;
+}
+
+/* Stars: two tiles at different sizes so the pattern never looks like a grid. */
+body:after {
+  background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><circle cx='84' cy='39' r='1.2' fill='%23fff' opacity='0.35'/><circle cx='214' cy='24' r='1.0' fill='%23ffd9f3' opacity='0.35'/><circle cx='56' cy='22' r='0.8' fill='%23fff' opacity='0.35'/><circle cx='24' cy='110' r='1.0' fill='%23fff' opacity='0.35'/><circle cx='164' cy='152' r='0.5' fill='%23ffd9f3' opacity='1'/><circle cx='103' cy='254' r='0.5' fill='%23fff' opacity='1'/><circle cx='75' cy='38' r='0.5' fill='%23fff' opacity='1'/><circle cx='146' cy='177' r='0.5' fill='%23ffd9f3' opacity='1'/><circle cx='166' cy='97' r='1.0' fill='%23ffd9f3' opacity='0.35'/><circle cx='15' cy='54' r='1.2' fill='%23e6d9ff' opacity='1'/><circle cx='202' cy='121' r='0.8' fill='%23fff' opacity='0.7'/><circle cx='65' cy='47' r='0.6' fill='%23ffd9f3' opacity='0.35'/><circle cx='78' cy='129' r='0.7' fill='%23fff' opacity='0.9'/><circle cx='158' cy='19' r='1.0' fill='%23fff' opacity='0.9'/><circle cx='197' cy='40' r='0.8' fill='%23fff' opacity='0.9'/><circle cx='250' cy='20' r='1.0' fill='%23fff' opacity='1'/><circle cx='88' cy='91' r='0.8' fill='%23e6d9ff' opacity='1'/><circle cx='18' cy='24' r='0.7' fill='%23d9f6ff' opacity='0.9'/><circle cx='173' cy='16' r='1.2' fill='%23d9f6ff' opacity='0.7'/><circle cx='150' cy='177' r='0.8' fill='%23d9f6ff' opacity='0.7'/><circle cx='100' cy='174' r='0.5' fill='%23fff' opacity='0.9'/><circle cx='44' cy='30' r='0.5' fill='%23fff' opacity='0.5'/><circle cx='34' cy='64' r='0.8' fill='%23fff' opacity='0.9'/><circle cx='43' cy='104' r='0.7' fill='%23e6d9ff' opacity='0.5'/><circle cx='225' cy='72' r='0.8' fill='%23d9f6ff' opacity='0.7'/><circle cx='230' cy='249' r='0.6' fill='%23fff' opacity='0.35'/><circle cx='39' cy='171' r='0.5' fill='%23ffd9f3' opacity='0.9'/><circle cx='47' cy='73' r='0.6' fill='%23ffd9f3' opacity='0.9'/><circle cx='96' cy='147' r='0.6' fill='%23ffd9f3' opacity='1'/><circle cx='170' cy='192' r='0.8' fill='%23e6d9ff' opacity='1'/><circle cx='103' cy='102' r='0.8' fill='%23fff' opacity='0.9'/><circle cx='50' cy='256' r='0.8' fill='%23fff' opacity='0.5'/><circle cx='88' cy='14' r='0.5' fill='%23fff' opacity='1'/><circle cx='140' cy='247' r='1.0' fill='%23fff' opacity='0.35'/><circle cx='227' cy='160' r='0.6' fill='%23fff' opacity='0.7'/><circle cx='157' cy='123' r='0.5' fill='%23e6d9ff' opacity='0.9'/><circle cx='125' cy='81' r='0.6' fill='%23d9f6ff' opacity='0.35'/><circle cx='89' cy='69' r='1.2' fill='%23ffd9f3' opacity='0.5'/><circle cx='6' cy='247' r='1.0' fill='%23fff' opacity='0.7'/><circle cx='179' cy='238' r='1.0' fill='%23d9f6ff' opacity='0.7'/><circle cx='224' cy='181' r='0.7' fill='%23fff' opacity='1'/><circle cx='236' cy='92' r='0.6' fill='%23ffd9f3' opacity='1'/><circle cx='203' cy='86' r='0.6' fill='%23fff' opacity='1'/><circle cx='210' cy='213' r='1.2' fill='%23fff' opacity='0.5'/><circle cx='135' cy='92' r='0.5' fill='%23fff' opacity='0.35'/><circle cx='123' cy='50' r='1.0' fill='%23e6d9ff' opacity='0.7'/><circle cx='210' cy='188' r='0.7' fill='%23fff' opacity='0.7'/><circle cx='57' cy='59' r='0.6' fill='%23fff' opacity='0.7'/><circle cx='125' cy='256' r='1.0' fill='%23e6d9ff' opacity='0.35'/><circle cx='236' cy='89' r='1.2' fill='%23d9f6ff' opacity='0.35'/><circle cx='31' cy='101' r='1.2' fill='%23e6d9ff' opacity='0.5'/><circle cx='231' cy='113' r='1.2' fill='%23fff' opacity='0.7'/><circle cx='208' cy='253' r='0.8' fill='%23e6d9ff' opacity='0.9'/><circle cx='193' cy='22' r='0.6' fill='%23fff' opacity='0.5'/><circle cx='7' cy='154' r='0.8' fill='%23ffd9f3' opacity='0.5'/></svg>"), url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='470' height='470'><circle cx='213' cy='263' r='0.8' fill='%23ffd9f3' opacity='0.9'/><circle cx='402' cy='89' r='1.0' fill='%23d9f6ff' opacity='0.9'/><circle cx='289' cy='88' r='0.8' fill='%23fff' opacity='0.7'/><circle cx='43' cy='381' r='1.6' fill='%23ffd9f3' opacity='0.35'/><circle cx='462' cy='453' r='1.6' fill='%23d9f6ff' opacity='1'/><circle cx='74' cy='7' r='1.0' fill='%23fff' opacity='0.35'/><circle cx='17' cy='413' r='1.0' fill='%23e6d9ff' opacity='0.35'/><circle cx='153' cy='278' r='0.6' fill='%23fff' opacity='1'/><circle cx='301' cy='235' r='1.6' fill='%23e6d9ff' opacity='0.35'/><circle cx='308' cy='191' r='1.0' fill='%23d9f6ff' opacity='0.35'/><circle cx='119' cy='356' r='1.0' fill='%23fff' opacity='0.7'/><circle cx='33' cy='360' r='0.8' fill='%23fff' opacity='0.35'/><circle cx='182' cy='450' r='1.6' fill='%23fff' opacity='0.35'/><circle cx='99' cy='428' r='0.8' fill='%23d9f6ff' opacity='0.9'/><circle cx='187' cy='34' r='1.6' fill='%23d9f6ff' opacity='0.5'/><circle cx='127' cy='41' r='0.7' fill='%23e6d9ff' opacity='0.35'/><circle cx='356' cy='55' r='0.6' fill='%23fff' opacity='0.35'/><circle cx='28' cy='375' r='0.6' fill='%23fff' opacity='1'/><circle cx='210' cy='90' r='1.6' fill='%23e6d9ff' opacity='0.5'/><circle cx='303' cy='55' r='0.8' fill='%23fff' opacity='0.5'/><circle cx='127' cy='456' r='1.0' fill='%23fff' opacity='0.7'/><circle cx='99' cy='185' r='1.0' fill='%23fff' opacity='1'/><circle cx='20' cy='69' r='0.8' fill='%23fff' opacity='0.7'/><circle cx='363' cy='155' r='0.7' fill='%23fff' opacity='0.9'/><circle cx='35' cy='98' r='1.6' fill='%23fff' opacity='0.5'/><circle cx='283' cy='175' r='0.8' fill='%23ffd9f3' opacity='0.5'/><circle cx='227' cy='270' r='0.8' fill='%23d9f6ff' opacity='0.5'/><circle cx='72' cy='427' r='1.0' fill='%23d9f6ff' opacity='0.5'/></svg>");
+  background-size: 260px 260px, 470px 470px;
+  opacity: 0.9;
+}
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.lite):not(.reduce):after {
+    animation: twinkle 6s ease-in-out infinite alternate;
+  }
+}
+@keyframes twinkle {
+  from { opacity: 0.55; }
+  to { opacity: 0.95; }
+}
+body[data-wallpaper="black"]:before { display: none; }
+body[data-wallpaper="black"]:after { display: block; opacity: 0.5; animation: none; }
+body.lite:after { display: block; animation: none; opacity: 0.6; }
+
+/* Glass: keep the look but cap the blur radius. Big blurs are the main cause of lag on Chromebooks. */
+#sidebar,
+header,
+dialog,
+.home-hero,
+.quick,
+.panel {
+  -webkit-backdrop-filter: blur(min(var(--glass-blur, 12px), 12px));
+  backdrop-filter: blur(min(var(--glass-blur, 12px), 12px));
+}
+.game-card,
+.game-card:hover,
+dialog::backdrop {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+body.lite #sidebar,
+body.lite header,
+body.lite dialog,
+body.lite .home-hero,
+body.lite .quick,
+body.lite .panel {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+#sidebar {
+  background: linear-gradient(170deg, rgba(42, 22, 92, 0.55), rgba(8, 4, 26, 0.7));
+  border-right-color: var(--border);
+}
+header {
+  border-bottom-color: var(--border);
+}
+.panel,
+.quick,
+.home-hero,
+.game-card {
+  border-color: var(--border);
+}
+.home-hero {
+  background: linear-gradient(125deg, rgba(124, 77, 255, 0.16), rgba(255, 92, 205, 0.06) 60%, rgba(7, 4, 26, 0.4));
+}
+.home-hero:before {
+  background: linear-gradient(var(--accent), transparent);
+}
+dialog {
+  background: linear-gradient(140deg, rgba(48, 26, 104, 0.92), rgba(10, 6, 30, 0.96));
+  border-color: rgba(196, 168, 255, 0.3);
+}
+dialog::backdrop {
+  background: rgba(5, 2, 18, 0.7);
+}
+
+/* Accents. */
+.primary {
+  background: linear-gradient(120deg, #b994ff, #ff8ee0);
+  color: #1a0b33;
+  box-shadow: inset 0 1px #fff8, var(--glow);
+}
+.primary:hover {
+  background: linear-gradient(120deg, #cdb3ff, #ffaee8);
+  color: #1a0b33;
+}
+nav a.active {
+  background: linear-gradient(90deg, rgba(185, 148, 255, 0.22), transparent);
+  border-color: rgba(185, 148, 255, 0.4);
+  box-shadow: inset 2px 0 var(--accent);
+}
+nav a:hover {
+  background: rgba(185, 148, 255, 0.1);
+}
+.game-card:hover {
+  background: linear-gradient(130deg, rgba(185, 148, 255, 0.14), rgba(255, 92, 205, 0.06));
+  border-color: rgba(205, 180, 255, 0.55);
+  box-shadow: inset 0 1px #fff3, 0 10px 30px rgba(0, 0, 0, 0.35), var(--glow);
+}
+.eyebrow,
+.link,
+.badge,
+.status,
+#balance {
+  color: #cdb8ff;
+}
+.pulse-label i {
+  background: var(--pink);
+  box-shadow: 0 0 10px var(--pink);
+}
+button,
+.pill,
+input,
+textarea,
+select {
+  border-color: rgba(196, 168, 255, 0.2);
+}
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible,
+.pill:focus-visible {
+  outline: 2px solid rgba(185, 148, 255, 0.7);
+  outline-offset: 1px;
+}
+input[type="range"] {
+  accent-color: var(--accent);
+}
+::selection {
+  background: rgba(185, 148, 255, 0.4);
+}
+/* The logo is blue; shift it toward the theme purple. */
+.brand img.brand-logo,
+.home-logo,
+.topbar-logo,
+.editor-shell header img {
+  filter: hue-rotate(28deg) saturate(1.3) brightness(1.9) drop-shadow(0 0 1px rgba(230, 210, 255, 0.9)) drop-shadow(0 0 12px rgba(160, 110, 255, 0.45));
+}
+body.lite .brand img.brand-logo,
+body.lite .home-logo,
+body.lite .topbar-logo {
+  filter: hue-rotate(28deg) saturate(1.3) brightness(1.9);
+}
+
+/* Loading placeholder shown before the app script finishes. */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+.loading span {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(185, 148, 255, 0.25);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.release-note {
+  padding-left: 18px;
+  line-height: 2;
+  color: #d6ccf5;
+}
+.release-note li::marker {
+  color: var(--pink);
+}
+
+/* Game covers without artwork: purple space instead of navy. */
+.cover {
+  background: linear-gradient(135deg, #24124d, #0a0620);
+}
+.cover-pattern {
+  background:
+    radial-gradient(ellipse at 85% 10%, rgba(255, 122, 217, 0.18), transparent 60%),
+    radial-gradient(ellipse at 10% 90%, rgba(111, 227, 255, 0.10), transparent 55%),
+    linear-gradient(135deg, #2a1559, #0b0621);
+}
+.cover-pattern:before {
+  border-color: rgba(196, 168, 255, 0.12);
+  background: linear-gradient(90deg, transparent, rgba(185, 148, 255, 0.06));
+}
+.cover-pattern span {
+  color: #e2d6ff;
+}
+input,
+select,
+textarea {
+  background-color: rgba(10, 5, 30, 0.65);
+}
+button:not(.primary):not(.game-card),
+.pill:not(.primary) {
+  background-color: rgba(28, 15, 62, 0.45);
+}
+button:not(.primary):not(.game-card):hover,
+.pill:not(.primary):hover {
+  background-color: rgba(60, 34, 120, 0.55);
+  border-color: rgba(196, 168, 255, 0.4);
+}

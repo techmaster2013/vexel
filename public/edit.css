@@ -1,1 +1,19 @@
-.editor-shell{width:min(900px,92vw);margin:40px auto}.editor-shell header{margin-bottom:28px}.editor-shell .panel{margin:20px 0;padding:24px}.editor-shell #login{max-width:440px;margin:50px auto}.editor-shell label{display:block;margin:14px 0 7px}.editor-shell input,.editor-shell textarea{width:100%;box-sizing:border-box}.editor-entry{border-bottom:1px solid #30415d;padding:18px 0}.editor-entry button{margin-top:10px}.editor-shell [hidden]{display:none!important}#status{white-space:pre-wrap;color:#c2d5f8}#status.error{color:#ff9aaa}
+.editor-shell{width:min(900px,92vw);margin:40px auto}
+.editor-shell header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:28px}
+.editor-shell .panel{margin:20px 0;padding:24px}
+.editor-shell #login{max-width:440px;margin:50px auto}
+.editor-shell label{display:block;margin:14px 0 7px}
+.editor-shell input,.editor-shell textarea{width:100%;box-sizing:border-box}
+.editor-shell input.invalid{border-color:#ff8fa8;box-shadow:0 0 0 1px #ff8fa855}
+.editor-shell h2 small{font-size:.7em;color:var(--muted)}
+.editor-shell [hidden]{display:none!important}
+.editor-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:10px;z-index:5}
+.editor-entry{border-bottom:1px solid var(--border);padding:18px 0}
+.editor-entry .actions{margin-top:10px}
+.setup-help{border-color:#ffcf7a66!important}
+.setup-help a{color:#ffd88f;text-decoration:underline}
+.muted{color:var(--muted)}
+#status{white-space:pre-wrap;color:#d6ccf5;min-height:1.6em}
+#status.ok{color:#9dffc8}
+#status.error{color:#ff9aaa}
+.editor-shell #status{text-align:center}

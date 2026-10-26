@@ -671,14 +671,14 @@ body[data-theme="rose"] {
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("./fonts/silkscreen-400.ttf") format("truetype");
+  src: url("./fonts/silkscreen-400.woff2") format("woff2");
 }
 @font-face {
   font-family: Silkscreen;
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("./fonts/silkscreen-700.ttf") format("truetype");
+  src: url("./fonts/silkscreen-700.woff2") format("woff2");
 }
 body,
 button,

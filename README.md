@@ -1,27 +1,49 @@
 # Vexel
 
-**[Open Vexel](https://techmaster2013.github.io/vexel/)** · **[Website editor](https://techmaster2013.github.io/vexel/edit.html)**
+A free game site that runs well on school Chromebooks.
 
-Games, movies, music, chat, and tools in one place. Version 1.
+**[Play now →](https://techmaster2013.github.io/vexel/)**
 
-### Change the website
+## What's on it
 
-Open **edit.html** and sign in with your GamePlaza admin account. Add games and movies, or change Caver’s server address, then press **Publish changes**. Visitors see changes after reloading.
+- **900+ browser games**, with search, categories, favorites and a "recently played" list
+- **Movies** from free and open film projects, plus a player for videos on your own computer
+- **Tools and toys**: a music player, notes, a soundboard and more
+- **A Linux computer** that runs right in your browser (it's big, so it only loads if you open it)
+- **Themes and settings**, including a lightweight mode for slow laptops
 
-The editor needs a one-time connection before it can publish: **[Editor setup](docs/EDITOR.md)**.
+No account needed. Your favorites and settings are saved in your browser.
 
-### Add game files
+## Tips
 
-Put game files in **[vex-games](https://github.com/techmaster2013/vex-games)**. Use its **main** branch. Then add the game to Vexel through the editor. Only upload games you own or have permission to share.
+- Press `/` or `Ctrl + K` anywhere to search.
+- Press `F` while playing for fullscreen.
+- Every game has a **Copy link** button, so you can send it to a friend.
+- If the site feels slow, turn on **Lightweight mode** in Settings.
 
-### Set up accounts or Caver
+## For the site owner
 
-**[Step-by-step setup](docs/SETUP.md)** explains Google, Microsoft, Discord, username login, and the Wisp server Caver needs.
+**Add a game or movie:** open the [website editor](https://techmaster2013.github.io/vexel/edit.html), sign in and press Publish. The first time, follow the [editor setup](docs/EDITOR.md) (about 5 minutes).
 
-Vexel publishes from **main**. There is no separate publishing branch. The game files have their own repo; everything else stays here.
+**Game files** live in the separate [vex-games](https://github.com/techmaster2013/vex-games) repo. Only upload games you're allowed to share.
 
-The library now has 940 entries: 21 local entries, 892 external game pages, and 27 still awaiting working sources. Caver & apps also has a searchable list of your public projects.
+**Publishing:** everything on the `main` branch goes live automatically through GitHub Pages.
 
-Some games need their files or an external service connected before they can play. Pac-Man uses the supplied wrapper and still needs Google’s assets through Caver. Eggfish opens its creator’s page through Caver.
+**Accounts, Caver and the optional server:** see [docs/SETUP.md](docs/SETUP.md).
 
-[Credits and licenses](THIRD_PARTY_NOTICES.md) · [Technical checks](docs/VERIFICATION.md)
+### Run it on your own computer
+
+You need Python 3 and a copy of the game files (the vex-games repo, or `game-pack.tar.gz` from this repo's Releases).
+
+```sh
+python3 scripts/prepare-pages.py --games ../vex-games --output ../vexel-site
+python3 -m http.server 8000 --directory ../vexel-site
+```
+
+Then open http://localhost:8000.
+
+## Credits
+
+Vexel grew out of GamePlaza, coreHZ, GPT Corner, nexSite, nexite and StreamPlaza. It uses open-source parts from other people; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+Licensed under GPL-3.0.
