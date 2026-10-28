@@ -37,7 +37,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download game-pack-v1 --repo techmaster2013/vexel --pattern game-pack.tar.gz
+          gh release download game-pack-v2 --repo techmaster2013/vexel --pattern game-pack.tar.gz
           mkdir game-pack
           tar -xzf game-pack.tar.gz -C game-pack
       - name: Prepare static files

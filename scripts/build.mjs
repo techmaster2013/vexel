@@ -24,7 +24,7 @@ const sw = await readFile(
 await writeFile(
   new URL("../public/sw.js", import.meta.url),
   sw +
-    `\nself.addEventListener('install',()=>self.skipWaiting());\nself.addEventListener('activate',e=>e.waitUntil(clients.claim()));\nself.addEventListener('fetch',e=>{if($scramjetController.shouldRoute(e))e.respondWith($scramjetController.route(e));});\n`,
+    `\nself.addEventListener('install',()=>self.skipWaiting());\nself.addEventListener('activate',e=>e.waitUntil(clients.claim()));\nimportScripts('./mirror-sw.js');\nself.addEventListener('fetch',e=>{const mirrored=vexelMirror.handle(e,self.registration.scope);if(mirrored)e.respondWith(mirrored);else if($scramjetController.shouldRoute(e))e.respondWith($scramjetController.route(e));});\n`,
 );
 await cp(
   new URL(

@@ -1,11 +1,11 @@
 import {loadEdits} from './content-store.js';
 import {loginFailure} from "./auth-errors.js";
-import {api,asset,gameAsset,staticMode,providerSignIn} from "./runtime.js";
+import {api,asset,gameAsset,staticMode,providerSignIn,worker,mirrorUrl,DEFAULT_WISP,visitorWisp} from "./runtime.js";
 import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
 import {watchExternalGame} from "./blocked-games.js";
 import { mountVM } from "./vm.js";
-const VERSION = "1.1";
+const VERSION = "1.2";
 const $ = (s) => document.querySelector(s),
   main = $("#main"),
   dialog = $("#modal");
@@ -141,8 +141,43 @@ function title(kicker, name, desc, action = "") {
 function section(name, sub, action = "") {
   return `<div class="section-head"><div><h2>${name}</h2>${sub ? `<p>${sub}</p>` : ""}</div>${action}</div>`;
 }
+// Where a game can be played from, best first: "/games/…" in the Vexel game pack,
+// "gh:repo/path" mirrored from one of the owner's repositories, a hosted https page,
+// or "caver:https://…" for sites that refuse to load in a frame.
+function sourcesOf(g) {
+  if (g.sources?.length) return g.sources;
+  const external = g.proxyTarget || g.remoteUrl || g.launchUrl;
+  return [g.path, external && (g.launchViaCaver ? "caver:" + external : external)].filter(Boolean);
+}
 function canLaunch(g) {
-  return Boolean(g.path || g.remoteUrl || g.launchUrl);
+  return sourcesOf(g).length > 0;
+}
+function sourceKind(source) {
+  if (source.startsWith("gh:")) return "mirror";
+  if (source.startsWith("caver:")) return "caver";
+  if (source.startsWith("/")) return "local";
+  return new URL(source).origin === location.origin ? "same" : "frame";
+}
+function sourceUrl(source) {
+  const kind = sourceKind(source);
+  return kind === "local" ? (config.gameOrigin || asset("content")) + source : kind === "mirror" ? mirrorUrl(source) : kind === "caver" ? source.slice(6) : source;
+}
+function sourceLabel(source) {
+  const kind = sourceKind(source);
+  if (kind === "local") return "Vexel";
+  if (kind === "mirror") return "GitHub · " + source.slice(3).split("/")[0];
+  const url = new URL(sourceUrl(source));
+  return (kind === "caver" ? "Caver · " : "") + (url.hostname.endsWith(".github.io") ? url.hostname.split(".")[0] + (url.pathname.split("/")[1] ? "/" + url.pathname.split("/")[1] : "") : url.hostname);
+}
+// The page a visitor can open outside Vexel, or the repository folder for a mirrored game.
+function originalPage(source) {
+  const kind = sourceKind(source);
+  if (kind === "local") return "";
+  if (kind === "mirror") {
+    const [repo, ...path] = source.slice(3).split("/");
+    return `https://github.com/techmaster2013/${repo}/tree/HEAD/${path.slice(0, -1).join("/")}`;
+  }
+  return sourceUrl(source);
 }
 function card(g) {
   return `<button class="game-card" data-game="${esc(g.id)}" aria-label="Preview ${esc(g.title)}"><div class="cover" style="--cover:${esc(g.color || "#12264a")}">${g.cover ? `<img src="${esc(gameAsset(g.cover))}" alt="" loading="lazy">` : `<div class="cover-pattern" data-kind="${esc(g.category)}"><span>${esc(g.title)}</span></div>`}<span class="tag">${esc(g.category)}</span><span class="play-indicator">${canLaunch(g) ? "▷" : "+"}</span></div><div class="card-meta"><strong>${esc(g.title)}</strong><div class="card-details"><span>${esc(g.status || "Installed")}</span><span class="favorite-indicator">${prefs.favorites?.includes(g.id) ? "♥" : "♡"}</span></div></div></button>`;
@@ -172,6 +207,10 @@ $(".skip").onclick = (e) => {
 $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
 const CHANGES = [
+  "Every game from every techmaster2013 repo now plays inside Vexel, with no new tabs",
+  "Caver works out of the box with nexSite's Scramjet setup",
+  "Ad and popunder scripts are removed from ported game pages",
+  "If a game copy is down, press ⇄ to switch to another source",
   "New galaxy look, lighter on slow Chromebooks",
   "Vexel opens even when login services are blocked or slow",
   "Share a game: every game has its own link",
@@ -194,34 +233,41 @@ function bindCards() {
 }
 function preview(id) {
  const g=games.find(x=>x.id===id);if(!g)return;
- const favorite=prefs.favorites?.includes(id),source=g.proxyTarget||g.remoteUrl||g.launchUrl;
- const playControl=g.launchViaCaver&&source?`<button class="primary" id="play" ${config.proxyReady?'':'disabled'}>Open in Caver ↗</button>${config.proxyReady?'':'<small class="muted">Caver needs a Wisp endpoint before this game can open.</small>'}`:g.openExternally&&source?`<a class="pill primary" id="play" href="${esc(source)}" target="_blank" rel="noopener">Open hosted game ↗</a>`:g.path||source?'<button class="primary" id="play">Play</button>':'<span class="muted">Not available yet</span>';
- open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button><button id="share">🔗 Copy link</button>${source?`<a class="pill" href="${esc(source)}" target="_blank" rel="noopener">Original page ↗</a>`:''}</div>${!canLaunch(g)?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
+ const favorite=prefs.favorites?.includes(id),sources=sourcesOf(g),original=sources[0]&&originalPage(sources[0]);
+ const playControl=sources.length?'<button class="primary" id="play">▷ Play</button>':'<span class="muted">Not available yet</span>';
+ open(`<div class="cover preview-cover" style="--cover:${esc(g.color||'#12264a')}">${g.cover?`<img src="${esc(gameAsset(g.cover))}" alt="">`:`<div class="cover-pattern"><span>${esc(g.title)}</span></div>`}</div><div class="detail"><span class="badge">${esc(g.category)} · ${esc(g.status||'Installed')}</span><h2>${esc(g.title)}</h2><p>${esc(g.description||'')}</p>${g.controls?`<p><small>${esc(g.controls)}</small></p>`:''}<div class="actions">${playControl}<button id="favorite">${favorite?'♥ Saved':'♡ Favorite'}</button><button id="share">🔗 Copy link</button>${original?`<a class="pill" href="${esc(original)}" target="_blank" rel="noopener">${sourceKind(sources[0])==='mirror'?'Source files':'Original page'} ↗</a>`:''}</div>${sources.length>1?`<p class="catalog-note">${sources.length} copies of this game are connected. If one doesn't load, press ⇄ while playing to try the next.</p>`:''}${!sources.length?`<p class="catalog-note">${esc(g.unavailableReason||'A working game source has not been connected.')}</p>`:''}</div>`);
  $('#share').onclick=()=>{const link=location.href.split('#')[0]+'#games?game='+encodeURIComponent(id);navigator.clipboard?.writeText(link).then(()=>toast('Link copied! Send it to a friend.'),()=>prompt('Copy this link:',link))??prompt('Copy this link:',link);};
  $('#favorite').onclick=()=>{prefs.favorites=favorite?(prefs.favorites||[]).filter(x=>x!==id):[...(prefs.favorites||[]),id];save();preview(id);};
- if(g.launchViaCaver&&source)$('#play').onclick=()=>{if(!config.proxyReady)return;dialog.close();openInCaver(source);};
- else if(g.openExternally&&source)$('#play').onclick=()=>{prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();dialog.close();};
- else if(g.path||source)$('#play').onclick=()=>{dialog.close();play(g);};
+ if(sources.length)$('#play').onclick=()=>{dialog.close();play(g);};
 }
 function openInCaver(originalUrl){pendingProxy=originalUrl;if(location.hash==='#apps')render();else location.hash='apps';}
-function play(g){
- const externalSource=g.proxyTarget||g.remoteUrl||g.launchUrl;
- if(externalSource&&!g.path){const target=new URL(externalSource);if(target.protocol!=='https:'||target.origin===location.origin)return toast('Remote games require a separate HTTPS origin.');}
- if(g.launchViaCaver&&externalSource){openInCaver(externalSource);return;}
- if(g.openExternally&&externalSource){window.open(externalSource,'_blank','noopener');return;}
+// Mirrored and same-site games come from the owner's own repositories and need real
+// storage for saves (Unity uses IndexedDB). Vexel-pack games keep an opaque sandbox
+// unless the catalog marks them `saves` (an owner-supplied game that stores worlds).
+const TRUSTED_SANDBOX='allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-modals allow-downloads';
+function play(g,index=0){
+ const sources=sourcesOf(g),source=sources[index];if(!source)return;
+ const kind=sourceKind(source),url=sourceUrl(source);
  cleanup();playing=true;
  prefs.recent=[g.id,...(prefs.recent||[]).filter(x=>x!==g.id)].slice(0,12);save();
- const originalUrl=g.path?(config.gameOrigin||asset('content'))+g.path:externalSource;
- const external=new URL(originalUrl,location.href).origin!==location.origin;
- main.innerHTML=`<div class="player-toolbar"><div><span class="eyebrow">NOW PLAYING</span><h2>${esc(g.title)}</h2></div><div class="actions"><button id="back-games">← Games</button>${external?'<button id="caver-game">Caver ↗</button>':''}<button id="reload-game" title="Reload game">↻ Reload</button><button id="full" title="Fullscreen (F)">⛶ Fullscreen</button></div></div><div id="game-view"><iframe id="game-frame" class="player-frame" sandbox="allow-scripts allow-pointer-lock" allow="fullscreen; gamepad" title="${esc(g.title)}"></iframe></div><p class="player-status">${esc(g.controls||'')}${g.license?' · '+esc(g.license):''}</p>`;
- const frame=$('#game-frame');let stopWatching=()=>{};
- if(external){frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-pointer-lock allow-downloads');stopWatching=watchExternalGame({frame,container:$('#game-view'),originalUrl,gameId:g.id,onOpenCaver:openInCaver});$('#caver-game').onclick=()=>openInCaver(originalUrl);}
- frame.src=originalUrl;
- $('#back-games').onclick=()=>render();$('#reload-game').onclick=()=>{frame.src='about:blank';setTimeout(()=>{frame.src=originalUrl;},50);};$('#full').onclick=()=>$('#game-view').requestFullscreen?.().catch(()=>toast('Fullscreen unavailable.'));
- cleanup=()=>{playing=false;stopWatching();};animatePage();
+ main.innerHTML=`<div class="player-toolbar"><div><span class="eyebrow">NOW PLAYING · ${esc(sourceLabel(source))}</span><h2>${esc(g.title)}</h2></div><div class="actions"><button id="back-games">← Games</button>${sources.length>1?`<button id="next-source" title="Try another copy of this game">⇄ Source ${index+1}/${sources.length}</button>`:''}${kind==='frame'?'<button id="caver-game" title="Open this page through the Caver proxy">Caver ↗</button>':''}<button id="reload-game" title="Reload game">↻ Reload</button><button id="full" title="Fullscreen (F)">⛶ Fullscreen</button></div></div><div id="game-view">${kind==='caver'?'<p class="player-loading">Starting Caver…</p>':`<iframe id="game-frame" class="player-frame" sandbox="allow-scripts allow-pointer-lock" allow="autoplay; fullscreen; gamepad" title="${esc(g.title)}"></iframe>`}</div><p class="player-status">${esc(g.controls||'')}${g.license?' · '+esc(g.license):''}</p>`;
+ const view=$('#game-view'),frame=$('#game-frame');let stopWatching=()=>{};
+ const failed=e=>{if(playing&&$('#game-view')===view)view.innerHTML=`<div class="blocked-fallback panel"><h2>This copy didn't load.</h2><p>${esc(e.message)}</p>${sources.length>1?'<button class="primary" id="fallback-next">Try the next source</button>':''}</div>`;$('#fallback-next')?.addEventListener('click',()=>play(g,(index+1)%sources.length));};
+ if(kind==='caver'){proxy.navigate(url,view).catch(failed);$('#reload-game').onclick=()=>proxy.control('reload');}
+ else{
+  if(kind==='mirror'||kind==='same'||kind==='local'&&g.saves)frame.setAttribute('sandbox',TRUSTED_SANDBOX);
+  if(kind==='frame'){frame.setAttribute('sandbox','allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-downloads');stopWatching=watchExternalGame({frame,container:view,originalUrl:url,gameId:g.id,onOpenCaver:openInCaver});}
+  // A mirrored game is served by the service worker, so it must be running first.
+  if(kind==='mirror')worker().then(()=>{if(frame.isConnected)frame.src=url;},failed);else frame.src=url;
+  $('#reload-game').onclick=()=>{frame.src='about:blank';setTimeout(()=>{frame.src=url;},50);};
+ }
+ $('#caver-game')?.addEventListener('click',()=>openInCaver(url));
+ $('#next-source')?.addEventListener('click',()=>play(g,(index+1)%sources.length));
+ $('#back-games').onclick=()=>render();$('#full').onclick=()=>view.requestFullscreen?.().catch(()=>toast('Fullscreen unavailable.'));
+ cleanup=()=>{playing=false;stopWatching();if(kind==='caver')proxy.destroy();};animatePage();
 }
 function home() {
-  const installed = games.filter((g) => g.path),
+  const featured = games.filter((g) => g.featured).concat(games.filter((g) => !g.featured && sourcesOf(g)[0]?.startsWith("/"))),
     recent = (prefs.recent || [])
       .map((id) => games.find((g) => g.id === id))
       .filter(Boolean)
@@ -231,7 +277,7 @@ function home() {
       .filter(Boolean)
       .slice(0, 4);
   main.innerHTML =
-    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">${VERSION}</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${installed.length} local entries</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
+    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">${VERSION}</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${games.filter(canLaunch).length} playable</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
       .slice(0, 6)
       .map(
         ([name, mark, url]) =>
@@ -247,11 +293,11 @@ function home() {
         ) + `<div class="recent-grid">${recent.map(card).join("")}</div>`
       : "") +
     section(
-      "Installed games",
+      "Featured games",
       "",
       '<a class="link" href="#games">View library →</a>',
     ) +
-    grid(installed.slice(0, 6)) +
+    grid(featured.slice(0, 12)) +
     (favorites.length && prefs.homeFavorites !== false
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
@@ -261,8 +307,9 @@ function home() {
   bindCards();
   $("#home-updates").onclick = updates;
   $("#home-random").onclick = () => {
-    if (installed.length)
-      preview(installed[Math.floor(Math.random() * installed.length)].id);
+    const playable = games.filter(canLaunch);
+    if (playable.length)
+      preview(playable[Math.floor(Math.random() * playable.length)].id);
   };
   main.querySelectorAll("[data-home-app]").forEach(
     (b) =>
@@ -386,7 +433,7 @@ function gamePage() {
 function appPage() {
   main.innerHTML =
     title("BROWSER", "Caver", "Search the web or open an app through Caver.") +
-    `<form id="browser-form" class="search-row"><input id="address" placeholder="Search or enter a website" aria-label="Website address"><button class="primary">Go ↗</button></form><div class="actions"><button data-control="back">← Back</button><button data-control="forward">Forward →</button><button data-control="reload">↻ Reload</button></div><p id="proxy-status" class="status">${config.proxyReady ? "Scramjet 2 · ready to start" : "Proxy setup needed · the owner must configure a Wisp endpoint."}</p><div id="proxy-view" hidden></div>` +
+    `<form id="browser-form" class="search-row"><input id="address" placeholder="Search or enter a website" aria-label="Website address"><button class="primary">Go ↗</button></form><div class="actions"><button data-control="back">← Back</button><button data-control="forward">Forward →</button><button data-control="reload">↻ Reload</button></div><p id="proxy-status" class="status">Scramjet 2 · ready to start</p><div id="proxy-view" hidden></div>` +
     section("Apps", "Preset applets open through Caver.") +
     `<div class="grid">${applets.map(([n, m, u, c]) => `<button class="game-card" data-app="${u}"><div class="cover" style="--cover:${c}"><span class="cover-mark">${m}</span></div><div class="card-meta"><strong>${n}</strong><span>↗</span></div></button>`).join("")}</div><p class="catalog-note">External apps may require login and may refuse proxy access. Their availability is controlled by the provider.</p>` + section("Your projects", "Websites and source links from your public repositories.") + `<input id="project-search" type="search" aria-label="Search projects" placeholder="Find a project…"><div id="repository-projects" class="grid" style="margin-top:20px"><p>Loading projects…</p></div>`;
   let busy = false;
@@ -578,7 +625,7 @@ function settingsPage() {
       )
       .join(
         "",
-      )}<p class="catalog-note">Lightweight mode removes blur and background effects. Reduced-motion preferences are also respected.</p></div><div class="panel"><h2>Browser settings</h2><label for="tab-title">Tab title</label><input id="tab-title" maxlength="80" value="${esc(prefs.title || "Vexel")}"><div class="actions"><button id="export">Export preferences</button><button id="import">Import preferences</button><input id="import-file" type="file" accept="application/json" hidden></div><p class="catalog-note">Favorites, notes, and appearance sync when signed in. Export excludes credentials and balances. Local movie progress stays on this device.</p><button id="reset">Reset appearance</button></div></div>`;
+      )}<p class="catalog-note">Lightweight mode removes blur and background effects. Reduced-motion preferences are also respected.</p></div><div class="panel"><h2>Browser settings</h2><label for="tab-title">Tab title</label><input id="tab-title" maxlength="80" value="${esc(prefs.title || "Vexel")}"><label for="wisp">Caver server</label><input id="wisp" type="url" inputmode="url" spellcheck="false" placeholder="${esc(DEFAULT_WISP)}" value="${esc(visitorWisp())}"><small>Leave empty for the default. If Caver is blocked on your network, paste another wss:// Wisp server.</small><div class="actions"><button id="export">Export preferences</button><button id="import">Import preferences</button><input id="import-file" type="file" accept="application/json" hidden></div><p class="catalog-note">Favorites, notes, and appearance sync when signed in. Export excludes credentials and balances. Local movie progress stays on this device.</p><button id="reset">Reset appearance</button></div></div>`;
   main.insertAdjacentHTML(
     "beforeend",
     `<div class="form-grid" style="margin-top:20px"><div class="panel"><h2>Glass & shape</h2><label for="glass">Glass intensity · <output id="glass-value">${prefs.glass ?? 60}</output>%</label><input id="glass" type="range" min="0" max="100" value="${Number(prefs.glass ?? 60)}"><label for="roundness">Corner radius · <output id="roundness-value">${prefs.roundness ?? 13}</output>px</label><input id="roundness" type="range" min="0" max="24" value="${Number(prefs.roundness ?? 13)}"><p class="catalog-note">Lightweight mode disables blur regardless of this setting.</p></div><div class="panel"><h2>Home screen</h2>${[
@@ -611,6 +658,12 @@ function settingsPage() {
   $("#tab-title").oninput = (e) => {
     prefs.title = e.target.value;
     save();
+  };
+  $("#wisp").onchange = (e) => {
+    const value = e.target.value.trim();
+    if (value && !/^wss:\/\/[^\s/]+/i.test(value)) return toast("Use a wss:// address.");
+    try { value ? localStorage.setItem("vexel.wisp", value) : localStorage.removeItem("vexel.wisp"); } catch {}
+    toast(value ? "Caver will use this server after you reload." : "Caver is back on the default server after you reload.");
   };
   $("#reset").onclick = () => {
     prefs = {

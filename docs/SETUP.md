@@ -6,23 +6,30 @@ The website is static HTML/CSS/JavaScript. Visitors and the Pages publishing wor
 
 For everyday changes, use **[edit.html](https://techmaster2013.github.io/vexel/edit.html)** after the [one-time editor setup](EDITOR.md).
 
-## 1. Publish changes and make games available
+## 1. Games
 
-Game source stays in `techmaster2013/vex-games/main`. Platform source and movie/config records stay in `techmaster2013/vexel/main`.
+Game records live in `techmaster2013/vex-games/manifest.json`. Each record has an ordered `sources` list. Vexel plays the first one, and the **⇄ Source** button in the player moves on to the next one:
 
-### Give Pages read access to the private game repo once
+| Source | Example | How it plays |
+| --- | --- | --- |
+| `/games/…` | `/games/eaglercraft/index.html` | A file in vex-games, published with the site |
+| `gh:repo/path` | `gh:game-hub/karlson/index.html` | Streamed from one of your **public** repos by Vexel's service worker (`public/mirror-sw.js`) |
+| `gh:repo/path?own` | `gh:game-hub/omori-fixed/index.html?own` | Same, but drops a dead CDN `<base>` because the repo has every file |
+| `https://…` | `https://gn-math.github.io/html/33-fix2.html` | A hosted page shown in the player |
+| `caver:https://…` | `caver:https://www.chess.com/` | A site that refuses frames, opened through Caver |
 
-1. In GitHub Settings → Developer settings → Personal access tokens → Fine-grained tokens, create a token owned by techmaster2013.
-2. Select **only vex-games**. Give it **Contents: Read-only** (Metadata read access is automatic). No write permission is needed.
-3. In **vexel** → Settings → Secrets and variables → Actions → New repository secret, save it as **VEX_GAMES_TOKEN**. Never commit the token to a file.
+The mirror exists because game-hub (14 GB) and b-rn1c-1 (4 GB) are far bigger than one GitHub Pages site can hold, and jsDelivr now blocks most of the CDN copies those ports pointed at. The mirror only serves `techmaster2013` repos, removes popunder ads and trackers from game pages, and keeps saves working (games run with real browser storage). It needs `raw.githubusercontent.com` to be reachable.
 
-Without this secret, Pages still rebuilds platform/movie/public-config changes from main, but uses the game-pack-v1 release archive. New changes in the private game repo cannot be read until access is configured.
+### Update the catalog
 
-### Install a game
+After you add or move games in any repo, rebuild the catalog from a vex-games checkout:
 
-1. Upload the complete browser build to `vex-games/games/my-game/`: `index.html`, JavaScript, styles, images, audio, WASM/data files and license/credits. Use files you are allowed to host. An EXE or a webpage containing only an iframe is not a complete local game.
-2. Use relative asset paths such as `./Build/game.wasm`, not site-root paths such as `/Build/game.wasm`.
-3. Edit the matching record in `vex-games/manifest.json` (or add one with a unique ID). Set `path`, license and status; remove its old `remoteUrl`, `launchUrl`, `proxyTarget`, `launchViaCaver`, `openExternally`, and `unavailableReason` unless intentionally needed.
+```sh
+python3 scripts/import-repos.py   # reads your repos with gh, checks links, rewrites manifest.json
+node scripts/validate.mjs
+```
+
+The script merges duplicate titles into one record with several sources, puts your own copies first, drops links that are dead, and moves sites that block frames to Caver. `integrations/repository-import.json` lists what it added, merged and dropped. To add a single game by hand, add a record like this:
 
 ```json
 {
@@ -30,19 +37,26 @@ Without this secret, Pages still rebuilds platform/movie/public-config changes f
   "title": "My Game",
   "category": "Arcade",
   "description": "A short description.",
-  "path": "/games/my-game/index.html",
+  "sources": ["/games/my-game/index.html"],
   "controls": "Arrow keys or WASD",
-  "license": "The actual license for this game; retain its license file",
+  "license": "The actual license for this game",
   "status": "Installed",
   "color": "#13284d"
 }
 ```
 
-4. Commit to `vex-games/main`. Its catalog check validates IDs, paths and license metadata.
-5. In **vexel → Actions → Publish GitHub Pages → Run workflow**, select **main** and run it. With VEX_GAMES_TOKEN configured it reads the latest game pack and publishes it. Changes in the separate games repo do not themselves trigger the Vexel workflow.
-6. Open Games and search for it. The default filter shows connected sources; choose All titles to see pending catalog entries too.
+Local (`/games/…`) games need a `license` and run in a locked-down frame with no storage. Add `"saves": true` for a game from your own repo that must save (Eaglercraft does).
 
-A catalog entry by itself does not include the game. Entries awaiting sources need the actual authorized browser files. For an independently hosted HTTPS game, use `remoteUrl` instead of `path`. Large assets can stay on a suitable game/CDN host; GitHub's normal per-file size limit is 100 MiB and Pages does not turn Git LFS pointers into playable assets.
+### Publish the game pack
+
+`vex-games` is private, so the Pages workflow can only read it with a token. Without the **VEX_GAMES_TOKEN** secret, it uses the `game-pack.tar.gz` asset on this repo's `game-pack-v2` release. To refresh that asset after changing vex-games:
+
+```sh
+tar -czf game-pack.tar.gz --exclude=.git -C ../vex-games .
+gh release upload game-pack-v2 game-pack.tar.gz --clobber --repo techmaster2013/vexel
+```
+
+Then run **Actions → Publish GitHub Pages → Run workflow** on main. To read vex-games directly instead, create a fine-grained token with **Contents: Read-only** on vex-games only, and save it as the **VEX_GAMES_TOKEN** repository secret.
 
 ## 2. Enable Firebase accounts, Google and Microsoft
 
@@ -106,7 +120,9 @@ The backend's `/api/proxy-config` should report `wss://YOUR_BACKEND/wisp/`. Set 
 
 Use `wss://` on the public HTTPS website and keep the trailing `/wisp/`. The WebSocket Origin is `https://techmaster2013.github.io`, without `/vexel/`. The backend retains public-destination-only, TCP 80/443 and connection/stream limits. Its allowed-origin list is exact; it does not use a wildcard.
 
-Commit the public config to `vexel/main`, wait for Pages, and open Caver. If it cannot connect, check the endpoint, TLS certificate, WebSocket forwarding, allowed origin and backend logs. No public Wisp endpoint has been invented or selected for you.
+Commit the public config to `vexel/main`, wait for Pages, and open Caver. If it cannot connect, check the endpoint, TLS certificate, WebSocket forwarding, allowed origin and backend logs.
+
+**You don't need your own Wisp server for Caver.** Like nexSite, Vexel uses the public `wss://wisp.mercurywork.shop/` server when `wispUrl` is empty. Your own server (above), the editor's Wisp setting, or a visitor's **Settings → Caver server** all take priority, which helps when a school network blocks the public one.
 
 ## 4. Add Discord sign-in to the same Firebase project
 
@@ -147,9 +163,9 @@ Use a direct HTTPS video URL that the browser can play, such as an MP4 or WebM s
 
 ## Pac-Man and Eggfish
 
-Pac-Man uses the supplied HTML in `vex-games/games/pacman/`. The original is preserved as `source.html`; the launch copy adds UTF-8 and a Google base URL. Google's actual game assets stay remote and Google blocks direct third-party iframes, so the local wrapper is marked Caver-required.
+Pac-Man uses the supplied HTML in `vex-games/games/pacman/`. The original is preserved as `source.html`; the launch copy adds UTF-8 and a Google base URL. Google's game assets stay remote and Google blocks third-party frames, so it plays through Caver inside the player.
 
-Eggfish keeps its creator-hosted page and opens through Caver when Wisp is ready. The asset inventory is in `vex-games/integrations/eggfish`; its music/art/code were not copied. Proxy gameplay is unverified until a production Wisp endpoint is configured.
+Eggfish keeps its creator-hosted itch.io page and plays through Caver. The asset inventory is in `vex-games/integrations/eggfish`; its music, art and code were not copied.
 
 ## Official references
 

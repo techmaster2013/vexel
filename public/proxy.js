@@ -1,4 +1,4 @@
-import {api,asset} from "./runtime.js";
+import {api,asset,worker,visitorWisp,DEFAULT_WISP} from "./runtime.js";
 let controller, frame, starting;
 const load = (src) =>
   new Promise((ok, no) => {
@@ -27,17 +27,12 @@ async function start() {
   if (controller) return controller;
   if (starting) return starting;
   starting = (async () => {
-    const config = await api("proxy-config");
-    if (!config.wisp)
-      throw Error(
-        "The proxy needs a Wisp server configured by the site owner.",
-      );
+    // Same Scramjet 2 + libcurl + Wisp stack as nexSite.
+    const config = await api("proxy-config").catch(() => ({}));
+    const wisp = visitorWisp() || config.wisp || DEFAULT_WISP;
     await load(asset("vendor/scramjet/scramjet.js"));
     await load(asset("vendor/controller/controller.api.js"));
-    const reg = await navigator.serviceWorker.register(asset("sw.js"), {
-      scope: new URL(".",import.meta.url).pathname,
-    });
-    await navigator.serviceWorker.ready;
+    const reg = await worker();
     if (!navigator.serviceWorker.controller)
       await Promise.race([
         new Promise((r) =>
@@ -54,7 +49,7 @@ async function start() {
         ),
       ]);
     const { default: Client } = await import(asset("vendor/libcurl/index.mjs"));
-    const transport = new Client({ wisp: config.wisp });
+    const transport = new Client({ wisp });
     await transport.init?.();
     const c = new $scramjetController.Controller({
       serviceworker: navigator.serviceWorker.controller || reg.active,

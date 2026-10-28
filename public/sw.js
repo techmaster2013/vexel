@@ -2,4 +2,5 @@ var $scramjetController;(()=>{var e={805(e,t,r){r.d(t,{C:()=>o});class o{methods
 //# sourceMappingURL=controller.sw.js.map
 self.addEventListener('install',()=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(clients.claim()));
-self.addEventListener('fetch',e=>{if($scramjetController.shouldRoute(e))e.respondWith($scramjetController.route(e));});
+importScripts('./mirror-sw.js');
+self.addEventListener('fetch',e=>{const mirrored=vexelMirror.handle(e,self.registration.scope);if(mirrored)e.respondWith(mirrored);else if($scramjetController.shouldRoute(e))e.respondWith($scramjetController.route(e));});

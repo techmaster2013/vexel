@@ -170,7 +170,7 @@ export const server = createServer(async (req, res) => {
             Boolean(p.id && p.secret),
           ]),
         ),
-        proxyReady: Boolean(wispUrl),
+        proxyReady: true,
         gameOrigin: env.GAME_CONTENT_ORIGIN || "",
         shop,
       });
@@ -191,7 +191,7 @@ export const server = createServer(async (req, res) => {
       rate(req,'game-probe',20);
       const entry=(await catalog()).find(g=>g.id===url.searchParams.get('id'));
       if(!entry)fail(404,'Game not found.');
-      const target=entry.remoteUrl||entry.launchUrl||(env.GAME_CONTENT_ORIGIN&&entry.path?env.GAME_CONTENT_ORIGIN+entry.path:null);
+      const target=(entry.sources||[]).find(s=>s.startsWith('https://'))||entry.remoteUrl||entry.launchUrl||(env.GAME_CONTENT_ORIGIN&&entry.path?env.GAME_CONTENT_ORIGIN+entry.path:null);
       if(!target)fail(400,'This game is hosted locally.');
       return json(res,await probeExternalGame(target));
     }
