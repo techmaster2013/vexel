@@ -207,6 +207,7 @@ $(".skip").onclick = (e) => {
 $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
 const CHANGES = [
+  "Minecraft 26.2, with a loading screen and a much faster start",
   "Every game from every techmaster2013 repo now plays inside Vexel, with no new tabs",
   "Caver works out of the box with nexSite's Scramjet setup",
   "Ad and popunder scripts are removed from ported game pages",

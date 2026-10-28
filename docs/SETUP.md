@@ -12,7 +12,7 @@ Game records live in `techmaster2013/vex-games/manifest.json`. Each record has a
 
 | Source | Example | How it plays |
 | --- | --- | --- |
-| `/games/…` | `/games/eaglercraft/index.html` | A file in vex-games, published with the site |
+| `/games/…` | `/games/minecraft-26-2/index.html` | A file in vex-games, published with the site |
 | `gh:repo/path` | `gh:game-hub/karlson/index.html` | Streamed from one of your **public** repos by Vexel's service worker (`public/mirror-sw.js`) |
 | `gh:repo/path?own` | `gh:game-hub/omori-fixed/index.html?own` | Same, but drops a dead CDN `<base>` because the repo has every file |
 | `https://…` | `https://gn-math.github.io/html/33-fix2.html` | A hosted page shown in the player |
@@ -45,7 +45,7 @@ The script merges duplicate titles into one record with several sources, puts yo
 }
 ```
 
-Local (`/games/…`) games need a `license` and run in a locked-down frame with no storage. Add `"saves": true` for a game from your own repo that must save (Eaglercraft does).
+Local (`/games/…`) games need a `license` and run in a locked-down frame with no storage. Add `"saves": true` for a trusted game that must save (Minecraft 26.2 does).
 
 ### Publish the game pack
 
