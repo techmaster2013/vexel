@@ -245,3 +245,22 @@ button:not(.primary):not(.game-card):hover,
   background-color: rgba(60, 34, 120, 0.55);
   border-color: rgba(196, 168, 255, 0.4);
 }
+
+/* Scroll reveal: cards, panels and headings rise into place as they scroll into view.
+   Scroll-driven CSS runs on the compositor with no scroll handlers; browsers without
+   scroll timelines show everything immediately. It animates `translate`/`scale` rather
+   than `transform`, so the card hover lift still works. Off in lightweight mode, with
+   "Reduce motion", and when the system asks for reduced motion. */
+@keyframes vexel-scroll-rise {
+  from { opacity: 0; translate: 0 26px; scale: 0.96; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body:not(.lite):not(.reduce) #main :is(.game-card, .panel, .section-head, .quick, .app-shortcut) {
+      animation: vexel-scroll-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 85%;
+    }
+  }
+}

@@ -161,6 +161,27 @@ movies.push({
 
 Use a direct HTTPS video URL that the browser can play, such as an MP4 or WebM stream you have permission to show—not a YouTube page, search page or download page. A metadata record without `stream` stays a preview. Use a unique ID. Commit to **vexel/main**; the Pages workflow rebuilds automatically, with no npm/pnpm step. Use a media host for large video files instead of committing movies to the platform repo. The player also supports local video files without uploading them.
 
+## 6. Light ads
+
+Vexel has one ad slot on Home and one under the Games grid. They show only to signed-out visitors and never while a game is playing. Each is a single lazy-loaded banner in a sandboxed frame: a click can open the advertiser in a new tab, but an ad can't redirect Vexel or open popups. Until you add an ad unit, visitors see nothing there.
+
+1. Get a banner ad unit that comes as a plain **iframe URL**. A-Ads (https://a-ads.com) works on a github.io address, needs no approval, and its "Code" tab gives a URL like `https://acceptable.a-ads.com/1234567`. Choose 728×90, or 468×60 if most visitors are on small screens.
+2. Add it to `public/pages-config.json`:
+
+```json
+"ads": { "src": "https://acceptable.a-ads.com/1234567", "width": 728, "height": 90 }
+```
+
+3. Commit to `main`; Pages republishes. Remove the `ads` line to turn ads off again.
+
+Things to know before you turn ads on:
+
+- **Most visitors are kids.** Ad networks require child-directed (non-personalized) ads for under-13 audiences under COPPA; tell your network the site is child-directed.
+- **Google AdSense won't approve a `github.io/vexel` address.** It needs a domain you own (a custom domain on Pages works) and a privacy policy page.
+- **School filters block ad networks**, and pages with ads get flagged more often, so expect the ad to be blank on many school networks. Vexel itself keeps working.
+- **Avoid popunder or "direct link" networks** such as Adsterra, PropellerAds or Monetag. They are the scripts Vexel strips from ported games, and they're what gets sites blocked.
+- Sign-in hides ads, so they never reach accounts.
+
 ## Pac-Man and Eggfish
 
 Pac-Man uses the supplied HTML in `vex-games/games/pacman/`. The original is preserved as `source.html`; the launch copy adds UTF-8 and a Google base URL. Google's game assets stay remote and Google blocks third-party frames, so it plays through Caver inside the player.

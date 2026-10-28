@@ -187,10 +187,14 @@ function grid(items) {
     ? `<div class="grid">${items.map(card).join("")}</div>`
     : '<div class="empty">No matching games.</div>';
 }
+// One small banner for signed-out visitors, set by `ads` in pages-config.json. The
+// sandbox lets a click open the advertiser in a new tab but never redirect Vexel or
+// pop anything up on its own. Nothing renders until an ad unit is configured.
 function ad() {
-  return user
-    ? ""
-    : `<div class="ad"><div>Guest ad placement. Signed-in accounts do not see ads.</div><span>AD SPACE · NOT CONNECTED</span></div>`;
+  const unit = config.ads;
+  if (user || !unit?.src) return "";
+  const width = Number(unit.width) || 728, height = Number(unit.height) || 90;
+  return `<aside class="ad" aria-label="Advertisement"><iframe src="${esc(unit.src)}" width="${width}" height="${height}" style="aspect-ratio:${width}/${height}" loading="lazy" scrolling="no" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" title="Advertisement"></iframe><small>Ad · sign in to hide ads</small></aside>`;
 }
 function open(html) {
   $("#modal-body").innerHTML = html;
@@ -208,6 +212,7 @@ $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
 const CHANGES = [
   "Minecraft 26.2, with a loading screen and a much faster start",
+  "Cards and panels glide in as you scroll (off in Lightweight mode)",
   "Every game from every techmaster2013 repo now plays inside Vexel, with no new tabs",
   "Caver works out of the box with nexSite's Scramjet setup",
   "Ad and popunder scripts are removed from ported game pages",
@@ -396,7 +401,7 @@ function gamePage() {
     $("#recent-shelf").hidden =
       Boolean(q) || libraryFilter !== "All" || sort === "favorites";
     const size=48,pages=Math.max(1,Math.ceil(list.length/size));page=Math.min(page,pages-1);
-    $("#game-grid").innerHTML = grid(list.slice(page*size,(page+1)*size))+`<div class="actions library-pagination"><button id="games-prev" ${page===0?'disabled':''}>← Previous</button><span>${list.length} matches · Page ${page+1} of ${pages}</span><button id="games-next" ${page>=pages-1?'disabled':''}>Next →</button></div>`;
+    $("#game-grid").innerHTML = grid(list.slice(page*size,(page+1)*size))+ad()+`<div class="actions library-pagination"><button id="games-prev" ${page===0?'disabled':''}>← Previous</button><span>${list.length} matches · Page ${page+1} of ${pages}</span><button id="games-next" ${page>=pages-1?'disabled':''}>Next →</button></div>`;
     $("#games-prev").onclick=()=>{page--;refresh(false);};$("#games-next").onclick=()=>{page++;refresh(false);};
     bindCards();
   }
