@@ -303,7 +303,7 @@ for folder, (title, category) in GAME_HUB.items():
         report["dropped"].append(f"game-hub/{folder}: {note}")
         continue
     add({"id": "hub-" + re.sub(r"[^a-z0-9]+", "-", folder.lower()).strip("-"), "title": title, "category": category,
-         "color": "#1b1638", "description": "Web port from game-hub.", "catalogSources": [f"{OWNER}/game-hub:{folder}"]}, [source], "game-hub " + note)
+         "color": "#1b1638", "description": "", "origin": "game-hub web port", "catalogSources": [f"{OWNER}/game-hub:{folder}"]}, [source], "game-hub " + note)
 
 # 3. Standalone game repositories without a working Pages site.
 for repo, (title, category, page) in STANDALONE.items():
@@ -312,7 +312,7 @@ for repo, (title, category, page) in STANDALONE.items():
         report["dropped"].append(f"{repo}: {note}")
         continue
     add({"id": "repo-" + repo.lower(), "title": title, "category": category, "color": "#1b2a4a",
-         "description": f"From the {repo} repository.", "catalogSources": [f"{OWNER}/{repo}"]}, [source], repo + " " + note)
+         "description": "", "origin": f"{repo} repository", "catalogSources": [f"{OWNER}/{repo}"]}, [source], repo + " " + note)
 
 # 4. T9's curated library (g10.html), without its popunder ad scripts.
 t9 = tree("t9_z13")
@@ -322,7 +322,7 @@ for name, href, image in re.findall(r'\{name:"([^"]+)",href:"([^"]+)",img:"([^"]
         report["dropped"].append(f"T9 {name}: {note}")
         continue
     add({"id": "t9-" + re.sub(r"[^a-z0-9]+", "-", href.lower().rsplit("/", 1)[-1].removesuffix(".html")).strip("-"), "title": name,
-         "category": guess_category(name), "color": "#241640", "description": "From the T9 library.",
+         "category": guess_category(name), "color": "#241640", "description": "", "origin": "T9 library",
          "catalogSources": [f"T9:{href.lstrip('/')}"]}, [source], "T9 " + note)
 
 # 5. Pages in b-rn1c-1 and GamePlaza that were not in the catalog yet (same site as Vexel).
@@ -331,7 +331,7 @@ for title, path, category in [("Pet Simulator X", "b-rn1c-1/Games/psx.html", "Si
                               ("Papa's Freezeria", "GamePlaza/games/ruffles/freeze.html", "Simulation"),
                               ("Pac-Man (Flash)", "GamePlaza/games/ruffles/pacman.html", "Arcade"), ("Tetris (Flash)", "GamePlaza/games/ruffles/tetris.html", "Puzzle")]:
     add({"id": "repo-" + re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-"), "title": title, "category": category, "color": "#1b2a4a",
-         "description": f"From {path.split('/')[0]}.", "catalogSources": [path.replace("/", ":", 1)]},
+         "description": "", "origin": path.split("/")[0], "catalogSources": [path.replace("/", ":", 1)]},
         [f"https://{OWNER}.github.io/" + urllib.parse.quote(path)], "repository page")
 
 # 6. Minecraft 26.2 (EaglercraftX Wasm-GC), packed from its single-file build by
@@ -369,16 +369,13 @@ for g in entries:
         kept.append(s)
     g["sources"] = sorted(dict.fromkeys(kept), key=rank)
     g["status"] = STATUS[kind(g["sources"][0])] if g["sources"] else "Awaiting source"
-    if not g["sources"]:
-        g["unavailableReason"] = "No working copy of this game was found in the connected repositories yet."
     if norm(g["title"]) in FEATURED:
         g["featured"] = True
     elif "featured" in g:
         del g["featured"]
 
-# A title discovered in this run with no working copy is not worth a catalog card.
-new_ids = {g["id"] for g in old}
-entries = [g for g in entries if g["sources"] or g["id"] in new_ids]
+# A game with no working copy is not worth a catalog card.
+entries = [g for g in entries if g["sources"]]
 ids = set()
 for g in entries:
     while g["id"] in ids:

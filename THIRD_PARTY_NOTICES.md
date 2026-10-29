@@ -26,7 +26,7 @@ MMG (GPL-3.0), the licensed b-rn1c-1 game directories (MicropolisJS/3D City GPL 
 
 Additional game source in `games/`: cars (jchabin, GPL-3.0), The House Game (Artur Kot, MIT), and original owner-authorized GPT Corner code. Their license files and pinned source revisions are included in the game pack. Other newly connected titles link to existing hosts and are not bundled.
 
-## Revision 1.2
+## Caver and the game mirror
 
 - Caver connects through the public Wisp server `wss://wisp.mercurywork.shop/` run by Mercury Workshop, as nexSite does, unless the site owner or visitor sets another server. Traffic to proxied sites passes through that server.
 - Mirrored games (`gh:` sources) are streamed unmodified from techmaster2013's public repositories, except that their HTML has known ad and tracker scripts removed and root-relative paths adjusted. They keep the credits and licenses of their original porters, listed in each repository (for example game-hub's README). Vexel does not relicense them.

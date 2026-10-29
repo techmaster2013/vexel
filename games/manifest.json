@@ -154,7 +154,7 @@
   "title": "Minecraft 26.2",
   "category": "Adventure",
   "color": "#2b3a1f",
-  "description": "Minecraft 26.2 in your browser (EaglercraftX Wasm-GC). Worlds save in your browser. The first launch downloads about 54 MB.",
+  "description": "Minecraft 26.2 in your browser. Worlds save in your browser. The first launch downloads about 54 MB.",
   "saves": true,
   "license": "EaglercraftX community build; Minecraft is © Mojang AB",
   "controls": "WASD to move · mouse to look · E for inventory · Esc for the menu",
@@ -163,7 +163,8 @@
   ],
   "status": "Installed",
   "featured": true,
-  "cover": "/games/covers/minecraft-26-2.webp"
+  "cover": "/games/covers/minecraft-26-2.webp",
+  "origin": "(EaglercraftX Wasm-GC)"
  },
  {
   "id": "gn-427",
@@ -564,7 +565,7 @@
   "title": "99 Nights in the Forest",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:99nights.html"
   ],
@@ -572,7 +573,8 @@
    "gh:t9_z13/99nights.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-99nights.webp"
+  "cover": "/games/covers/t9-99nights.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-258",
@@ -1036,7 +1038,7 @@
   "title": "Aqua Thrill",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:thrill.html"
   ],
@@ -1044,7 +1046,8 @@
    "https://t9lat22.github.io/gamed/games/aquaparkslides/index.html"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-thrill.webp"
+  "cover": "/games/covers/t9-thrill.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-448",
@@ -1083,7 +1086,7 @@
   "title": "Arthur's Nightmare",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "By Varun R..",
+  "description": "By Varun R.",
   "catalogSources": [
    "gn-math/assets:zones.json#645"
   ],
@@ -1522,7 +1525,7 @@
   "title": "Barry Prison",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:barry.html"
   ],
@@ -1530,7 +1533,8 @@
    "https://script.google.com/macros/s/AKfycbxRR9j9VoEVe3ftwVkqAslFNtnJ1UUWj8hLc51en9qR8fsVz2gho9geBFjasY0IV8gJBQ/exec"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-barry.webp"
+  "cover": "/games/covers/t9-barry.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-775",
@@ -1650,7 +1654,7 @@
   "title": "Basketball Legends",
   "category": "Sports",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:basket.html"
   ],
@@ -1658,7 +1662,8 @@
    "https://t9lat22.github.io/basketball-legends/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-basket.webp"
+  "cover": "/games/covers/t9-basket.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gp-basketball-stars",
@@ -1683,7 +1688,7 @@
   "title": "Battle Golf",
   "category": "Action",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:golf.html"
   ],
@@ -1691,7 +1696,8 @@
    "https://t9lat22.github.io/battle-golf/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-golf.webp"
+  "cover": "/games/covers/t9-golf.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-29",
@@ -2348,21 +2354,6 @@
   "cover": "/games/covers/gn-755.webp"
  },
  {
-  "id": "gp-brawl-stars",
-  "title": "Brawl Stars",
-  "category": "Action",
-  "color": "#13284d",
-  "description": "",
-  "provenance": "GamePlaza/site/games.js",
-  "catalogSources": [
-   "GamePlaza:site/games.js"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
-  "cover": "/games/covers/gp-brawl-stars.webp"
- },
- {
   "id": "gn-753",
   "title": "Breaklock",
   "category": "Arcade",
@@ -2434,7 +2425,7 @@
   "title": "Bugswim",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "Bugswim · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:site/games.js"
@@ -2443,7 +2434,8 @@
    "caver:https://scratch.mit.edu/projects/841683021/"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-bugswim.webp"
+  "cover": "/games/covers/gp-bugswim.webp",
+  "origin": "Bugswim · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-376",
@@ -2514,7 +2506,7 @@
   "title": "Burgeria",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:burgeria.html"
   ],
@@ -2522,7 +2514,8 @@
    "https://t9lat22.github.io/papas-burgeria/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-burgeria.webp"
+  "cover": "/games/covers/t9-burgeria.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-78",
@@ -2868,7 +2861,7 @@
   "title": "Chess",
   "category": "Puzzle",
   "color": "#13284d",
-  "description": "Chess · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:site/games.js"
@@ -2877,7 +2870,8 @@
    "caver:https://www.chess.com/"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-chess.webp"
+  "cover": "/games/covers/gp-chess.webp",
+  "origin": "Chess · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-151",
@@ -3022,21 +3016,6 @@
   ],
   "status": "Hosted",
   "cover": "/games/covers/gn-545.webp"
- },
- {
-  "id": "gp-clash-royale",
-  "title": "Clash Royale",
-  "category": "Action",
-  "color": "#13284d",
-  "description": "",
-  "provenance": "GamePlaza/site/games.js",
-  "catalogSources": [
-   "GamePlaza:site/games.js"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
-  "cover": "/games/covers/gp-clash-royale.webp"
  },
  {
   "id": "gn-259",
@@ -3460,7 +3439,7 @@
   "title": "CubeShot",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:cubeshot.html"
   ],
@@ -3468,7 +3447,8 @@
    "gh:t9_z13/Games/cubeshot-io-main/index.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-cubeshot.webp"
+  "cover": "/games/covers/t9-cubeshot.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "catalog-cubeshot-io",
@@ -4273,7 +4253,7 @@
   "title": "Eggfish",
   "category": "Horror",
   "color": "#13284d",
-  "description": "A fishing game by Burghbrain. Opens the creator’s itch.io page through Caver when its Wisp transport is configured.",
+  "description": "A fishing game by Burghbrain.",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:games/eggfish.html",
@@ -4286,14 +4266,15 @@
    "caver:https://burghbrain.itch.io/eggfish"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-eggfish.webp"
+  "cover": "/games/covers/gp-eggfish.webp",
+  "origin": "Opens the creator’s itch.io page through Caver when its Wisp transport is configured"
  },
  {
   "id": "t9-frame",
   "title": "Eggy Car",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:eggy-car-main/eggy-car-main/frame.html"
   ],
@@ -4301,7 +4282,8 @@
    "gh:t9_z13/eggy-car-main/eggy-car-main/frame.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-frame.webp"
+  "cover": "/games/covers/t9-frame.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-197",
@@ -4405,7 +4387,7 @@
   "title": "eParkour",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "eParkour · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:site/games.js"
@@ -4414,7 +4396,8 @@
    "https://eparkour.io/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/gp-eparkour.webp"
+  "cover": "/games/covers/gp-eparkour.webp",
+  "origin": "eParkour · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-264",
@@ -4521,7 +4504,7 @@
   "title": "EvoWars.io",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "By Night Steed S.C..",
+  "description": "By Night Steed S.C.",
   "catalogSources": [
    "gn-math/assets:zones.json#360"
   ],
@@ -5375,7 +5358,7 @@
   "title": "Football Legends",
   "category": "Sports",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:soccer.html"
   ],
@@ -5383,7 +5366,8 @@
    "https://t9lat22.github.io/football-legends/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-soccer.webp"
+  "cover": "/games/covers/t9-soccer.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-154",
@@ -5406,7 +5390,7 @@
   "title": "Fortnite",
   "category": "Action",
   "color": "#13284d",
-  "description": "Fortnite · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:site/games.js"
@@ -5415,7 +5399,8 @@
    "caver:https://www.xbox.com/en-US/play/games/fortnite/BT5P2X999VH2"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-fortnite.webp"
+  "cover": "/games/covers/gp-fortnite.webp",
+  "origin": "Fortnite · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-120",
@@ -5966,7 +5951,7 @@
   "title": "Friday Night Funkin': Pibby: Apocalypse",
   "category": "Rhythm",
   "color": "#13284d",
-  "description": "By BAUDASlel etc..",
+  "description": "By BAUDASlel etc.",
   "catalogSources": [
    "gn-math/assets:zones.json#541"
   ],
@@ -6303,7 +6288,7 @@
   "title": "Funny Shooter 2",
   "category": "Action",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:funnyshooter.html"
   ],
@@ -6311,7 +6296,8 @@
    "https://classroomjq.github.io/funny-shooter-2/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-funnyshooter.webp"
+  "cover": "/games/covers/t9-funnyshooter.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-722",
@@ -6610,7 +6596,7 @@
   "title": "Google Baseball Game",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "Google Baseball Game · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "gn-math/assets:zones.json#257",
@@ -6621,7 +6607,8 @@
    "caver:https://www.google.com/logos/2019/july4th19/r6/july4th19.html?hl=en"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-google-baseball-game.webp"
+  "cover": "/games/covers/gp-google-baseball-game.webp",
+  "origin": "Google Baseball Game · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-361",
@@ -6660,7 +6647,7 @@
   "title": "GPT Corner Playground",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "Drawing, sound, typing challenges, physics and interactive experiments from GPT Corner.",
+  "description": "Drawing, sound, typing challenges, physics and interactive experiments.",
   "catalogSources": [
    "techmaster2013/GPT-corner"
   ],
@@ -6669,7 +6656,8 @@
    "/games/gpt-corner/index.html"
   ],
   "status": "Installed",
-  "cover": "/games/covers/repo-gpt-corner-playground.webp"
+  "cover": "/games/covers/repo-gpt-corner-playground.webp",
+  "origin": "from GPT Corner"
  },
  {
   "id": "gn-851",
@@ -6692,7 +6680,7 @@
   "title": "Grand Vegas",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:grandvegas.html"
   ],
@@ -6700,7 +6688,8 @@
    "gh:t9_z13/grandvegas.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-grandvegas.webp"
+  "cover": "/games/covers/t9-grandvegas.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gp-granny",
@@ -6777,7 +6766,7 @@
   "title": "Grow a Garden",
   "category": "Simulation",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:garden.html"
   ],
@@ -6785,7 +6774,8 @@
    "https://script.google.com/macros/s/AKfycbwK_YDMKEccZyVOz_fpe66G4Je4VyFPdT10OdaKpM699Utzbq41n2m6OXqAzpX0oqrLTA/exec"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-garden.webp"
+  "cover": "/games/covers/t9-garden.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-603",
@@ -6808,7 +6798,7 @@
   "title": "GTA",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:gta5.html"
   ],
@@ -6816,7 +6806,8 @@
    "gh:t9_z13/gta5.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-gta5.webp"
+  "cover": "/games/covers/t9-gta5.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gta-v",
@@ -6836,7 +6827,7 @@
   "title": "GTA Vice City",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:gtavc.html"
   ],
@@ -6844,7 +6835,8 @@
    "gh:t9_z13/gtavc.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-gtavc.webp"
+  "cover": "/games/covers/t9-gtavc.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-155",
@@ -7566,7 +7558,7 @@
   "title": "Infinite Craft",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:ic.html"
   ],
@@ -7574,7 +7566,8 @@
    "gh:t9_z13/ic.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-ic.webp"
+  "cover": "/games/covers/t9-ic.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-857",
@@ -7711,7 +7704,7 @@
   "title": "Jelly Truck",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:jellytruck.html"
   ],
@@ -7719,7 +7712,8 @@
    "https://t9lat22.github.io/jelly-truck"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-jellytruck.webp"
+  "cover": "/games/covers/t9-jellytruck.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-7",
@@ -7855,7 +7849,7 @@
   "title": "KART BROS!",
   "category": "Racing",
   "color": "#13284d",
-  "description": "KART BROS! · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:site/games.js"
@@ -7864,7 +7858,8 @@
    "https://kartbros.io/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/gp-kart-bros.webp"
+  "cover": "/games/covers/gp-kart-bros.webp",
+  "origin": "KART BROS! · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-445",
@@ -8170,7 +8165,7 @@
   "title": "Level Devil",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:leveld.html"
   ],
@@ -8178,7 +8173,8 @@
    "gh:t9_z13/leveld.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-leveld.webp"
+  "cover": "/games/covers/t9-leveld.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-95",
@@ -8409,7 +8405,7 @@
   "title": "Match Triple 3D",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "By LIHUHU PTE. LTD..",
+  "description": "By LIHUHU PTE. LTD.",
   "catalogSources": [
    "gn-math/assets:zones.json#665"
   ],
@@ -8715,7 +8711,7 @@
   "title": "Money Roll",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:moneyroll.html"
   ],
@@ -8723,7 +8719,8 @@
    "https://t9lat22.github.io/money-rush/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-moneyroll.webp"
+  "cover": "/games/covers/t9-moneyroll.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-400",
@@ -8778,7 +8775,7 @@
   "title": "Monster Trucks",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:monstertrucks.html"
   ],
@@ -8786,7 +8783,8 @@
    "gh:t9_z13/monstertrucks.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-monstertrucks.webp"
+  "cover": "/games/covers/t9-monstertrucks.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "catalog-moo",
@@ -8824,7 +8822,7 @@
   "title": "Moto Maniac",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:manic.html"
   ],
@@ -8832,7 +8830,8 @@
    "https://t9lat22.github.io/moto-maniac/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-manic.webp"
+  "cover": "/games/covers/t9-manic.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-96",
@@ -8981,21 +8980,6 @@
   "cover": "/games/covers/gp-my-femboy-roommate.webp"
  },
  {
-  "id": "gp-my-singing-monsters",
-  "title": "My Singing Monsters",
-  "category": "Simulation",
-  "color": "#13284d",
-  "description": "",
-  "provenance": "GamePlaza/site/games.js",
-  "catalogSources": [
-   "GamePlaza:site/games.js"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
-  "cover": "/games/covers/gp-my-singing-monsters.webp"
- },
- {
   "id": "gn-840",
   "title": "My Talking Baby Hippo",
   "category": "Arcade",
@@ -9142,7 +9126,7 @@
   "title": "New York Times Games",
   "category": "Puzzle",
   "color": "#13284d",
-  "description": "New York Times Games · opens the existing official or creator-hosted page. External services may require an account.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:site/games.js"
@@ -9151,7 +9135,8 @@
    "caver:https://www.nytimes.com/crosswords"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-new-york-times-games.webp"
+  "cover": "/games/covers/gp-new-york-times-games.webp",
+  "origin": "New York Times Games · opens the existing official or creator-hosted page. External services may require an account."
  },
  {
   "id": "gn-587",
@@ -9174,7 +9159,7 @@
   "title": "nex2048",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "nex2048 from nexHTML.",
+  "description": "",
   "catalogSources": [
    "techmaster2013/nexHTML:store/apps/nex2048.html"
   ],
@@ -9184,14 +9169,15 @@
    "/games/nexHTML/nex2048.html"
   ],
   "status": "Installed",
-  "cover": "/games/covers/nex-2048.webp"
+  "cover": "/games/covers/nex-2048.webp",
+  "origin": "nex2048 from nexHTML."
  },
  {
   "id": "nex-mines",
   "title": "nexMines",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "nexMines from nexHTML.",
+  "description": "",
   "catalogSources": [
    "techmaster2013/nexHTML:store/apps/nexMines.html"
   ],
@@ -9201,14 +9187,15 @@
    "/games/nexHTML/nexMines.html"
   ],
   "status": "Installed",
-  "cover": "/games/covers/nex-mines.webp"
+  "cover": "/games/covers/nex-mines.webp",
+  "origin": "nexMines from nexHTML."
  },
  {
   "id": "nex-snake",
   "title": "nexSnake",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "nexSnake from nexHTML.",
+  "description": "",
   "catalogSources": [
    "techmaster2013/nexHTML:store/apps/nexSnake.html"
   ],
@@ -9218,7 +9205,8 @@
    "/games/nexHTML/nexSnake.html"
   ],
   "status": "Installed",
-  "cover": "/games/covers/nex-snake.webp"
+  "cover": "/games/covers/nex-snake.webp",
+  "origin": "nexSnake from nexHTML."
  },
  {
   "id": "gn-447",
@@ -9405,7 +9393,7 @@
   "title": "Only Up",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:onlyup.html"
   ],
@@ -9413,7 +9401,8 @@
    "https://t9lat22.github.io/only-up/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-onlyup.webp"
+  "cover": "/games/covers/t9-onlyup.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-659",
@@ -9616,7 +9605,7 @@
   "title": "Pac-Man",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "Google’s Pac-Man doodle. It plays through Caver because Google blocks embedding.",
+  "description": "Google’s Pac-Man doodle.",
   "provenance": "GamePlaza/site/games.js",
   "license": "User-supplied wrapper · upstream game assets not bundled",
   "controls": "Arrow keys",
@@ -9628,14 +9617,15 @@
    "caver:https://techmaster2013.github.io/vexel/games/pacman/index.html"
   ],
   "status": "Via Caver",
-  "cover": "/games/covers/gp-pac-man.webp"
+  "cover": "/games/covers/gp-pac-man.webp",
+  "origin": "It plays through Caver because Google blocks embedding"
  },
  {
   "id": "repo-pac-man-flash",
   "title": "Pac-Man (Flash)",
   "category": "Arcade",
   "color": "#1b2a4a",
-  "description": "From GamePlaza.",
+  "description": "",
   "catalogSources": [
    "GamePlaza:games/ruffles/pacman.html"
   ],
@@ -9643,7 +9633,8 @@
    "https://techmaster2013.github.io/GamePlaza/games/ruffles/pacman.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/repo-pac-man-flash.webp"
+  "cover": "/games/covers/repo-pac-man-flash.webp",
+  "origin": "From GamePlaza."
  },
  {
   "id": "gn-158",
@@ -9845,7 +9836,7 @@
   "title": "Papa's Pizzeria",
   "category": "Simulation",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:papapiza.html"
   ],
@@ -9853,7 +9844,8 @@
    "gh:t9_z13/papapiza.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-papapiza.webp"
+  "cover": "/games/covers/t9-papapiza.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-228",
@@ -10182,7 +10174,7 @@
   "title": "Pixel Gun 3D",
   "category": "Action",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:pixel.html"
   ],
@@ -10190,7 +10182,8 @@
    "https://t9lat22.github.io/pixel-gun-3d/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-pixel.webp"
+  "cover": "/games/covers/t9-pixel.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-281",
@@ -10467,21 +10460,6 @@
   "cover": "/games/covers/catalog-portal.webp"
  },
  {
-  "id": "gp-portal-remake",
-  "title": "Portal Remake",
-  "category": "Adventure",
-  "color": "#13284d",
-  "description": "",
-  "provenance": "GamePlaza/site/games.js",
-  "catalogSources": [
-   "GamePlaza:site/games.js"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
-  "cover": "/games/covers/gp-portal-remake.webp"
- },
- {
   "id": "gn-617",
   "title": "Postal",
   "category": "Arcade",
@@ -10551,7 +10529,7 @@
   "title": "President Simulator",
   "category": "Simulation",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:president.html"
   ],
@@ -10559,7 +10537,8 @@
    "https://t9lat22.github.io/president-simulator/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-president.webp"
+  "cover": "/games/covers/t9-president.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-282",
@@ -11391,7 +11370,7 @@
   "title": "Run",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:run.html"
   ],
@@ -11399,7 +11378,8 @@
    "gh:t9_z13/run.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-run.webp"
+  "cover": "/games/covers/t9-run.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-175",
@@ -11469,20 +11449,6 @@
   ],
   "status": "Hosted",
   "cover": "/games/covers/gn-839.webp"
- },
- {
-  "id": "gp-sab",
-  "title": "SAB",
-  "category": "Arcade",
-  "color": "#13284d",
-  "description": "",
-  "provenance": "GamePlaza/site/games.js",
-  "catalogSources": [
-   "GamePlaza:site/games.js"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet."
  },
  {
   "id": "gn-737",
@@ -11565,20 +11531,6 @@
   "cover": "/games/covers/gn-311.webp"
  },
  {
-  "id": "repo-save-the-doge",
-  "title": "Save the Doge",
-  "category": "Arcade",
-  "color": "#13284d",
-  "description": "",
-  "catalogSources": [
-   "bv3:games.js"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
-  "cover": "/games/covers/repo-save-the-doge.webp"
- },
- {
   "id": "gn-802",
   "title": "Scampton The Great",
   "category": "Arcade",
@@ -11615,7 +11567,7 @@
   "title": "Scary Teacher 3D",
   "category": "Horror",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:scaryteach.html"
   ],
@@ -11623,7 +11575,8 @@
    "gh:t9_z13/scaryteach.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-scaryteach.webp"
+  "cover": "/games/covers/t9-scaryteach.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-605",
@@ -11712,7 +11665,7 @@
   "title": "Secrets of Hallowland",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:hallow.html"
   ],
@@ -11720,7 +11673,8 @@
    "https://arcade.makecode.com/S55699-72457-49890-85748"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-hallow.webp"
+  "cover": "/games/covers/t9-hallow.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-778",
@@ -11755,25 +11709,11 @@
   "cover": "/games/covers/gn-595.webp"
  },
  {
-  "id": "catalog-sheepy-a-short-adventure",
-  "title": "Sheepy: A Short Adventure",
-  "category": "Arcade",
-  "color": "#13284d",
-  "description": "",
-  "catalogSources": [
-   "techmaster2013/sheepy"
-  ],
-  "sources": [],
-  "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
-  "cover": "/games/covers/catalog-sheepy-a-short-adventure.webp"
- },
- {
   "id": "t9-shell",
   "title": "Shell Shockers",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:shell.html"
   ],
@@ -11781,7 +11721,8 @@
    "https://t9lat22.github.io/shell-shockers"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-shell.webp"
+  "cover": "/games/covers/t9-shell.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-721",
@@ -11836,7 +11777,7 @@
   "title": "Short Life",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:shortlife.html"
   ],
@@ -11844,7 +11785,8 @@
    "gh:t9_z13/shortlife.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-shortlife.webp"
+  "cover": "/games/covers/t9-shortlife.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-575",
@@ -12026,7 +11968,7 @@
   "title": "Slime Rancher",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "By Monomi Park, Ported by Snubby.top.",
+  "description": "By Monomi Park.top.",
   "catalogSources": [
    "gn-math/assets:zones.json#591"
   ],
@@ -12035,7 +11977,8 @@
    "https://gn-math.github.io/html/591-fix2.html"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/gn-591.webp"
+  "cover": "/games/covers/gn-591.webp",
+  "origin": "Ported by Snubby"
  },
  {
   "id": "gn-327",
@@ -12147,7 +12090,7 @@
   "title": "Smash Kartz",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:kartz.html"
   ],
@@ -12155,7 +12098,8 @@
    "gh:t9_z13/kartz.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-kartz.webp"
+  "cover": "/games/covers/t9-kartz.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gp-snake-game",
@@ -12179,7 +12123,7 @@
   "title": "Snake.io",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:snakeio.html"
   ],
@@ -12187,14 +12131,15 @@
    "https://t9lat22.github.io/snake-io/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-snakeio.webp"
+  "cover": "/games/covers/t9-snakeio.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "t9-sniper",
   "title": "Sniper Shot",
   "category": "Action",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:sniper.html"
   ],
@@ -12202,7 +12147,8 @@
    "https://t9lat22.github.io/sniper-shot-bullet-time"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-sniper.webp"
+  "cover": "/games/covers/t9-sniper.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-119",
@@ -12225,7 +12171,7 @@
   "title": "Snowball.io",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:snowball.html"
   ],
@@ -12233,7 +12179,8 @@
    "gh:t9_z13/snowball.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-snowball.webp"
+  "cover": "/games/covers/t9-snowball.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-207",
@@ -12256,7 +12203,7 @@
   "title": "Soccer Bros",
   "category": "Sports",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:soccerbros.html"
   ],
@@ -12264,7 +12211,8 @@
    "gh:t9_z13/soccerbros.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-soccerbros.webp"
+  "cover": "/games/covers/t9-soccerbros.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-739",
@@ -12384,7 +12332,7 @@
   "title": "Sonic the Hedgehog 3",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:sonic3.html"
   ],
@@ -12392,7 +12340,8 @@
    "gh:t9_z13/sonic3.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-sonic3.webp"
+  "cover": "/games/covers/t9-sonic3.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-550",
@@ -12740,7 +12689,7 @@
   "title": "Stack Block",
   "category": "Puzzle",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:stack/index.html"
   ],
@@ -12748,7 +12697,8 @@
    "gh:t9_z13/stack/index.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-index.webp"
+  "cover": "/games/covers/t9-index.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-18",
@@ -12771,7 +12721,7 @@
   "title": "Stair Race 3D",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:stair.html"
   ],
@@ -12779,7 +12729,8 @@
    "https://t9lat22.github.io/stair-race-3d/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-stair.webp"
+  "cover": "/games/covers/t9-stair.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-789",
@@ -13012,7 +12963,7 @@
   "title": "Stickman Duel Battle",
   "category": "Action",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:duel.html"
   ],
@@ -13020,7 +12971,8 @@
    "https://t9lat22.github.io/stick-duel-battle/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-duel.webp"
+  "cover": "/games/covers/t9-duel.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-371",
@@ -13470,7 +13422,7 @@
   "title": "Tap Goal",
   "category": "Sports",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:tapgoal.html"
   ],
@@ -13478,14 +13430,15 @@
    "https://script.google.com/a/macros/usjstudents.org/s/AKfycbynaou0tltUF8svMuQfNMxMC-c5t3cQJ2C1khpQuTqngeJ84dkTbp5anyPeLrO39_2k/exec"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-tapgoal.webp"
+  "cover": "/games/covers/t9-tapgoal.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-607",
   "title": "Tattletail",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "By Waygetter Electronics, Ported by Snubby.top.",
+  "description": "By Waygetter Electronics.top.",
   "catalogSources": [
    "gn-math/assets:zones.json#607",
    "techmaster2013/game-hub:tattletail"
@@ -13496,7 +13449,8 @@
    "https://gn-math.github.io/html/607-fix2.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/gn-607.webp"
+  "cover": "/games/covers/gn-607.webp",
+  "origin": "Ported by Snubby"
  },
  {
   "id": "gn-866",
@@ -13615,7 +13569,7 @@
   "title": "Temple Run",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:temple.html"
   ],
@@ -13623,7 +13577,8 @@
    "gh:t9_z13/temple.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-temple.webp"
+  "cover": "/games/covers/t9-temple.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-10",
@@ -13680,7 +13635,7 @@
   "title": "Tetris",
   "category": "Puzzle",
   "color": "#13284d",
-  "description": "Tetris · opens the official game page. External availability and account requirements apply.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "gn-math/assets:zones.json#733",
@@ -13694,14 +13649,15 @@
    "https://t9lat22.github.io/gamed/games/tetris/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/gp-tetris.webp"
+  "cover": "/games/covers/gp-tetris.webp",
+  "origin": "Tetris · opens the official game page. External availability and account requirements apply."
  },
  {
   "id": "repo-tetris-flash",
   "title": "Tetris (Flash)",
   "category": "Puzzle",
   "color": "#1b2a4a",
-  "description": "From GamePlaza.",
+  "description": "",
   "catalogSources": [
    "GamePlaza:games/ruffles/tetris.html"
   ],
@@ -13709,7 +13665,8 @@
    "https://techmaster2013.github.io/GamePlaza/games/ruffles/tetris.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/repo-tetris-flash.webp"
+  "cover": "/games/covers/repo-tetris-flash.webp",
+  "origin": "From GamePlaza."
  },
  {
   "id": "gp-that-s-not-my-neighbor",
@@ -13994,7 +13951,7 @@
   "title": "Timeshooter 3",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:timeshooter3.html"
   ],
@@ -14002,7 +13959,8 @@
    "https://t9lat22.github.io/time-shooter-3/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-timeshooter3.webp"
+  "cover": "/games/covers/t9-timeshooter3.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-108",
@@ -14042,7 +14000,7 @@
   "title": "Tombmask",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:tombmask.html"
   ],
@@ -14050,7 +14008,8 @@
    "gh:t9_z13/tombmask.html"
   ],
   "status": "Ported",
-  "cover": "/games/covers/t9-tombmask.webp"
+  "cover": "/games/covers/t9-tombmask.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-510",
@@ -14361,13 +14320,14 @@
   "id": "truss",
   "title": "Truss",
   "category": "Puzzle",
-  "description": "Truss, loaded from the source you supplied in a sandboxed external player.",
+  "description": "",
   "color": "#13284d",
   "sources": [
    "https://tru.ss/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/truss.webp"
+  "cover": "/games/covers/truss.webp",
+  "origin": "Truss, loaded from the source you supplied in a sandboxed external player."
  },
  {
   "id": "gn-111",
@@ -14587,7 +14547,7 @@
   "title": "Uno",
   "category": "Arcade",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:uno.html"
   ],
@@ -14595,7 +14555,8 @@
    "https://t9lat22.github.io/uno/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-uno.webp"
+  "cover": "/games/covers/t9-uno.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-718",
@@ -15104,7 +15065,7 @@
   "title": "Wheelie Bike 2",
   "category": "Racing",
   "color": "#241640",
-  "description": "From the T9 library.",
+  "description": "",
   "catalogSources": [
    "T9:wheelie.html"
   ],
@@ -15112,7 +15073,8 @@
    "https://t9lat22.github.io/wheelie-bike/index.html"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/t9-wheelie.webp"
+  "cover": "/games/covers/t9-wheelie.webp",
+  "origin": "From the T9 library."
  },
  {
   "id": "gn-245",
@@ -15430,7 +15392,7 @@
   "title": "Zombs Royale",
   "category": "Arcade",
   "color": "#13284d",
-  "description": "Zombs Royale · opens the official game page. External availability and account requirements apply.",
+  "description": "",
   "provenance": "GamePlaza/site/games.js",
   "catalogSources": [
    "GamePlaza:games/zombs.html",
@@ -15440,6 +15402,7 @@
    "https://zombsroyale.io/"
   ],
   "status": "Hosted",
-  "cover": "/games/covers/gp-zombs-royale.webp"
+  "cover": "/games/covers/gp-zombs-royale.webp",
+  "origin": "Zombs Royale · opens the official game page. External availability and account requirements apply."
  }
 ]

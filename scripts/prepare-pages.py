@@ -15,8 +15,8 @@ for required in ['vendor/scramjet/scramjet.js','vendor/controller/controller.api
 shutil.copytree(root/'public',output,ignore=shutil.ignore_patterns('*.map','temp-types-build'),dirs_exist_ok=True)
 shutil.copytree(games,output/'games',dirs_exist_ok=True)
 # The catalog is fetched on every visit, so store it without whitespace or the
-# import bookkeeping (where each record was found) that the site never reads.
-private={'catalogSources','provenance','author','revision'}
+# fields the site never shows: where each game comes from, its status and license.
+private={'catalogSources','provenance','author','revision','origin','status','license'}
 public=[{k:v for k,v in g.items() if k not in private} for g in manifest]
 (output/'games'/'manifest.json').write_text(json.dumps(public,separators=(',',':'),ensure_ascii=False))
 config=json.loads((root/'public/pages-config.json').read_text());config['mode']='static'

@@ -16,7 +16,7 @@ for (const g of manifest) {
   for (const key of ["path", "launchUrl", "remoteUrl", "proxyTarget", "launchViaCaver", "openExternally"])
     if (key in g) throw Error(`Legacy field ${key} on ${g.id}; use sources instead.`);
   if (!Array.isArray(g.sources)) throw Error("Missing sources list: " + g.id);
-  if (!g.sources.length && !g.unavailableReason) throw Error("Unplayable entries need an unavailableReason: " + g.id);
+  if (!g.sources.length) throw Error("No way to play this game; remove it: " + g.id);
   for (const source of g.sources) {
     if (source.startsWith("/")) {
       const file = resolve(root, "." + source);
@@ -34,5 +34,4 @@ for (const g of manifest) {
       throw Error("Invalid cover: " + g.id);
   }
 }
-const playable = manifest.filter((g) => g.sources.length).length;
-console.log(`${manifest.length} unique catalog entries validated; ${playable} playable.`);
+console.log(`${manifest.length} games validated.`);
