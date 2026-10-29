@@ -917,7 +917,8 @@
   "sources": [
    "gh:angry/index.html?own"
   ],
-  "status": "Ported"
+  "status": "Ported",
+  "cover": "/games/covers/gp-angry-birds-2.webp"
  },
  {
   "id": "gn-316",
@@ -1123,7 +1124,8 @@
   "sources": [
    "https://techmaster2013.github.io/b-rn1c-1/Games/atr3/index.html"
   ],
-  "status": "Ported"
+  "status": "Ported",
+  "cover": "/games/covers/catalog-atr3.webp"
  },
  {
   "id": "gn-13",
@@ -1380,7 +1382,8 @@
   "sources": [
    "https://techmaster2013.github.io/b-rn1c-1/Games/baldi-basics/index.html"
   ],
-  "status": "Ported"
+  "status": "Ported",
+  "cover": "/games/covers/catalog-baldi-basics.webp"
  },
  {
   "id": "gn-467",
@@ -1735,7 +1738,8 @@
   "sources": [
    "https://techmaster2013.github.io/b-rn1c-1/Games/Bedwars.html"
   ],
-  "status": "Ported"
+  "status": "Ported",
+  "cover": "/games/covers/catalog-bedwars.webp"
  },
  {
   "id": "gp-bee-swarm-simulator",
@@ -2355,7 +2359,8 @@
   ],
   "sources": [],
   "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet."
+  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
+  "cover": "/games/covers/gp-brawl-stars.webp"
  },
  {
   "id": "gn-753",
@@ -4766,7 +4771,8 @@
   "sources": [
    "https://techmaster2013.github.io/b-rn1c-1/Games/fifa17packopener.html"
   ],
-  "status": "Ported"
+  "status": "Ported",
+  "cover": "/games/covers/catalog-fifa17packopener.webp"
  },
  {
   "id": "catalog-fifteen-puzzle-maker",
@@ -6467,7 +6473,8 @@
    "https://techmaster2013.github.io/b-rn1c-1/Games/getting%20over%20it/index.html",
    "gh:game-hub/getting-over-it/index.html?own"
   ],
-  "status": "Ported"
+  "status": "Ported",
+  "cover": "/games/covers/catalog-getting-over-it.webp"
  },
  {
   "id": "gn-557",
@@ -8985,7 +8992,8 @@
   ],
   "sources": [],
   "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet."
+  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
+  "cover": "/games/covers/gp-my-singing-monsters.webp"
  },
  {
   "id": "gn-840",
@@ -10470,7 +10478,8 @@
   ],
   "sources": [],
   "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet."
+  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
+  "cover": "/games/covers/gp-portal-remake.webp"
  },
  {
   "id": "gn-617",
@@ -11229,7 +11238,8 @@
   "sources": [
    "https://xxpwnxxx420lord.github.io/Barnical-Extended-Games/rocket-league/index.html"
   ],
-  "status": "Hosted"
+  "status": "Hosted",
+  "cover": "/games/covers/gp-rocket-league.webp"
  },
  {
   "id": "gn-656",
@@ -11565,7 +11575,8 @@
   ],
   "sources": [],
   "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet."
+  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
+  "cover": "/games/covers/repo-save-the-doge.webp"
  },
  {
   "id": "gn-802",
@@ -11754,7 +11765,8 @@
   ],
   "sources": [],
   "status": "Awaiting source",
-  "unavailableReason": "No working copy of this game was found in the connected repositories yet."
+  "unavailableReason": "No working copy of this game was found in the connected repositories yet.",
+  "cover": "/games/covers/catalog-sheepy-a-short-adventure.webp"
  },
  {
   "id": "t9-shell",
