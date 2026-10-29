@@ -198,6 +198,8 @@ const CHANGES = [
   "Added Tools & toys: a music player, notes, a soundboard and more",
   "Added a Linux computer that runs in your browser",
   "Added accounts: sign in with Google, Microsoft or a username",
+  "Added the chatroom: live rooms for signed-in accounts",
+  "Added coins and the theme shop: earn coins while you play and unlock themes",
   "Added themes, wallpapers, animations and Lightweight mode for slow Chromebooks",
 ];
 function updates() {
