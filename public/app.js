@@ -604,7 +604,7 @@ function settingsPage() {
       )
       .join(
         "",
-      )}<p class="catalog-note">Lightweight mode removes blur and background effects. Reduced-motion preferences are also respected.</p></div><div class="panel"><h2>Browser settings</h2><label for="tab-title">Tab title</label><input id="tab-title" maxlength="80" value="${esc(prefs.title || "Vexel")}"><label for="wisp">Caver server</label><input id="wisp" type="url" inputmode="url" spellcheck="false" placeholder="${esc(DEFAULT_WISP)}" value="${esc(visitorWisp())}"><small>Leave empty for the default. If Caver is blocked on your network, paste another wss:// Wisp server.</small><div class="actions"><button id="export">Export preferences</button><button id="import">Import preferences</button><input id="import-file" type="file" accept="application/json" hidden></div><p class="catalog-note">Favorites, notes, and appearance sync when signed in. Export excludes credentials and balances. Local movie progress stays on this device.</p><button id="reset">Reset appearance</button></div></div>`;
+      )}<p class="catalog-note">Lightweight mode removes blur and background effects. Reduced-motion preferences are also respected.</p></div><div class="panel"><h2>Browser settings</h2><label for="tab-title">Tab title</label><input id="tab-title" maxlength="80" value="${esc(prefs.title || "Vexel")}"><label for="wisp">Caver server</label><div class="inline-form"><input id="wisp" type="url" inputmode="url" spellcheck="false" placeholder="${esc(DEFAULT_WISP)}" value="${esc(visitorWisp())}"><button id="wisp-test" type="button">Test</button></div><small id="wisp-result" role="status">Leave empty for the default. If Caver is blocked on your network, paste another wss:// Wisp server and press Test.</small><div class="actions"><button id="export">Export preferences</button><button id="import">Import preferences</button><input id="import-file" type="file" accept="application/json" hidden></div><p class="catalog-note">Favorites, notes, and appearance sync when signed in. Export excludes credentials and balances. Local movie progress stays on this device.</p><button id="reset">Reset appearance</button></div></div>`;
   main.insertAdjacentHTML(
     "beforeend",
     `<div class="form-grid" style="margin-top:20px"><div class="panel"><h2>Glass & shape</h2><label for="glass">Glass intensity · <output id="glass-value">${prefs.glass ?? 60}</output>%</label><input id="glass" type="range" min="0" max="100" value="${Number(prefs.glass ?? 60)}"><label for="roundness">Corner radius · <output id="roundness-value">${prefs.roundness ?? 13}</output>px</label><input id="roundness" type="range" min="0" max="24" value="${Number(prefs.roundness ?? 13)}"><p class="catalog-note">Lightweight mode disables blur regardless of this setting.</p></div><div class="panel"><h2>Home screen</h2>${[
@@ -643,6 +643,33 @@ function settingsPage() {
     if (value && !/^wss:\/\/[^\s/]+/i.test(value)) return toast("Use a wss:// address.");
     try { value ? localStorage.setItem("vexel.wisp", value) : localStorage.removeItem("vexel.wisp"); } catch {}
     toast(value ? "Caver will use this server after you reload." : "Caver is back on the default server after you reload.");
+  };
+  // Opens the same kind of WebSocket Caver uses. A filter that allows the server's web
+  // page but blocks WebSockets still shows up here as blocked.
+  $("#wisp-test").onclick = () => {
+    const url = $("#wisp").value.trim() || DEFAULT_WISP, result = $("#wisp-result"), button = $("#wisp-test");
+    if (!/^wss:\/\/[^\s/]+/i.test(url)) { result.textContent = "Use a wss:// address."; return; }
+    button.disabled = true;
+    result.textContent = "Testing " + url + "…";
+    let socket, settled = false;
+    const finish = (ok, why) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      try { socket?.close(); } catch {}
+      button.disabled = false;
+      if (result.isConnected)
+        result.textContent = ok ? "✓ Connected. Caver can use " + url + " on this network." : "✗ Couldn't connect to " + url + " (" + why + "). It's blocked on this network or offline.";
+    };
+    const timer = setTimeout(() => finish(false, "no answer in 8 seconds"), 8000);
+    try {
+      socket = new WebSocket(url);
+      socket.onopen = () => finish(true);
+      socket.onerror = () => finish(false, "connection refused");
+      socket.onclose = () => finish(false, "connection closed");
+    } catch (e) {
+      finish(false, e.message);
+    }
   };
   $("#reset").onclick = () => {
     prefs = {
