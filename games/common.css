@@ -1,0 +1,105 @@
+:root {
+  color-scheme: dark;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #080e1e;
+  color: #eef5ff;
+  font: 15px/1.5 system-ui;
+  text-align: center;
+  padding: 20px;
+}
+h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: -1px;
+}
+p {
+  color: #91a6be;
+  margin: 10px;
+}
+button {
+  font: inherit;
+  background: #1b3047;
+  color: #dfeeff;
+  border: 1px solid #ffffff22;
+  border-radius: 10px;
+  padding: 9px 17px;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 3px solid #adcaff;
+}
+button:hover {
+  background: #2a475d;
+}
+.primary {
+  background: #adcaff;
+  color: #15253f;
+}
+canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: 55vh;
+  margin: 15px auto;
+  border: 1px solid #ffffff15;
+  border-radius: 14px;
+  background: #0e192b;
+  touch-action: none;
+}
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  margin: 12px;
+}
+.score {
+  color: #adcaff;
+}
+#message {
+  min-height: 24px;
+  color: #adcaff;
+}
+.directions button {
+  width: 48px;
+}
+.memory {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  width: min(400px, 95vw);
+  margin: 20px auto;
+}
+.memory button {
+  aspect-ratio: 1;
+  font-size: 28px;
+  padding: 0;
+}
+.memory .matched {
+  background: #243e65;
+  border-color: #adcaff;
+}
+.pad {
+  width: min(480px, 90vw);
+  height: 240px;
+  margin: 20px auto;
+  display: grid;
+  place-items: center;
+  font-size: 25px;
+  border-radius: 20px;
+  background: #253147;
+  color: #fff;
+  border: 1px solid #ffffff20;
+}
+.pad.ready {
+  background: #adcaff;
+  color: #12243d;
+}
+.pad.wait {
+  background: #543d5e;
+}

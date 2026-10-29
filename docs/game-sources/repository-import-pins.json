@@ -1,0 +1,23 @@
+[
+  {
+    "repo": "techmaster2013/cars",
+    "revision": "a7a057e9a6d61c92db069eb9410f7019f798adca",
+    "sourcePrefix": "",
+    "destination": "games/cars",
+    "license": "GPL-3.0"
+  },
+  {
+    "repo": "techmaster2013/b-rn1c-1",
+    "revision": "ad47ca50a90c77aaf97fd1266c717d7e1680890c",
+    "sourcePrefix": "Games/Thehousegame/the-house-game-gh-pages/",
+    "destination": "games/the-house-game",
+    "license": "MIT"
+  },
+  {
+    "repo": "techmaster2013/GPT-corner",
+    "revision": "b90d6c75ac4c808ae704d57f5b249df6e5fb815b",
+    "sourcePrefix": "",
+    "destination": "games/gpt-corner",
+    "license": "Owner-authorized original code"
+  }
+]

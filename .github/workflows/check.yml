@@ -13,3 +13,4 @@ jobs:
       - run: pnpm build
       - run: node --check public/app.js && node --check server/index.mjs
       - run: pnpm test
+      - run: node scripts/validate-games.mjs

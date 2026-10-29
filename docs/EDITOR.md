@@ -40,6 +40,6 @@ The editor tells you what went wrong. The common ones:
 
 ## Notes
 
-- Game files still go in the [vex-games](https://github.com/techmaster2013/vex-games) repo. The editor only stores links to them.
+- Game files go in this repo's `games/` folder. The editor only stores links to them.
 - Your password goes straight to Firebase. It is never saved in Vexel or on GitHub.
 - Want to sign in with a username instead of an email? Add it to `usernames` in `public/editor-config.js`, like `usernames = {owner: 'you@example.com'}`. That file is public, so only use an email you're fine with people seeing.

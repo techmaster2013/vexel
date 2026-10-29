@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Pulse</title
+  ><link rel="stylesheet" href="common.css" />
+  <h1>Pulse</h1>
+  <p>Wait for blue. Then click, tap, or press Space.</p>
+  <button class="pad" id="pad">Click to begin</button>
+  <p id="message" role="status">No rush. Until there is.</p>
+  <p id="best" class="score"></p>
+  <script>
+    const pad = document.querySelector("#pad"),
+      msg = document.querySelector("#message");
+    let state = "idle",
+      timer,
+      start,
+      best = Infinity;
+    function hit() {
+      if (state === "idle" || state === "done") {
+        state = "wait";
+        pad.className = "pad wait";
+        pad.textContent = "Wait for blue…";
+        msg.textContent = "Steady.";
+        timer = setTimeout(
+          () => {
+            state = "ready";
+            pad.className = "pad ready";
+            pad.textContent = "Now!";
+            start = performance.now();
+          },
+          1500 + Math.random() * 3000,
+        );
+      } else if (state === "wait") {
+        clearTimeout(timer);
+        state = "done";
+        pad.className = "pad";
+        pad.textContent = "Too soon. Try again.";
+        msg.textContent = "Wait for the color to change.";
+      } else {
+        const time = Math.round(performance.now() - start);
+        best = Math.min(best, time);
+        state = "done";
+        pad.className = "pad";
+        pad.textContent = time + " ms · Again?";
+        msg.textContent = time < 250 ? "Lightning quick." : "Nice. One more?";
+        document.querySelector("#best").textContent =
+          "Session best: " + best + " ms";
+      }
+    }
+    pad.onclick = hit;
+    window.onkeydown = (e) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (!e.repeat) hit();
+      }
+    };
+  </script>
+</html>

@@ -22,9 +22,9 @@ Revision 0.3:
 
 ## Additional game sources
 
-MMG (GPL-3.0), the licensed b-rn1c-1 game directories (MicropolisJS/3D City GPL with additional terms, URL Chess AGPL, Asteroids/Canvas Tetris/Particle Clicker/Tower Building MIT), and owner-authorized original nexHTML mini-games live in the separate vex-games repository. Their own licenses and source revisions are retained there. Catalog metadata does not license third-party proprietary payloads. The optional Firebase browser SDK is loaded from Google's pinned 12.4.0 CDN when configured.
+MMG (GPL-3.0), the licensed b-rn1c-1 game directories (MicropolisJS/3D City GPL with additional terms, URL Chess AGPL, Asteroids/Canvas Tetris/Particle Clicker/Tower Building MIT), and owner-authorized original nexHTML mini-games live in the `games/` folder. Their own licenses and source revisions are retained there. Catalog metadata does not license third-party proprietary payloads. The optional Firebase browser SDK is loaded from Google's pinned 12.4.0 CDN when configured.
 
-Additional game source stays in vex-games: cars (jchabin, GPL-3.0), The House Game (Artur Kot, MIT), and original owner-authorized GPT Corner code. Their license files and pinned source revisions are included in the game pack. Other newly connected titles link to existing hosts and are not bundled.
+Additional game source in `games/`: cars (jchabin, GPL-3.0), The House Game (Artur Kot, MIT), and original owner-authorized GPT Corner code. Their license files and pinned source revisions are included in the game pack. Other newly connected titles link to existing hosts and are not bundled.
 
 ## Revision 1.2
 

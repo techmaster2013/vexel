@@ -1,0 +1,23 @@
+canvas {
+    display: block;
+    margin: auto;
+    border: 1px solid black;
+}
+
+#playbutton {
+    width: 100px;
+    height: 50px;
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: white;
+    cursor: pointer;
+}
+/* Vexel: fit the original board inside a sandboxed player without cropping. */
+html,body{margin:0;min-height:100%;background:#071122;color:#dbe7ff}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px;box-sizing:border-box}
+canvas{height:min(600px,calc(100dvh - 82px));width:auto;max-width:95vw;border:1px solid #839dc355;background:#0c1b31}
+#playbutton{margin:0;height:42px;min-height:42px;font-size:18px;border:1px solid #a8c3ee66;border-radius:8px;background:#c8daff;color:#081329}

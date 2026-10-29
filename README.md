@@ -6,7 +6,7 @@ A free game site that runs well on school Chromebooks.
 
 ## What's on it
 
-- **950+ browser games** from every techmaster2013 repo (game-hub, b-rn1c-1, T9, GamePlaza and more), all playable inside Vexel, with search, categories, favorites and a "recently played" list
+- **940+ browser games** from every techmaster2013 repo (game-hub, b-rn1c-1, T9, GamePlaza and more), all playable inside Vexel, with search, categories, favorites and a "recently played" list
 - **Caver**, a built-in Scramjet web proxy (the same setup as nexSite) that works with no setup
 - **Movies** from free and open film projects, plus a player for videos on your own computer
 - **Tools and toys**: a music player, notes, a soundboard and more
@@ -27,7 +27,7 @@ No account needed. Your favorites and settings are saved in your browser.
 
 **Add a game or movie:** open the [website editor](https://techmaster2013.github.io/vexel/edit.html), sign in and press Publish. The first time, follow the [editor setup](docs/EDITOR.md) (about 5 minutes).
 
-**Game files** live in the separate [vex-games](https://github.com/techmaster2013/vex-games) repo. Big ports stay in the repos they're already in: Vexel's service worker streams them from GitHub (see [docs/SETUP.md](docs/SETUP.md#1-games)). After adding games to any of your repos, run `python3 scripts/import-repos.py` in vex-games to update the catalog.
+**Games** live in the `games/` folder: the catalog (`games/manifest.json`), cover art and the games Vexel hosts itself. Big ports stay in the repos they're already in, and Vexel's service worker streams them from GitHub (see [docs/SETUP.md](docs/SETUP.md#1-games)). After adding games to any of your repos, run `python3 scripts/import-games.py` to update the catalog.
 
 **Publishing:** everything on the `main` branch goes live automatically through GitHub Pages.
 
@@ -35,10 +35,10 @@ No account needed. Your favorites and settings are saved in your browser.
 
 ### Run it on your own computer
 
-You need Python 3 and a copy of the game files (the vex-games repo, or `game-pack.tar.gz` from this repo's Releases).
+You need Python 3.
 
 ```sh
-python3 scripts/prepare-pages.py --games ../vex-games --output ../vexel-site
+python3 scripts/prepare-pages.py --output ../vexel-site
 python3 -m http.server 8000 --directory ../vexel-site
 ```
 

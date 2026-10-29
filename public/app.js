@@ -1,6 +1,6 @@
 import {loadEdits} from './content-store.js';
 import {loginFailure} from "./auth-errors.js";
-import {api,asset,gameAsset,staticMode,providerSignIn,worker,mirrorUrl,DEFAULT_WISP,visitorWisp} from "./runtime.js";
+import {api,asset,gameAsset,siteRoot,staticMode,providerSignIn,worker,mirrorUrl,DEFAULT_WISP,visitorWisp} from "./runtime.js";
 import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
 import {watchExternalGame} from "./blocked-games.js";
@@ -130,7 +130,7 @@ function apply() {
 }
 function identity() {
   $("#identity").innerHTML = user
-    ? `${esc(user.username)}<small>Signed in · no ads</small>`
+    ? `${esc(user.username)}<small>Signed in</small>`
     : (staticMode ? "Guest<small>Account options</small>" : "Guest<small>Sign in to sync your data</small>");
   $("#avatar").textContent = user?.username[0].toUpperCase() || "V";
   $("#balance").textContent = "◈ " + (user?.unlimitedCoins ? "∞" : (user?.coins || 0));
@@ -160,7 +160,7 @@ function sourceKind(source) {
 }
 function sourceUrl(source) {
   const kind = sourceKind(source);
-  return kind === "local" ? (config.gameOrigin || asset("content")) + source : kind === "mirror" ? mirrorUrl(source) : kind === "caver" ? source.slice(6) : source;
+  return kind === "local" ? (config.gameOrigin || siteRoot) + source : kind === "mirror" ? mirrorUrl(source) : kind === "caver" ? source.slice(6) : source;
 }
 function sourceLabel(source) {
   const kind = sourceKind(source);
@@ -179,22 +179,13 @@ function originalPage(source) {
   }
   return sourceUrl(source);
 }
-function card(g) {
-  return `<button class="game-card" data-game="${esc(g.id)}" aria-label="Preview ${esc(g.title)}"><div class="cover" style="--cover:${esc(g.color || "#12264a")}">${g.cover ? `<img src="${esc(gameAsset(g.cover))}" alt="" loading="lazy">` : `<div class="cover-pattern" data-kind="${esc(g.category)}"><span>${esc(g.title)}</span></div>`}<span class="tag">${esc(g.category)}</span><span class="play-indicator">${canLaunch(g) ? "▷" : "+"}</span></div><div class="card-meta"><strong>${esc(g.title)}</strong><div class="card-details"><span>${esc(g.status || "Installed")}</span><span class="favorite-indicator">${prefs.favorites?.includes(g.id) ? "♥" : "♡"}</span></div></div></button>`;
+function card(g, i = 0) {
+  return `<button class="game-card" style="--i:${Math.min(i, 12)}" data-game="${esc(g.id)}" aria-label="Preview ${esc(g.title)}"><div class="cover" style="--cover:${esc(g.color || "#12264a")}">${g.cover ? `<img src="${esc(gameAsset(g.cover))}" alt="" loading="lazy">` : `<div class="cover-pattern" data-kind="${esc(g.category)}"><span>${esc(g.title)}</span></div>`}<span class="tag">${esc(g.category)}</span><span class="play-indicator">${canLaunch(g) ? "▷" : "+"}</span></div><div class="card-meta"><strong>${esc(g.title)}</strong><div class="card-details"><span>${esc(g.status || "Installed")}</span><span class="favorite-indicator">${prefs.favorites?.includes(g.id) ? "♥" : "♡"}</span></div></div></button>`;
 }
 function grid(items) {
   return items.length
     ? `<div class="grid">${items.map(card).join("")}</div>`
     : '<div class="empty">No matching games.</div>';
-}
-// One small banner for signed-out visitors, set by `ads` in pages-config.json. The
-// sandbox lets a click open the advertiser in a new tab but never redirect Vexel or
-// pop anything up on its own. Nothing renders until an ad unit is configured.
-function ad() {
-  const unit = config.ads;
-  if (user || !unit?.src) return "";
-  const width = Number(unit.width) || 728, height = Number(unit.height) || 90;
-  return `<aside class="ad" aria-label="Advertisement"><iframe src="${esc(unit.src)}" width="${width}" height="${height}" style="aspect-ratio:${width}/${height}" loading="lazy" scrolling="no" referrerpolicy="no-referrer-when-downgrade" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" title="Advertisement"></iframe><small>Ad · sign in to hide ads</small></aside>`;
 }
 function open(html) {
   $("#modal-body").innerHTML = html;
@@ -212,7 +203,8 @@ $("#menu").onclick = () => document.body.classList.toggle("menu-open");
 $("#updates").onclick = updates;
 const CHANGES = [
   "Minecraft 26.2, with a loading screen and a much faster start",
-  "Cards and panels glide in as you scroll (off in Lightweight mode)",
+  "Cards and panels glide in as you scroll, and covers animate on hover",
+  "Cover art for almost every game",
   "Every game from every techmaster2013 repo now plays inside Vexel, with no new tabs",
   "Caver works out of the box with nexSite's Scramjet setup",
   "Ad and popunder scripts are removed from ported game pages",
@@ -230,7 +222,7 @@ function updates() {
 }
 $("#credits").onclick = () =>
   open(
-    `<h2>Credits</h2><p>Vexel combines the game library, browser, tools, and community features developed across GamePlaza, coreHZ, GPT Corner, nexSite, nexite, and StreamPlaza. Layout inspired by Barnical.</p><p>Proxy: <a href="https://github.com/MercuryWorkshop/scramjet" target="_blank" rel="noopener">MercuryWorkshop Scramjet 2 (AGPL-3.0)</a> and <a href="https://github.com/MercuryWorkshop/CurlTransport" target="_blank" rel="noopener">libcurl transport (AGPL-3.0)</a>. Unmodified runtime packages are installed from the pinned dependency lockfile. Open movie credits and licenses appear beside each player. Font: Silkscreen, bundled under the SIL Open Font License. Alpine VM: v86 (BSD-2-Clause), SeaBIOS, and Alpine Linux. Built-in transport: wisp-js (LGPL-3.0-or-later).</p><p>Logo: supplied by Vexel’s owner. Original game payloads live in vex-games.</p><p>Vexel is GPL-3.0, with no warranty. Third-party components retain their licenses.</p><a class="pill" href="https://github.com/techmaster2013/vexel" target="_blank" rel="noopener">Source & research notes ↗</a>`,
+    `<h2>Credits</h2><p>Vexel combines the game library, browser, tools, and community features developed across GamePlaza, coreHZ, GPT Corner, nexSite, nexite, and StreamPlaza. Layout inspired by Barnical.</p><p>Proxy: <a href="https://github.com/MercuryWorkshop/scramjet" target="_blank" rel="noopener">MercuryWorkshop Scramjet 2 (AGPL-3.0)</a> and <a href="https://github.com/MercuryWorkshop/CurlTransport" target="_blank" rel="noopener">libcurl transport (AGPL-3.0)</a>. Unmodified runtime packages are installed from the pinned dependency lockfile. Open movie credits and licenses appear beside each player. Font: Silkscreen, bundled under the SIL Open Font License. Alpine VM: v86 (BSD-2-Clause), SeaBIOS, and Alpine Linux. Built-in transport: wisp-js (LGPL-3.0-or-later).</p><p>Logo: supplied by Vexel’s owner. Game files live in the games folder.</p><p>Vexel is GPL-3.0, with no warranty. Third-party components retain their licenses.</p><a class="pill" href="https://github.com/techmaster2013/vexel" target="_blank" rel="noopener">Source & research notes ↗</a>`,
   );
 function bindCards() {
   main
@@ -273,7 +265,7 @@ function play(g,index=0){
  cleanup=()=>{playing=false;stopWatching();if(kind==='caver')proxy.destroy();};animatePage();
 }
 function home() {
-  const featured = games.filter((g) => g.featured).concat(games.filter((g) => !g.featured && sourcesOf(g)[0]?.startsWith("/"))),
+  const featured = games.filter((g) => g.featured).sort((a, b) => (b.id === "minecraft-26-2") - (a.id === "minecraft-26-2")).concat(games.filter((g) => !g.featured && sourcesOf(g)[0]?.startsWith("/"))),
     recent = (prefs.recent || [])
       .map((id) => games.find((g) => g.id === id))
       .filter(Boolean)
@@ -283,7 +275,7 @@ function home() {
       .filter(Boolean)
       .slice(0, 4);
   main.innerHTML =
-    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">${VERSION}</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions"><a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${games.filter(canLaunch).length} playable</span><span>${games.length} catalog entries</span><span>${user ? "Signed in · no ads" : "Guest session"}</span></div></section><section class="home-apps">${applets
+    `<section class="home-hero panel"><div class="home-heading"><div><span class="eyebrow">HOME</span><h1><img class="home-logo" src="./vexel-logo.png" alt="Vexel" width="470" height="175"></h1><p>Games. Apps. Media. Tools.</p></div><span class="home-version">${VERSION}</span></div><form id="home-search" class="home-search"><input id="home-query" type="search" placeholder="Search games or enter a URL" aria-label="Search games or enter a URL"><button class="primary" type="submit">Search →</button></form><div class="home-actions">${games.some((g) => g.id === "minecraft-26-2") ? '<button id="home-minecraft" class="primary">▶ Minecraft 26.2</button>' : ""}<a href="#games" class="pill">Browse games ↗</a><a href="#apps" class="pill">Open Caver ↗</a><button id="home-random">Random game</button></div><div class="home-stats"><span>${games.filter(canLaunch).length} playable</span><span>${games.length} catalog entries</span><span>${user ? "Signed in" : "Guest session"}</span></div></section><section class="home-apps">${applets
       .slice(0, 6)
       .map(
         ([name, mark, url]) =>
@@ -308,10 +300,10 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE ${VERSION}</span><h2>What's new</h2><p>${CHANGES[0]}, and more.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>` +
-    ad();
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE ${VERSION}</span><h2>What's new</h2><p>${CHANGES[0]}, and more.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>`;
   bindCards();
   $("#home-updates").onclick = updates;
+  $("#home-minecraft")?.addEventListener("click", () => play(games.find((g) => g.id === "minecraft-26-2")));
   $("#home-random").onclick = () => {
     const playable = games.filter(canLaunch);
     if (playable.length)
@@ -401,7 +393,7 @@ function gamePage() {
     $("#recent-shelf").hidden =
       Boolean(q) || libraryFilter !== "All" || sort === "favorites";
     const size=48,pages=Math.max(1,Math.ceil(list.length/size));page=Math.min(page,pages-1);
-    $("#game-grid").innerHTML = grid(list.slice(page*size,(page+1)*size))+ad()+`<div class="actions library-pagination"><button id="games-prev" ${page===0?'disabled':''}>← Previous</button><span>${list.length} matches · Page ${page+1} of ${pages}</span><button id="games-next" ${page>=pages-1?'disabled':''}>Next →</button></div>`;
+    $("#game-grid").innerHTML = grid(list.slice(page*size,(page+1)*size))+`<div class="actions library-pagination"><button id="games-prev" ${page===0?'disabled':''}>← Previous</button><span>${list.length} matches · Page ${page+1} of ${pages}</span><button id="games-next" ${page>=pages-1?'disabled':''}>Next →</button></div>`;
     $("#games-prev").onclick=()=>{page--;refresh(false);};$("#games-next").onclick=()=>{page++;refresh(false);};
     bindCards();
   }

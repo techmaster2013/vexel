@@ -9,7 +9,7 @@ services:
       GAME_CONTENT_DIR: /games
     volumes:
       - vexel-data:/app/data
-      - ../vex-games:/games:ro
+      - ./games:/games:ro
     restart: unless-stopped
 volumes:
   vexel-data:

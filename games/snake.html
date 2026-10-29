@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Neon Snake</title
+  ><link rel="stylesheet" href="common.css" />
+  <h1>Neon Snake</h1>
+  <p>Find the sparks. Don’t lose your tail.</p>
+  <div class="row">
+    <span class="score" id="score">0 sparks</span
+    ><button id="start" class="primary">New game</button
+    ><button id="pause">Pause</button>
+  </div>
+  <canvas
+    id="board"
+    width="400"
+    height="400"
+    aria-label="Snake game board"
+  ></canvas>
+  <div id="message" role="status">Use arrows, WASD, or the buttons below.</div>
+  <div class="directions">
+    <button data-dir="up" aria-label="Up">↑</button>
+    <div class="row">
+      <button data-dir="left" aria-label="Left">←</button
+      ><button data-dir="down" aria-label="Down">↓</button
+      ><button data-dir="right" aria-label="Right">→</button>
+    </div>
+  </div>
+  <script>
+    const canvas = document.querySelector("canvas"),
+      ctx = canvas.getContext("2d"),
+      score = document.querySelector("#score"),
+      msg = document.querySelector("#message");
+    let snake,
+      food,
+      dir,
+      next,
+      running,
+      paused = false,
+      changed = false;
+    const dirs = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+    function feed() {
+      let free = [];
+      for (let y = 0; y < 20; y++)
+        for (let x = 0; x < 20; x++)
+          if (!snake.some((s) => s[0] === x && s[1] === y)) free.push([x, y]);
+      if (!free.length) {
+        running = false;
+        msg.textContent = "You filled the whole board. Incredible.";
+        return;
+      }
+      food = free[Math.floor(Math.random() * free.length)];
+    }
+    function reset() {
+      snake = [
+        [9, 10],
+        [8, 10],
+        [7, 10],
+      ];
+      dir = next = [1, 0];
+      running = true;
+      paused = false;
+      changed = false;
+      document.querySelector("#pause").textContent = "Pause";
+      msg.textContent = "Keep moving.";
+      score.textContent = "0 sparks";
+      feed();
+      draw();
+    }
+    function draw() {
+      ctx.fillStyle = "#0e192b";
+      ctx.fillRect(0, 0, 400, 400);
+      ctx.strokeStyle = "#ffffff04";
+      for (let i = 0; i < 400; i += 20) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, 400);
+        ctx.moveTo(0, i);
+        ctx.lineTo(400, i);
+        ctx.stroke();
+      }
+      if (food) {
+        ctx.fillStyle = "#d1e4ff";
+        ctx.beginPath();
+        ctx.arc(food[0] * 20 + 10, food[1] * 20 + 10, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      snake.forEach((s, i) => {
+        ctx.fillStyle = i ? "#658bbd" : "#adcaff";
+        ctx.fillRect(s[0] * 20 + 2, s[1] * 20 + 2, 16, 16);
+      });
+    }
+    function turn(name) {
+      const d = dirs[name];
+      if (!d || changed || (d[0] === -dir[0] && d[1] === -dir[1])) return;
+      next = d;
+      changed = true;
+    }
+    setInterval(() => {
+      if (!running || paused) return;
+      dir = next;
+      changed = false;
+      const h = [snake[0][0] + dir[0], snake[0][1] + dir[1]],
+        eat = food && h[0] === food[0] && h[1] === food[1];
+      const body = eat ? snake : snake.slice(0, -1);
+      if (
+        h.some((v) => v < 0 || v >= 20) ||
+        body.some((s) => s[0] === h[0] && s[1] === h[1])
+      ) {
+        running = false;
+        msg.textContent = "Trail ended. Try again?";
+        return;
+      }
+      snake.unshift(h);
+      if (eat) {
+        feed();
+        score.textContent = snake.length - 3 + " sparks";
+      } else snake.pop();
+      draw();
+    }, 130);
+    function pause() {
+      paused = !paused;
+      document.querySelector("#pause").textContent = paused
+        ? "Resume"
+        : "Pause";
+    }
+    document.querySelector("#start").onclick = reset;
+    document.querySelector("#pause").onclick = pause;
+    document
+      .querySelectorAll("[data-dir]")
+      .forEach((b) => (b.onclick = () => turn(b.dataset.dir)));
+    window.onkeydown = (e) => {
+      const m = {
+        ArrowUp: "up",
+        w: "up",
+        ArrowDown: "down",
+        s: "down",
+        ArrowLeft: "left",
+        a: "left",
+        ArrowRight: "right",
+        d: "right",
+      };
+      if (m[e.key]) {
+        e.preventDefault();
+        turn(m[e.key]);
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        pause();
+      }
+    };
+    reset();
+  </script>
+</html>

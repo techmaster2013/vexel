@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../sandbox-storage.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>mmg   🧊</title>
+
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="menu">
+    <h1>🧊 miscellaneous multiplayer game 🧊</h1>
+    <p id="version">v0.whtevr-tf</p>
+
+    <div class="option">
+      <label for="player-name">username</label>
+      <input id="player-name" type="text" maxlength="16" placeholder="we luv cubey!" autocomplete="off">
+    </div>
+
+    <div class="option">
+      <label for="player-color">cubey's color</label>
+      <input id="player-color" type="color" value="#ffffff">
+    </div>
+
+    <div class="option">
+      <label for="gamemode">gamemode</label>
+      <select id="gamemode">
+        <option value="free-roam">free roam</option>
+        <option value="tag">tag</option>
+        <option value="survival">survival</option>
+        <option value="tag-survival">tag x survival</option>
+        <option value="pvp">pvp</option>
+        <option value="hot-potato">hot potato</option>
+        <option value="meteor-shower">meteor shower</option>
+        <option value="infection">infection</option>
+        <option value="king-hill">king of the hill</option>
+        <option value="speedrun">origin escape</option>
+        <option value="tiny">tiny cubey</option>
+      </select>
+    </div>
+
+    <div class="option">
+      <label for="round-time">time</label>
+      <select id="round-time">
+        <option value="30">30 sec</option>
+        <option value="60" selected>1 min</option>
+        <option value="120">2 min</option>
+        <option value="300">5 min</option>
+        <option value="0">unlimited</option>
+      </select>
+    </div>
+
+    <hr>
+
+    <button id="singleplayer" title="guess u got no friends..">singleplayer</button>
+    <button id="create-room">create room</button>
+
+    <div id="join-section">
+      <input id="room-code" type="text" maxlength="4" placeholder="enter room code" autocomplete="off">
+      <button id="join-room">join</button>
+    </div>
+
+    <p id="menu-status"></p>
+  </div>
+
+  <div id="game-ui" class="hidden">
+    <div id="game-info">
+      <span id="game-status"></span>
+      <span id="coordinates">x: 0 · y: 0</span>
+      <span id="mode-status"></span>
+      <span id="round-timer"></span>
+      <span id="score-status"></span>
+    </div>
+
+    <div id="game-buttons">
+      <button id="start-round" class="hidden">start</button>
+      <button id="leave-game">leave</button>
+    </div>
+  </div>
+
+  <div id="pvp-hud" class="hidden">
+    <div id="pvp-health">hp: 100</div>
+    <div id="charge-track"><div id="charge-green"></div><div id="charge-marker"></div></div>
+    <div id="charge-label">hold space to charge</div>
+  </div>
+
+  <div id="chat" class="hidden">
+    <div id="chat-log"></div>
+    <form id="chat-form">
+      <input id="chat-input" maxlength="240" autocomplete="off" placeholder="say something dumb">
+      <button>send</button>
+    </form>
+  </div>
+
+  <div id="countdown" class="hidden"></div>
+
+  <div id="pause-menu" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>paused</h2>
+      <button id="resume-game">resume</button>
+      <button id="pause-exit">exit</button>
+    </div>
+  </div>
+
+  <div id="exit-menu" class="overlay hidden">
+    <div class="overlay-box">
+      <h2 id="exit-message">abandoning cubey? :(</h2>
+      <button id="confirm-exit">exit</button>
+      <button id="cancel-exit">nvm</button>
+    </div>
+  </div>
+
+  <div id="death-menu" class="overlay hidden">
+    <div class="overlay-box">
+      <h2>cubey died 💀</h2>
+      <p id="death-status">waiting for the round...</p>
+      <button id="death-exit">exit</button>
+    </div>
+  </div>
+
+  <canvas id="game"></canvas>
+
+  <script type="module" src="game.js"></script>
+  <script type="module" src="chat.js"></script>
+  <script type="module" src="rounds.js"></script>
+
+</body>
+</html>

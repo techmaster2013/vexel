@@ -9,7 +9,7 @@ services:
       GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/firebase-service-account.json
     volumes:
       - vexel-data:/app/data
-      - ../vex-games:/games:ro
+      - ./games:/games:ro
       - ./secrets:/run/secrets:ro
     expose: ["3000"]
     restart: unless-stopped

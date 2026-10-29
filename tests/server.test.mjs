@@ -24,7 +24,7 @@ async function request(path, data, session = cookie, headers = {}) {
 }
 before(async () => {
   const content = join(tmp, "content");
-  mkdirSync(join(content, "games"), { recursive: true });
+  mkdirSync(content, { recursive: true });
   writeFileSync(
     join(content, "manifest.json"),
     JSON.stringify(
@@ -35,7 +35,7 @@ before(async () => {
     ),
   );
   writeFileSync(
-    join(content, "games/fixture.html"),
+    join(content, "fixture.html"),
     "<html><script>/* original test fixture */</script></html>",
   );
   processHandle = spawn(process.execPath, ["server/index.mjs"], {
@@ -68,7 +68,7 @@ test("catalog serves the configured separate content directory and JSON MIME", a
   assert.equal(r.status, 200);
   assert.equal(b.length, 4);
   for (const game of b) {
-    const response = await fetch(origin + "/content" + game.path);
+    const response = await fetch(origin + game.path);
     assert.equal(response.status, 200);
     assert.match(await response.text(), /<script>/);
   }

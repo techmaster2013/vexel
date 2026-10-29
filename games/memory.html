@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Memory Lane</title
+  ><link rel="stylesheet" href="common.css" />
+  <h1>Memory Lane</h1>
+  <p>Find the pairs. Take your time.</p>
+  <div class="row">
+    <span id="score" class="score">0 moves</span
+    ><button id="start" class="primary">Shuffle again</button>
+  </div>
+  <div class="memory" id="cards"></div>
+  <p id="message" role="status">Eight pairs are waiting.</p>
+  <script>
+    let cards = [],
+      opened = [],
+      matches = 0,
+      moves = 0,
+      locked = false,
+      generation = 0;
+    const symbols = ["◈", "✦", "☀", "◉", "♥", "☽", "✳", "♣"];
+    function reset() {
+      generation++;
+      cards = [...symbols, ...symbols]
+        .map((symbol) => ({ symbol, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort);
+      opened = [];
+      matches = moves = 0;
+      locked = false;
+      document.querySelector("#score").textContent = "0 moves";
+      document.querySelector("#message").textContent =
+        "Eight pairs are waiting.";
+      document.querySelector("#cards").innerHTML = cards
+        .map(
+          (c, i) =>
+            `<button data-card="${i}" aria-label="Reveal card ${i + 1}">?</button>`,
+        )
+        .join("");
+      document
+        .querySelectorAll("[data-card]")
+        .forEach((b) => (b.onclick = () => flip(b)));
+    }
+    function flip(b) {
+      if (locked || b.disabled || opened.includes(b)) return;
+      const c = cards[Number(b.dataset.card)];
+      b.textContent = c.symbol;
+      b.setAttribute("aria-label", c.symbol);
+      opened.push(b);
+      if (opened.length !== 2) return;
+      moves++;
+      document.querySelector("#score").textContent = moves + " moves";
+      if (opened[0].textContent === opened[1].textContent) {
+        opened.forEach((b) => {
+          b.disabled = true;
+          b.classList.add("matched");
+        });
+        opened = [];
+        if (++matches === 8)
+          document.querySelector("#message").textContent =
+            "All together. " + moves + " moves. Lovely.";
+      } else {
+        locked = true;
+        const g = generation;
+        setTimeout(() => {
+          if (g !== generation) return;
+          opened.forEach((b) => {
+            b.textContent = "?";
+            b.setAttribute(
+              "aria-label",
+              "Reveal card " + (Number(b.dataset.card) + 1),
+            );
+          });
+          opened = [];
+          locked = false;
+        }, 750);
+      }
+    }
+    document.querySelector("#start").onclick = reset;
+    reset();
+  </script>
+</html>

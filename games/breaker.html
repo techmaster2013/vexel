@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Orbit Breaker</title
+  ><link rel="stylesheet" href="common.css" />
+  <h1>Orbit Breaker</h1>
+  <p>A little focus. A lot of bouncing.</p>
+  <div class="row">
+    <span id="score" class="score">0 / 32</span
+    ><button id="start" class="primary">New game</button
+    ><button id="pause">Pause</button>
+  </div>
+  <canvas width="480" height="360" aria-label="Brick breaker board"></canvas>
+  <p id="message" role="status">Move with mouse, touch, or arrow keys.</p>
+  <script>
+    const c = document.querySelector("canvas"),
+      ctx = c.getContext("2d");
+    let ball,
+      paddle,
+      bricks,
+      running,
+      paused = false,
+      left = false,
+      right = false,
+      previous = 0;
+    function reset() {
+      ball = { x: 240, y: 260, vx: 130, vy: -180 };
+      paddle = 195;
+      bricks = Array.from({ length: 32 }, (_, i) => ({
+        x: 20 + (i % 8) * 56,
+        y: 35 + Math.floor(i / 8) * 24,
+        live: true,
+      }));
+      running = true;
+      paused = false;
+      document.querySelector("#pause").textContent = "Pause";
+      document.querySelector("#score").textContent = "0 / 32";
+      document.querySelector("#message").textContent =
+        "Move with mouse, touch, or arrow keys.";
+    }
+    function draw(t) {
+      const dt = Math.min((t - previous) / 1000, 0.025);
+      previous = t;
+      if (running && !paused) {
+        if (left) paddle -= 300 * dt;
+        if (right) paddle += 300 * dt;
+        paddle = Math.max(0, Math.min(390, paddle));
+        ball.x += ball.vx * dt;
+        ball.y += ball.vy * dt;
+        if (ball.x < 6) {
+          ball.x = 6;
+          ball.vx = Math.abs(ball.vx);
+        }
+        if (ball.x > 474) {
+          ball.x = 474;
+          ball.vx = -Math.abs(ball.vx);
+        }
+        if (ball.y < 6) {
+          ball.y = 6;
+          ball.vy = Math.abs(ball.vy);
+        }
+        if (
+          ball.vy > 0 &&
+          ball.y >= 320 &&
+          ball.y <= 335 &&
+          ball.x >= paddle - 6 &&
+          ball.x <= paddle + 96
+        ) {
+          ball.y = 319;
+          ball.vy = -Math.abs(ball.vy);
+          ball.vx = (ball.x - paddle - 45) * 4;
+        }
+        for (const b of bricks) {
+          if (
+            b.live &&
+            ball.x > b.x - 6 &&
+            ball.x < b.x + 56 &&
+            ball.y > b.y - 6 &&
+            ball.y < b.y + 22
+          ) {
+            b.live = false;
+            ball.vy *= -1;
+            break;
+          }
+        }
+        const n = bricks.filter((b) => !b.live).length;
+        document.querySelector("#score").textContent = n + " / 32";
+        if (n === 32) {
+          running = false;
+          document.querySelector("#message").textContent =
+            "Constellation cleared. Beautiful.";
+        }
+        if (ball.y > 370) {
+          running = false;
+          document.querySelector("#message").textContent =
+            "Out of orbit. Try again?";
+        }
+      }
+      ctx.fillStyle = "#0e192b";
+      ctx.fillRect(0, 0, 480, 360);
+      bricks.forEach((b, i) => {
+        if (!b.live) return;
+        ctx.fillStyle = ["#adcaff", "#85d4bf", "#89aedb", "#b6a2de"][
+          Math.floor(i / 8)
+        ];
+        ctx.fillRect(b.x, b.y, 50, 16);
+      });
+      ctx.fillStyle = "#c8e5ff";
+      ctx.fillRect(paddle, 326, 90, 9);
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, 6, 0, Math.PI * 2);
+      ctx.fill();
+      requestAnimationFrame(draw);
+    }
+    function move(e) {
+      const r = c.getBoundingClientRect();
+      paddle = Math.max(
+        0,
+        Math.min(390, ((e.clientX - r.left) * 480) / r.width - 45),
+      );
+    }
+    c.onpointermove = move;
+    c.onpointerdown = (e) => {
+      c.setPointerCapture(e.pointerId);
+      move(e);
+    };
+    function pause() {
+      paused = !paused;
+      document.querySelector("#pause").textContent = paused
+        ? "Resume"
+        : "Pause";
+    }
+    document.querySelector("#start").onclick = reset;
+    document.querySelector("#pause").onclick = pause;
+    window.onkeydown = (e) => {
+      if (e.key === "ArrowLeft") {
+        left = true;
+        e.preventDefault();
+      }
+      if (e.key === "ArrowRight") {
+        right = true;
+        e.preventDefault();
+      }
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (!e.repeat) pause();
+      }
+    };
+    window.onkeyup = (e) => {
+      if (e.key === "ArrowLeft") left = false;
+      if (e.key === "ArrowRight") right = false;
+    };
+    window.onblur = () => {
+      left = right = false;
+    };
+    reset();
+    requestAnimationFrame(draw);
+  </script>
+</html>

@@ -25,7 +25,7 @@ const origin = env.PUBLIC_ORIGIN || "http://localhost:3000",
 const builtinWisp = env.BUILTIN_WISP !== "false";
 const wispUrl =
   env.WISP_URL || (builtinWisp ? origin.replace(/^http/, "ws") + "/wisp/" : "");
-const games = resolve(root, env.GAME_CONTENT_DIR || "../vex-games");
+const games = resolve(root, env.GAME_CONTENT_DIR || "games");
 const db = openStore(resolve(root, env.DATABASE_PATH || "data/vexel.sqlite"));
 const admins = (env.ADMIN_USERNAMES || "")
   .toLowerCase()
@@ -470,8 +470,8 @@ export const server = createServer(async (req, res) => {
       );
     }
     if (path === "/api/proxy-config") return json(res, { wisp: wispUrl });
-    if (path.startsWith("/content/"))
-      return await file(res, games, decodeURIComponent(path.slice(8)));
+    if (path.startsWith("/games/"))
+      return await file(res, games, decodeURIComponent(path.slice(6)));
     if (path === "/LICENSE") return await file(res, root, "/LICENSE");
     if (path === "/")
       return await file(res, resolve(root, "public"), "/index.html");
