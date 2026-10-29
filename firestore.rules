@@ -1,0 +1,174 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================
+    // FEEDBACK
+    // =========================
+
+    match /feedback/{feedbackId} {
+
+      // Anyone can submit feedback.
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'category',
+          'message',
+          'game',
+          'source',
+          'status',
+          'createdAt'
+        ])
+        && request.resource.data.category is string
+        && request.resource.data.message is string
+        && request.resource.data.game is string
+        && request.resource.data.source is string
+        && request.resource.data.status == 'unresolved'
+        && request.resource.data.createdAt is timestamp;
+
+      // Only YOU can read feedback.
+      allow read: if
+        request.auth != null
+        && request.auth.uid == 'PeDivPz9H3hvwW0TB33tgq6V4u63';
+
+      // Only YOU can modify or delete feedback.
+      allow update, delete: if
+        request.auth != null
+        && request.auth.uid == 'PeDivPz9H3hvwW0TB33tgq6V4u63';
+    }
+
+
+    // =========================
+    // CHANGELOG
+    // =========================
+
+    match /changelog/main {
+
+      // Anyone can read the changelog.
+      allow get: if true;
+
+      // Prevent public collection/list queries.
+      allow list: if false;
+
+      // Only YOU can modify the changelog.
+      allow create, update, delete: if
+        request.auth != null
+        && request.auth.uid == 'PeDivPz9H3hvwW0TB33tgq6V4u63';
+    }
+
+
+    // =========================
+    // EVERYTHING ELSE
+    // =========================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ---- Vexel (techmaster2013.github.io/vexel) ----
+    // Shared by the chatroom, coins and theme shop, and the website editor. These
+    // blocks sit next to GamePlaza's rules in the same project; deploy with
+    // `node scripts/deploy-firestore-rules.mjs`, which keeps GamePlaza's.
+    function vexelSignedIn() {
+      return request.auth != null;
+    }
+    function vexelAdmin() {
+      return request.auth != null && (request.auth.uid == 'PeDivPz9H3hvwW0TB33tgq6V4u63'
+        || request.auth.token.get('vexelAdmin', false) == true
+        || request.auth.token.get('admin', false) == true);
+    }
+    function vexelProfile(uid) {
+      return /databases/$(database)/documents/vexelUsers/$(uid);
+    }
+
+    // Website editor additions (games and movies), readable by every visitor.
+    match /vexel/site {
+      allow get: if true;
+      allow list, delete: if false;
+      allow create, update: if vexelAdmin()
+        && request.resource.data.keys().hasOnly(['payload', 'updatedAt'])
+        && request.resource.data.payload is string
+        && request.resource.data.payload.size() <= 150000
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    // One profile per account: coins, owned themes, and the clocks that limit how
+    // fast coins are earned and messages are sent.
+    match /vexelUsers/{uid} {
+      function unchanged(fields) {
+        return request.resource.data.diff(resource.data).unchangedKeys().hasAll(fields);
+      }
+      function onlyChanged(fields) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+      }
+      function price(item) {
+        return {'aurora': 40, 'ember': 60, 'rose': 80}[item];
+      }
+      // Earn 1 coin a minute while browsing, or 3 while a game is open.
+      function earning() {
+        let gained = request.resource.data.coins - resource.data.coins;
+        return onlyChanged(['coins', 'lastEarn'])
+          && gained >= 1 && gained <= 3
+          && request.resource.data.lastEarn == request.time
+          && request.time > resource.data.lastEarn + duration.value(55, 's');
+      }
+      // Buy one theme at its price (accounts with unlimited coins pay nothing).
+      function buying() {
+        let owned = request.resource.data.owned;
+        let item = owned.size() > 0 ? owned[owned.size() - 1] : '';
+        let paid = resource.data.coins - request.resource.data.coins;
+        return onlyChanged(['coins', 'owned'])
+          && item in ['aurora', 'ember', 'rose']
+          && !(item in resource.data.owned)
+          && owned == resource.data.owned.concat([item])
+          && (paid == price(item) || (paid == 0 && request.auth.token.get('unlimitedCoins', false) == true))
+          && request.resource.data.coins >= 0;
+      }
+      // Sending a chat message stamps lastChat (see the messages rule below).
+      function chatting() {
+        return onlyChanged(['lastChat'])
+          && request.resource.data.lastChat == request.time
+          && request.time > resource.data.lastChat + duration.value(3, 's');
+      }
+      // Admins can grant 1-10,000 coins to anyone.
+      function granting() {
+        let granted = request.resource.data.coins - resource.data.coins;
+        return vexelAdmin() && onlyChanged(['coins']) && granted >= 1 && granted <= 10000;
+      }
+
+      allow get: if request.auth != null && (request.auth.uid == uid || vexelAdmin());
+      allow list: if vexelAdmin();
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['username', 'coins', 'owned', 'lastEarn', 'lastChat'])
+        && request.resource.data.username is string
+        && request.resource.data.username.size() >= 1 && request.resource.data.username.size() <= 40
+        && request.resource.data.username == request.auth.token.get('name', request.resource.data.username)
+        && request.resource.data.coins == 0
+        && request.resource.data.owned == []
+        && request.resource.data.lastEarn == request.time
+        && request.resource.data.lastChat == request.time;
+      allow update: if granting()
+        || (request.auth != null && request.auth.uid == uid && (earning() || buying() || chatting()));
+      allow delete: if false;
+    }
+
+    // Chat rooms. Signed-in accounts read and post; you can delete your own
+    // messages, and admins can delete any. Posting also stamps your profile's
+    // lastChat in the same batch, which limits everyone to one message per 3 s.
+    match /chatRooms/{room}/messages/{messageId} {
+      allow read: if vexelSignedIn() && room in ['general', 'games', 'creative'];
+      allow create: if vexelSignedIn()
+        && room in ['general', 'games', 'creative']
+        && request.resource.data.keys().hasOnly(['uid', 'username', 'text', 'created'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.username == get(vexelProfile(request.auth.uid)).data.username
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 1000
+        && request.resource.data.created == request.time
+        && getAfter(vexelProfile(request.auth.uid)).data.lastChat == request.time;
+      allow update: if false;
+      allow delete: if vexelSignedIn() && (resource.data.uid == request.auth.uid || vexelAdmin());
+    }
+    // ---- end Vexel ----
+  }
+}

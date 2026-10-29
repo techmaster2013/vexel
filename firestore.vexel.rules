@@ -28,9 +28,6 @@
     // One profile per account: coins, owned themes, and the clocks that limit how
     // fast coins are earned and messages are sent.
     match /vexelUsers/{uid} {
-      function unchanged(fields) {
-        return request.resource.data.diff(resource.data).unchangedKeys().hasAll(fields);
-      }
       function onlyChanged(fields) {
         return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
       }
