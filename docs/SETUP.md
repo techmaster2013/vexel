@@ -89,6 +89,19 @@ The Firebase Web configuration is public. OAuth client secrets and service-accou
 
 **Incorrect login!** appears for wrong credentials. A missing Firebase project, disabled provider, bad authorized-domain setting or network error is a setup/service problem and gets its own message. The old localhost SQLite `owner` account is not automatically a Firebase account, and no account database is published to Pages. Admin roles depend on a trusted account/UID, not a display name.
 
+## Chatroom, coins and the theme shop
+
+On the static site these run on Firestore in the same Firebase project as accounts, so no server is needed. The security rules in `firestore.vexel.rules` enforce the limits: 1 coin a minute (3 while playing), exact theme prices, at most one chat message every 3 seconds, and only the author or an admin can delete a message. Admins are the owner account and accounts with the `vexelAdmin` or `admin` claim.
+
+Deploy or update the rules (they are merged into the project's existing GamePlaza rules, never replacing them):
+
+```sh
+npx -y firebase-tools@14.27.0 login      # once
+node scripts/deploy-firestore-rules.mjs  # --dry-run writes firestore.rules without uploading
+```
+
+The rules tests run against the Firebase emulator; see the top of `scripts/test-firestore-rules.mjs`.
+
 ## 3. Host one backend for Discord and Wisp
 
 Use an always-running server/container host that supports HTTPS and WebSocket upgrades. GitHub Pages cannot run this service. The included `compose.backend.yaml` runs Vexel plus Caddy; Caddy provides HTTPS and forwards WebSockets. You need Docker on the backend host, not npm on your own browser/device.

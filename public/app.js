@@ -1,6 +1,6 @@
 import {loadEdits} from './content-store.js';
 import {loginFailure} from "./auth-errors.js";
-import {api,asset,gameAsset,siteRoot,staticMode,providerSignIn,worker,mirrorUrl,DEFAULT_WISP,visitorWisp} from "./runtime.js";
+import {api,asset,gameAsset,siteRoot,staticMode,providerSignIn,worker,mirrorUrl,DEFAULT_WISP,visitorWisp,chatFeed} from "./runtime.js";
 import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
 import {watchExternalGame} from "./blocked-games.js";
@@ -284,7 +284,7 @@ function home() {
       ? section("Favorites", "") +
         `<div class="recent-grid">${favorites.map(card).join("")}</div>`
       : "") +
-    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE ${VERSION}</span><h2>What's new</h2><p>${CHANGES[0]}, and more.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>${staticMode?"Browse themes. Coin rewards and purchases need a shared backend.":"Earn coins while using Vexel or playing installed games. Unlock account themes in the shop."}</p><a href="#shop" class="pill">Open shop →</a></div></div>`;
+    `<div class="two-col home-lower"><div class="panel"><span class="eyebrow">UPDATE ${VERSION}</span><h2>What's new</h2><p>${CHANGES[0]}, and more.</p><button id="home-updates">Read changelog</button></div><div class="panel"><span class="eyebrow">CUSTOMIZATION</span><h2>${user ? "◈ " + (user.unlimitedCoins ? "∞" : user.coins) + " coins" : "Theme shop"}</h2><p>Earn coins while you play and unlock themes in the shop.</p><a href="#shop" class="pill">Open shop →</a></div></div>`;
   bindCards();
   $("#home-updates").onclick = updates;
   $("#home-minecraft")?.addEventListener("click", () => play(games.find((g) => g.id === "minecraft-26-2")));
@@ -716,7 +716,7 @@ function accountPage() {
   if (user) {
     main.innerHTML =
       title("ACCOUNT", esc(user.username), "Manage your account.") +
-      `<div class="form-grid"><div class="panel"><span class="badge">SIGNED IN</span><h2 style="margin-top:20px">Your account</h2><p>◈ ${user.unlimitedCoins ? "∞" : user.coins} coins · ${user.owned.length} unlocked themes</p><p class="catalog-note">${staticMode?"Cloud coins and purchases are not connected on this deployment.":"Earn 1 coin per active minute, or 3 while playing. One reward per minute, across your account. Coins have no cash value."}</p><div class="actions"><a href="#shop" class="pill primary">Visit the shop</a><button id="logout">Sign out</button></div><p class="catalog-note">Email/password accounts support email or username login. Email verification and password recovery are not configured in this first version.</p></div>${user.admin ? `<form id="grant" class="panel"><h2>Admin coin grant</h2><label for="grant-user">Username</label><input id="grant-user" required><label for="grant-amount">Coins</label><input id="grant-amount" type="number" min="1" max="10000" required><div class="actions"><button>Grant coins</button></div><p id="grant-status" class="status"></p></form>` : `<div class="panel"><h2>Saved data</h2><p>${staticMode?"Favorites, recent games, notes, and preferences stay on this device.":"Favorites, recent games, notes, and preferences sync with your account."}</p><a href="#settings" class="link">Settings →</a></div>`}</div>`;
+      `<div class="form-grid"><div class="panel"><span class="badge">SIGNED IN</span><h2 style="margin-top:20px">Your account</h2><p>◈ ${user.unlimitedCoins ? "∞" : user.coins} coins · ${user.owned.length} unlocked themes</p><p class="catalog-note">${"Earn 1 coin per active minute, or 3 while playing. One reward per minute, across your account. Coins have no cash value."}</p><div class="actions"><a href="#shop" class="pill primary">Visit the shop</a><button id="logout">Sign out</button></div><p class="catalog-note">Email/password accounts support email or username login. Email verification and password recovery are not configured in this first version.</p></div>${user.admin ? `<form id="grant" class="panel"><h2>Admin coin grant</h2><label for="grant-user">Username</label><input id="grant-user" required><label for="grant-amount">Coins</label><input id="grant-amount" type="number" min="1" max="10000" required><div class="actions"><button>Grant coins</button></div><p id="grant-status" class="status"></p></form>` : `<div class="panel"><h2>Saved data</h2><p>${staticMode?"Favorites, recent games, notes, and preferences stay on this device.":"Favorites, recent games, notes, and preferences sync with your account."}</p><a href="#settings" class="link">Settings →</a></div>`}</div>`;
     $("#logout").onclick = async () => {
       try {
         await api("logout", {});
@@ -799,7 +799,7 @@ function shopPage() {
       "Unlock themes with earned coins.",
       `<span class="badge">◈ ${user?.unlimitedCoins ? "∞" : (user?.coins || 0)} COINS</span>`,
     ) +
-    `<div class="grid">${config.shop.map((s) => `<article class="panel shop-card"><div class="swatch" style="background:${s.color}">vexel.</div><h3 style="margin-top:20px">${s.name}</h3><p>Account theme</p><div class="actions"><small>◈ ${s.price}</small><button data-buy="${s.id}" ${user?.owned.includes(s.id) ? "disabled" : ""}>${user?.owned.includes(s.id) ? "Owned ✓" : "Unlock"}</button></div></article>`).join("")}</div><p class="catalog-note">${staticMode ? "Coin rewards and theme purchases need a shared backend." : user ? "Stay active to earn 1 coin per minute, or 3 while a game is open. Rewards share a server cooldown." : "Sign in to earn coins and unlock themes."} No purchases or real money.</p>`;
+    `<div class="grid">${config.shop.map((s) => `<article class="panel shop-card"><div class="swatch" style="background:${s.color}">vexel.</div><h3 style="margin-top:20px">${s.name}</h3><p>Account theme</p><div class="actions"><small>◈ ${s.price}</small><button data-buy="${s.id}" ${user?.owned.includes(s.id) ? "disabled" : ""}>${user?.owned.includes(s.id) ? "Owned ✓" : "Unlock"}</button></div></article>`).join("")}</div><p class="catalog-note">${user ? "Stay active to earn 1 coin per minute, or 3 while a game is open. Rewards share a server cooldown." : "Sign in to earn coins and unlock themes."} No purchases or real money.</p>`;
   main.querySelectorAll("[data-buy]").forEach(
     (b) =>
       (b.onclick = async () => {
@@ -826,52 +826,48 @@ function socialPage() {
     title("COMMUNITY", "Chatroom", "Shared rooms for Vexel accounts.") +
     (!user
       ? `<div class="empty">Sign in to join the conversation.<div class="actions" style="justify-content:center"><a href="#account" class="pill primary">Join Vexel →</a></div></div>`
-      : `<div class="panel chat-layout"><div class="rooms">${["general", "games", "creative"].map((r) => `<button data-room="${r}" class="${r === chatRoom ? "primary" : ""}"># ${r}</button>`).join("")}</div><div><h3 id="room-title"># ${chatRoom}</h3><div id="messages" class="messages" aria-live="polite"></div><form id="chat-form" class="inline-form"><input id="message" maxlength="1000" required autocomplete="off" placeholder="Say something…" aria-label="Chat message"><button class="primary">Send</button></form><p id="chat-status" class="status"></p></div></div><p class="catalog-note">Shared rooms, stored on the Vexel server. Keep personal information private. Delete your own messages; admins can moderate any message. Nexite friends, DMs, attachments, and presence remain on the roadmap.</p>`);
+      : `<div class="panel chat-layout"><div class="rooms">${["general", "games", "creative"].map((r) => `<button data-room="${r}" class="${r === chatRoom ? "primary" : ""}"># ${r}</button>`).join("")}</div><div><h3 id="room-title"># ${chatRoom}</h3><div id="messages" class="messages" aria-live="polite"></div><form id="chat-form" class="inline-form"><input id="message" maxlength="1000" required autocomplete="off" placeholder="Say something…" aria-label="Chat message"><button class="primary">Send</button></form><p id="chat-status" class="status"></p></div></div><p class="catalog-note">Shared rooms for signed-in accounts. Keep personal information private: no real names, schools or addresses. Delete your own messages with ×; admins can remove any message.</p>`);
   if (!user) return;
   let stopped = false,
-    last = "";
-  async function refresh() {
-    try {
-      const items = await api("chat?room=" + chatRoom);
-      if (stopped || !$("#messages")) return;
-      const next = JSON.stringify(items);
-      if (next === last) return;
-      last = next;
-      const el = $("#messages"),
-        bottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-      el.innerHTML =
-        items
-          .map(
-            (m) =>
-              `<article class="message"><strong>${esc(m.username)}</strong><time>${new Date(m.created).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</time>${m.username === user.username || user.admin ? `<button data-delete="${m.id}" aria-label="Delete message">×</button>` : ""}<p>${esc(m.text)}</p></article>`,
-          )
-          .join("") || '<p class="muted">No messages yet.</p>';
-      if (bottom) el.scrollTop = el.scrollHeight;
-      el.querySelectorAll("[data-delete]").forEach(
-        (b) =>
-          (b.onclick = async () => {
-            try {
-              await api("chat/delete", { id: Number(b.dataset.delete) });
-              refresh();
-            } catch (e) {
-              toast(e.message);
-            }
-          }),
-      );
-    } catch (e) {
-      if (!stopped && $("#chat-status"))
-        $("#chat-status").textContent = e.message;
-    }
+    stop = () => {};
+  const room = chatRoom;
+  function show(items) {
+    const el = $("#messages");
+    if (stopped || !el) return;
+    const bottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    el.innerHTML =
+      items
+        .map(
+          (m) =>
+            `<article class="message"><strong>${esc(m.username)}</strong><time>${new Date(m.created).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}</time>${m.uid === user.id || m.username === user.username || user.admin ? `<button data-delete="${esc(m.id)}" aria-label="Delete message">×</button>` : ""}<p>${esc(m.text)}</p></article>`,
+        )
+        .join("") || '<p class="muted">No messages yet. Say hi!</p>';
+    if (bottom) el.scrollTop = el.scrollHeight;
+    el.querySelectorAll("[data-delete]").forEach(
+      (b) =>
+        (b.onclick = async () => {
+          try {
+            await api("chat/delete", { room, id: staticMode ? b.dataset.delete : Number(b.dataset.delete) });
+          } catch (e) {
+            toast(e.message);
+          }
+        }),
+    );
   }
+  const failed = (e) => {
+    if (!stopped && $("#chat-status")) $("#chat-status").textContent = e.message;
+  };
+  // New messages arrive live; nothing is re-downloaded on a timer.
+  chatFeed(room, show, failed).then((unsubscribe) => (stopped ? unsubscribe() : (stop = unsubscribe)), failed);
   $("#chat-form").onsubmit = async (e) => {
     e.preventDefault();
     const input = $("#message");
     try {
-      await api("chat", { room: chatRoom, text: input.value });
+      await api("chat", { room, text: input.value });
       input.value = "";
-      await refresh();
+      $("#chat-status").textContent = "";
     } catch (e) {
-      $("#chat-status").textContent = e.message;
+      failed(e);
     }
   };
   main.querySelectorAll("[data-room]").forEach(
@@ -881,11 +877,9 @@ function socialPage() {
         render();
       }),
   );
-  refresh();
-  const timer = setInterval(()=>{if(!document.hidden)refresh();}, 3000);
   cleanup = () => {
     stopped = true;
-    clearInterval(timer);
+    stop();
   };
 }
 let audioContext;

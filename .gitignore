@@ -5,3 +5,4 @@ data/
 
 secrets/
 *service-account*.json
+firestore.rules.backup

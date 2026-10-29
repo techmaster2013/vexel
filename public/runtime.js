@@ -24,6 +24,13 @@ async function firebase(){
  return firebaseClient;
 }
 export async function providerSignIn(name){const client=await firebase();return name==='discord'?discordSignIn({backend:site.authBackendUrl,signInWithToken:client.customToken}):client.provider(name);}
+// Live chat for one room. Static sites listen to Firestore; the optional server is polled.
+export async function chatFeed(room,onMessages,onError){
+ if(staticMode)return (await firebase()).chatFeed(room,onMessages,onError);
+ let stopped=false;const tick=()=>api('chat?room='+room).then(m=>{if(!stopped)onMessages(m);},onError);
+ tick();const timer=setInterval(()=>{if(!document.hidden)tick();},3000);
+ return ()=>{stopped=true;clearInterval(timer);};
+}
 export async function api(path,data,{signal}={}){
  if(!staticMode){
   const r=await fetch(asset('api/'+path),{method:data?'POST':'GET',headers:data?{'Content-Type':'application/json'}:{},body:data?JSON.stringify(data):undefined,signal});
@@ -39,7 +46,11 @@ export async function api(path,data,{signal}={}){
   case 'register':return {user:await(await firebase()).register(data)};
   case 'logout':if(site.firebase)await(await firebase()).logout();return {ok:true};
   case 'preferences':return {local:true};
-  case 'activity':return {earned:0,user:site.firebase?await(await firebase()).me():null};
+  case 'activity':{const c=await firebase();return {earned:await c.earn(data?.kind),user:await c.me()};}
+  case 'shop/buy':{const c=await firebase();await c.buy(data.item);return {user:await c.me()};}
+  case 'admin/grant':await(await firebase()).grant(String(data.username||''),data.amount);return {ok:true};
+  case 'chat':await(await firebase()).send(data.room,String(data.text||'').trim().slice(0,1000));return {ok:true};
+  case 'chat/delete':await(await firebase()).remove(data.room,data.id);return {ok:true};
   case 'game-probe':return {blocked:false,signature:null,inspection:'unavailable'};
   default:throw Error('This feature needs a shared backend. Local games, appearance and tools work without one.');
  }
