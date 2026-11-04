@@ -9,6 +9,8 @@ firestore.rules.backup
 
 # Downloaded on demand by scripts/prepare-pages.py and scripts/prepare-vm.mjs
 public/vendor/v86/alpine.iso
+public/vendor/v86/debian/
+*.iso
 # Extra files `pnpm build` copies that the site never loads
 public/vendor/**/*.map
 public/vendor/**/*.d.ts

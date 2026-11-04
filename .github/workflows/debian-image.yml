@@ -1,0 +1,39 @@
+name: Build Debian VM image
+# Builds the Debian 12 + LXDE live ISO for the Linux VM and publishes it as the
+# `vm-debian` release (git can't hold files this big). The Pages deploy then
+# downloads it and serves it in chunks. Run it from the Actions tab when you want
+# to rebuild; it also runs when the image's recipe changes.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["scripts/vm-debian/**", ".github/workflows/debian-image.yml"]
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: debian-image
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the ISO with live-build
+        run: docker run --rm --privileged -v "$PWD:/w" -w /w debian:bookworm sh scripts/vm-debian/build.sh
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          iso=vexel-debian-lxde-i386.iso
+          sudo chown "$(id -u)" "$iso"
+          sha256sum "$iso" > "$iso.sha256"
+          notes="Debian 12 (bookworm) i386 live image with LXDE, built by .github/workflows/debian-image.yml from commit $GITHUB_SHA. Debian is free software; package sources are at https://sources.debian.org/ and each package's license is in /usr/share/doc inside the image."
+          gh release view vm-debian >/dev/null 2>&1 || gh release create vm-debian --title "Debian VM image" --notes "$notes" --latest=false
+          gh release edit vm-debian --notes "$notes"
+          gh release upload vm-debian "$iso" "$iso.sha256" --clobber
+      - name: Redeploy the site with the new image
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

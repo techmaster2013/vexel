@@ -1,0 +1,30 @@
+# Live system
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+sudo
+
+# Graphics: v86's display is a Bochs VBE card (bochs DRM driver); fbdev/vesa are fallbacks.
+xserver-xorg-core
+xserver-xorg-video-fbdev
+xserver-xorg-video-vesa
+xserver-xorg-input-libinput
+x11-xserver-utils
+dbus-x11
+fonts-dejavu-core
+
+# LXDE desktop (panel, Openbox, PCManFM file manager), logged in automatically
+lxde-core
+lxterminal
+lxappearance
+lightdm
+lightdm-gtk-greeter
+gnome-themes-extra
+adwaita-icon-theme
+
+# Networking (v86 gives the guest a virtio card with DHCP through Wisp) and a light browser
+ifupdown
+isc-dhcp-client
+ca-certificates
+netsurf-gtk

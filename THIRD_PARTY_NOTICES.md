@@ -18,6 +18,7 @@ Revision 0.3:
 - v86 0.5.472 is BSD-2-Clause: https://github.com/copy/v86 . Its license is copied beside prepared runtime files. Firmware source revisions and checksums are recorded in scripts/vm-sources.json; firmware licensing is copied alongside them.
 - @mercuryworkshop/wisp-js 0.5.1 is LGPL-3.0-or-later: https://github.com/MercuryWorkshop/wisp-js . It is imported unmodified as a server library. The deprecated wisp-server-node implementation is not used.
 - Alpine Linux is assembled from separately licensed packages. The unmodified x86 installation image is downloaded from the official Alpine mirror and SHA-256 verified, not committed to the source repository. Source/package details: https://alpinelinux.org/ and https://gitlab.alpinelinux.org/alpine/aports .
+- The Debian 12 + LXDE VM image is built from unmodified Debian packages by `.github/workflows/debian-image.yml` (recipe in `scripts/vm-debian/`) and published as the `vm-debian` release, not committed to the source repository. Each package's license is in `/usr/share/doc/<package>/copyright` inside the image; sources are at https://sources.debian.org/ .
 - Big Buck Bunny, Sintel, Elephants Dream, and Caminandes: Llamigos stream from Internet Archive items carrying CC BY 3.0 metadata, with creator attribution and full film credits preserved. No media files are bundled.
 
 ## Additional game sources

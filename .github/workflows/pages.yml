@@ -23,6 +23,16 @@ jobs:
           node-version: 24
       - name: Check the game catalog
         run: node scripts/validate-games.mjs
+      - name: Add the Debian desktop image, if it has been built
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release download vm-debian --repo "$GITHUB_REPOSITORY" -p 'vexel-debian-lxde-i386.iso*' -D "$RUNNER_TEMP/debian"; then
+            (cd "$RUNNER_TEMP/debian" && sha256sum -c vexel-debian-lxde-i386.iso.sha256)
+            python3 scripts/split-vm-image.py "$RUNNER_TEMP/debian/vexel-debian-lxde-i386.iso" public/vendor/v86/debian --name debian
+          else
+            echo "No Debian image yet; run the 'Build Debian VM image' workflow to add it."
+          fi
       - name: Prepare static files
         run: python3 scripts/prepare-pages.py --output "$RUNNER_TEMP/pages"
       - uses: actions/configure-pages@v5

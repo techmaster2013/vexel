@@ -1,0 +1,8 @@
+#!/bin/sh
+# Boot the live system after 1 second instead of waiting at the boot menu.
+set -e
+for cfg in isolinux/isolinux.cfg; do
+  [ -f "$cfg" ] || continue
+  sed -i '/^timeout /d; /^prompt /d' "$cfg"
+  printf 'timeout 10\nprompt 0\n' >> "$cfg"
+done
