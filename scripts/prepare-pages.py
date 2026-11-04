@@ -9,6 +9,14 @@ output=args.output.resolve();games=args.games.resolve()
 if output==root or root in output.parents or output==games or games in output.parents:raise SystemExit('Choose an output directory outside the repository.')
 if output.exists() and any(output.iterdir()):raise SystemExit('Output directory must be empty.')
 manifest=json.loads((games/'manifest.json').read_text())
+# The Linux VM's disk image is too big to keep in git, so fetch it from its pinned
+# official source (checksum-verified) the first time; later runs reuse the copy.
+image=json.loads((root/'scripts/vm-sources.json').read_text())['image'];iso=root/'public/vendor/v86'/image['file']
+if not iso.is_file() or hashlib.sha256(iso.read_bytes()).hexdigest()!=image['sha256']:
+ import urllib.request;print('Downloading '+image['file']+' from '+image['url'])
+ data=urllib.request.urlopen(image['url'],timeout=300).read()
+ if hashlib.sha256(data).hexdigest()!=image['sha256']:raise SystemExit('Checksum mismatch: '+image['file'])
+ iso.write_bytes(data)
 for required in ['vendor/scramjet/scramjet.js','vendor/controller/controller.api.js','vendor/v86/libv86.mjs','vendor/v86/alpine.iso','sw.js']:
  if not (root/'public'/required).is_file():raise SystemExit('Missing checked-in runtime: '+required)
 # Source maps and type-build leftovers are only for debugging; visitors never download them.

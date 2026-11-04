@@ -246,6 +246,14 @@ button:not(.primary):not(.game-card):hover,
   border-color: rgba(196, 168, 255, 0.4);
 }
 
+/* Smooth scrolling for links, "back to top" jumps and keyboard paging; mouse-wheel
+   glide lives in smooth-scroll.js. Same off-switches as the rest of the motion. */
+@media (prefers-reduced-motion: no-preference) {
+  html:has(> body:not(.lite):not(.reduce)) {
+    scroll-behavior: smooth;
+  }
+}
+
 /* Scroll reveal: cards, panels and headings rise into place as they scroll into view.
    Scroll-driven CSS runs on the compositor with no scroll handlers; browsers without
    scroll timelines show everything immediately. It animates `translate`/`scale` rather

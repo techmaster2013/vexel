@@ -5,6 +5,7 @@ import { applets, toys, movies } from "./catalog.js";
 import * as proxy from "./proxy.js";
 import {watchExternalGame} from "./blocked-games.js";
 import { mountVM } from "./vm.js";
+import "./smooth-scroll.js";
 const VERSION = "1.0";
 const $ = (s) => document.querySelector(s),
   main = $("#main"),
@@ -1142,7 +1143,8 @@ function render() {
   pages[route]();
   if (linkedGame && games.some((g) => g.id === linkedGame)) preview(linkedGame);
   animatePage();
-  window.scrollTo(0, 0);
+  // Jump (not glide) to the top of a newly opened page.
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 window.addEventListener("hashchange", render);
 let pointerFrame = 0;
