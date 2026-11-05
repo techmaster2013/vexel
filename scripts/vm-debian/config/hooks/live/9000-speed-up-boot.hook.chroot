@@ -1,9 +1,13 @@
 #!/bin/sh
-# Trim boot work that only slows down an emulated PC.
+# Network setup and boot trimming for an emulated PC.
 set -e
-# Don't hold boot for a DHCP lease when Vexel's VM network is off.
-mkdir -p /etc/systemd/system/networking.service.d
-printf '[Service]\nTimeoutStartSec=15\n' > /etc/systemd/system/networking.service.d/short-timeout.conf
+# DHCP in the background with systemd-networkd; DNS through systemd-resolved.
+systemctl enable systemd-networkd.service systemd-resolved.service
+# Don't wait for the network at boot (it may be turned off in Vexel).
+systemctl mask systemd-networkd-wait-online.service
+ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# LightDM autologin needs the autologin group to exist.
+getent group autologin >/dev/null || groupadd -r autologin
 systemctl mask apt-daily.timer apt-daily-upgrade.timer man-db.timer e2scrub_all.timer fstrim.timer 2>/dev/null || true
 apt-get clean
 # Keep /usr/share/doc: it holds the packages' copyright files, which must ship with the image.

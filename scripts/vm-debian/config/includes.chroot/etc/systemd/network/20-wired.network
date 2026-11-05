@@ -1,3 +1,6 @@
 # Get an address automatically when Vexel's VM has networking turned on.
-allow-hotplug eth0
-iface eth0 inet dhcp
+[Match]
+Name=eth* en*
+
+[Network]
+DHCP=yes

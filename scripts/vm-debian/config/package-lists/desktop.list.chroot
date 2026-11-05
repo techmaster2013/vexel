@@ -3,6 +3,8 @@ live-boot
 live-config
 live-config-systemd
 systemd-sysv
+# Creates the live user (live-config only recommends it, and recommends are off)
+user-setup
 sudo
 
 # Graphics: v86's display is a Bochs VBE card (bochs DRM driver); fbdev/vesa are fallbacks.
@@ -23,8 +25,8 @@ lightdm-gtk-greeter
 gnome-themes-extra
 adwaita-icon-theme
 
-# Networking (v86 gives the guest a virtio card with DHCP through Wisp) and a light browser
-ifupdown
-isc-dhcp-client
+# Networking (v86 gives the guest a virtio card with DHCP through Wisp): systemd-networkd
+# gets a lease in the background, so a slow or missing network never holds up boot.
+systemd-resolved
 ca-certificates
 netsurf-gtk
