@@ -16,13 +16,20 @@ p.add_argument("output", type=pathlib.Path)
 p.add_argument("--name", default="debian")
 p.add_argument("--chunk", type=int, default=2 * 1024 * 1024)
 args = p.parse_args()
-args.output.mkdir(parents=True, exist_ok=True)
-digest, size = hashlib.sha256(), 0
+digest = hashlib.sha256()
+with args.image.open("rb") as f:
+    while block := f.read(1 << 20):
+        digest.update(block)
+# Chunks go in a folder named after the image's hash, so browsers never mix cached
+# chunks of an old build with a new one (Pages caches files for 10 minutes).
+version = digest.hexdigest()[:12]
+chunks = args.output / version
+chunks.mkdir(parents=True, exist_ok=True)
+size = 0
 with args.image.open("rb") as f:
     while block := f.read(args.chunk):
-        digest.update(block)
-        (args.output / f"{args.name}-{size}-{size + args.chunk}.iso").write_bytes(block)
+        (chunks / f"{args.name}-{size}-{size + args.chunk}.iso").write_bytes(block)
         size += len(block)
-info = {"size": size, "chunk": args.chunk, "sha256": digest.hexdigest()}
+info = {"size": size, "chunk": args.chunk, "sha256": digest.hexdigest(), "dir": version}
 (args.output / "info.json").write_text(json.dumps(info))
-print(f"{args.image.name}: {size / 1e6:.0f} MB in {-(-size // args.chunk)} chunks -> {args.output}")
+print(f"{args.image.name}: {size / 1e6:.0f} MB in {-(-size // args.chunk)} chunks -> {chunks}")

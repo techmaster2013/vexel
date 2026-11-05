@@ -19,7 +19,8 @@ export async function mountVM(main, { api, toast, download }) {
     if (!disposed && $("#vm-status")) $("#vm-status").textContent = s;
   };
   // Boot images. Debian is built by .github/workflows/debian-image.yml and published
-  // as 2 MB chunks that v86 fetches only as the guest reads them (info.json has the size).
+  // as 2 MB chunks that v86 fetches only as the guest reads them (info.json has the size
+  // and the per-build chunk folder).
   let customFile = null,
     debian = null;
   const hints = {
@@ -71,7 +72,7 @@ export async function mountVM(main, { api, toast, download }) {
   const bootImage = () => {
     const id = $("#vm-iso").value;
     if (id === "debian")
-      return { cdrom: { url: asset("vendor/v86/debian/debian.iso"), size: debian.size, fixed_chunk_size: debian.chunk, use_parts: true, async: true }, desktop: true };
+      return { cdrom: { url: asset("vendor/v86/debian/" + (debian.dir ? debian.dir + "/" : "") + "debian.iso"), size: debian.size, fixed_chunk_size: debian.chunk, use_parts: true, async: true }, desktop: true };
     if (id === "custom") return { cdrom: { buffer: customFile }, desktop: true };
     return { cdrom: { url: asset("vendor/v86/alpine.iso"), async: false }, desktop: false };
   };
